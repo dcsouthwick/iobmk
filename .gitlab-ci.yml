@@ -8,7 +8,7 @@ variables:
   UTIL_IMAGE: $CI_REGISTRY_IMAGE/bmk-profiler:latest
   ATLAS_KV_IMAGE: $CI_REGISTRY_IMAGE/atlas-kv-bmk:1.0
 
-test-dev:
+test-qa:
     # This job installs the cern-benchmark suite using "make" 
     # in a docker container having cvmfs already mounted
     # then runs the three standard benchmarks 
@@ -29,5 +29,5 @@ test-dev:
         expire_in: 1 week
         when: always
     only:
-        - devel
+        - qa
 
