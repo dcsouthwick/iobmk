@@ -1,0 +1,33 @@
+stages:
+  - test
+  - build
+  - check
+
+variables:
+  HEPWORKLOADS_IMAGE: $CI_REGISTRY_IMAGE/hepworkloads-base:1.0
+  UTIL_IMAGE: $CI_REGISTRY_IMAGE/bmk-profiler:latest
+  ATLAS_KV_IMAGE: $CI_REGISTRY_IMAGE/atlas-kv-bmk:1.0
+
+test-dev:
+    # This job installs the cern-benchmark suite using "make" 
+    # in a docker container having cvmfs already mounted
+    # then runs the three standard benchmarks 
+    stage: test
+    tags:
+        - cvmfs
+    image: $HEPWORKLOADS_IMAGE
+    script: 
+        - ls /cvmfs/atlas.cern.ch
+        - yum install -y yum-plugin-ovl #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
+        - make -f Makefile nocvmfs 
+        - cern-benchmark --benchmarks="whetstone;DB12;kv" --freetext="test-dev version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC
+        - cat /tmp/cern-benchmark_root/bmk_tmp/result_profile.json
+        - tar -czf cern-benchmark-test.tgz /tmp/cern-benchmark_root/ /opt/cern-benchmark/ 
+    artifacts:
+        paths:
+           - cern-benchmark-test.tgz
+        expire_in: 1 week
+        when: always
+    only:
+        - devel
+
