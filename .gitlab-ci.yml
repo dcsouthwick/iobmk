@@ -31,7 +31,7 @@ variables:
 
 job_build_base_image_slc6:
    before_script:
-       - export CHANGED_PATH=docker-images/hep-benchmark-base-slc6/*
+       - export CHANGED_PATH=* #docker-images/hep-benchmark-base-slc6/*
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6/Dockerfile
        - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6
        - export DESTINATION=$CI_REGISTRY_IMAGE/hep-benchmark-base-slc6:latest
