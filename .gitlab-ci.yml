@@ -45,7 +45,7 @@ job_build_base_image_cc7:
        - export DESTINATION=$CI_REGISTRY_IMAGE/hep-benchmark-base-cc7:latest
    <<: *job_build_base_image_definition
 
-job_test_qa:
+.job_test_qa:
     # This job installs the cern-benchmark suite using "make" 
     # in a docker container having cvmfs already mounted
     # then runs the three standard benchmarks 
