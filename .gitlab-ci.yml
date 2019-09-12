@@ -18,8 +18,8 @@ variables:
   only:
     refs:
     - qa
-    changes:
-    - $CHANGED_PATH
+    #changes:
+    #- $CHANGED_PATH
   script:
     # Prepare Kaniko configuration file
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
