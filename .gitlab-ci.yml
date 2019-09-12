@@ -1,4 +1,5 @@
 stages:
+  - build-base-image
   - test
   - build
   - check
@@ -8,7 +9,43 @@ variables:
   UTIL_IMAGE: $CI_REGISTRY_IMAGE/bmk-profiler:latest
   ATLAS_KV_IMAGE: $CI_REGISTRY_IMAGE/atlas-kv-bmk:1.0
 
-test-qa:
+# Build the base image which is used to test installation and build the final hep-benchmark-suite image
+.job_build_base_image_template: &job_build_base_image_definition
+  stage: build-base-image
+  image: # NB enable shared runners and do not specify a CI tag
+    name: gitlab-registry.cern.ch/ci-tools/docker-image-builder # CERN version of the Kaniko image
+    entrypoint: [""]
+  only:
+    refs:
+    - qa
+    changes:
+    - $CHANGED_PATH
+  script:
+    # Prepare Kaniko configuration file
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    # Build and push the image from the Dockerfile at the root of the project.
+    # To push to a specific docker tag, amend the --destination parameter, e.g. --destination $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
+    # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
+    - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE --destination $DESTINATION
+
+
+job_build_base_image_slc6:
+   before_script:
+       - export CHANGED_PATH=docker-images/hep-benchmark-base-slc6/*
+       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6/Dockerfile
+       - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6
+       - export DESTINATION=$CI_REGISTRY_IMAGE/hep-benchmark-base-slc6:latest
+   <<: *job_build_base_image_definition
+
+job_build_base_image_cc7:
+   before_script:
+       - export CHANGED_PATH=docker-images/hep-benchmark-base-cc7/*
+       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7/Dockerfile
+       - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7
+       - export DESTINATION=$CI_REGISTRY_IMAGE/hep-benchmark-base-cc7:latest
+   <<: *job_build_base_image_definition
+
+job_test_qa:
     # This job installs the cern-benchmark suite using "make" 
     # in a docker container having cvmfs already mounted
     # then runs the three standard benchmarks 
