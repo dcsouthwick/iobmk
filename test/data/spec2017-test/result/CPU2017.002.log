@@ -1,0 +1,863 @@
+runcpu v5825 started at 2017-12-20 15:54:21 on "4bdabd3c3191"
+runcpu is: /spec2017/bin/harness/runcpu
+runcpu: runcpu --config=cern-gcc-linux-x86.cfg --nobuild --noreportable --iterations=1 pure_rate_cpp
+toolset: linux-x86_64
+
+Locating benchmarks...found 47 benchmarks in 55 benchsets.
+Reading config file '/spec2017/config/cern-gcc-linux-x86.cfg'
+
+2 configurations selected:
+
+ Action    Run Mode   Workload     Report Type      Benchmarks
+--------   --------   --------   ----------------   ---------------------------
+validate   rate       refrate    SPECrate2017_fp    508.namd_r, 510.parest_r,  
+                                                    511.povray_r,              
+                                                    526.blender_r              
+validate   rate       refrate    SPECrate2017_int   520.omnetpp_r,             
+                                                    523.xalancbmk_r,           
+                                                    531.deepsjeng_r,           
+                                                    541.leela_r                
+-------------------------------------------------------------------------------
+
+Setting up environment for running 508.namd_r, 510.parest_r, 511.povray_r, 526.blender_r...
+Starting runcpu for 508.namd_r, 510.parest_r, 511.povray_r, 526.blender_r...
+Running "specperl /spec2017/bin/sysinfo" to gather system information.
+sysinfo: r5797 of 2017-06-14 (96c45e4568ad54c135fd618bcc091c0f)
+sysinfo: Getting system information for Linux...
+sysinfo: ...getting CPU info
+sysinfo: ...getting info from numactl
+sysinfo: ...getting memory info
+sysinfo: ...getting OS info
+Retrieving flags file (/spec2017/config/flags/gcc.xml)...
+Verbosity = 5
+Action    = validate
+Tune      = base
+Label     = mytest-m64
+Size      = refrate
+benchmarks= 508.namd_r,510.parest_r,511.povray_r,526.blender_r
+outputs   = txt,html,cfg,pdf,csv
+username  = root
+Environment settings:
+LD_LIBRARY_PATH = "%{gcc_dir}/lib64/:%{gcc_dir}/lib/:/lib64"
+
+Benchmarks selected: 508.namd_r, 510.parest_r, 511.povray_r, 526.blender_r
+Compiling Binaries
+------------------------------------------------------------------------
+COMP: "/usr/bin/g++                -m64 -c -o options.o -DSPEC -DNDEBUG  -DNAMD_DISABLE_SSE -DSPEC_AUTO_SUPPRESS_OPENMP -g -O3         -DSPEC_LP64  <source>"
+C: CXXC="/usr/bin/g++                -m64"
+C: CXXOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS=""
+P: BENCH_CXXFLAGS="-DNAMD_DISABLE_SSE -DSPEC_AUTO_SUPPRESS_OPENMP"
+O: OPTIMIZE="-g -O3"
+O: CXXOPTIMIZE=""
+P: PORTABILITY=""
+P: CXXPORTABILITY=""
+O: EXTRA_CXXFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_CXXOPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CXXPORTABILITY=""
+LINK: "/usr/bin/g++                -m64      -g -O3          <objects>            -o options  "
+C: LD="/usr/bin/g++                -m64"
+O: OPTIMIZE="-g -O3"
+C: LDOUT="-o options"
+ CXXC_VERSION_OPTION:
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+  Up to date 508.namd_r base mytest-m64
+------------------------------------------------------------------------
+COMP: "/usr/bin/g++                -m64 -c -o options.o -DSPEC -DNDEBUG -Iinclude -I. -DSPEC_AUTO_SUPPRESS_OPENMP  -g -O3         -DSPEC_LP64  <source>"
+C: CXXC="/usr/bin/g++                -m64"
+C: CXXOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-Iinclude -I. -DSPEC_AUTO_SUPPRESS_OPENMP"
+P: BENCH_CXXFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: CXXOPTIMIZE=""
+P: PORTABILITY=""
+P: CXXPORTABILITY=""
+O: EXTRA_CXXFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_CXXOPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CXXPORTABILITY=""
+LINK: "/usr/bin/g++                -m64      -g -O3          <objects>            -o options  "
+C: LD="/usr/bin/g++                -m64"
+O: OPTIMIZE="-g -O3"
+C: LDOUT="-o options"
+ CXXC_VERSION_OPTION:
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+  Up to date 510.parest_r base mytest-m64
+------------------------------------------------------------------------
+COMP: "/usr/bin/g++                -m64 -c -o options.o -DSPEC -DNDEBUG -Ifrontend -Ibase -I. -Ispec_qsort -DSPEC_AUTO_SUPPRESS_OPENMP  -g -O3         -DSPEC_LP64  <source>"
+C: CXXC="/usr/bin/g++                -m64"
+C: CXXOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-Ifrontend -Ibase -I. -Ispec_qsort -DSPEC_AUTO_SUPPRESS_OPENMP"
+P: BENCH_CXXFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: CXXOPTIMIZE=""
+P: PORTABILITY=""
+P: CXXPORTABILITY=""
+O: EXTRA_CXXFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_CXXOPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CXXPORTABILITY=""
+COMP: "/usr/bin/gcc     -std=c99   -m64 -c -o options.o -DSPEC -DNDEBUG -Ifrontend -Ibase -I. -Ispec_qsort -DSPEC_AUTO_SUPPRESS_OPENMP  -g -O3               -DSPEC_LP64  <source>"
+C: CC="/usr/bin/gcc     -std=c99   -m64"
+C: COBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-Ifrontend -Ibase -I. -Ispec_qsort -DSPEC_AUTO_SUPPRESS_OPENMP"
+P: BENCH_CFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: COPTIMIZE=""
+P: PORTABILITY=""
+P: CPORTABILITY=""
+O: EXTRA_CFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_COPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CPORTABILITY=""
+LINK: "/usr/bin/g++                -m64      -g -O3          <objects>            -o options  "
+C: LD="/usr/bin/g++                -m64"
+O: OPTIMIZE="-g -O3"
+C: LDOUT="-o options"
+ CXXC_VERSION_OPTION:
+ CC_VERSION_OPTION:
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+COMP: "/usr/bin/g++                -m64 -c -o options.o -DSPEC -DNDEBUG -Ifrontend -Ibase -I. -Ispec_qsort -DSPEC_AUTO_SUPPRESS_OPENMP  -g -O3         -DSPEC_LP64  <source>"
+C: CXXC="/usr/bin/g++                -m64"
+C: CXXOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-Ifrontend -Ibase -I. -Ispec_qsort -DSPEC_AUTO_SUPPRESS_OPENMP"
+P: BENCH_CXXFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: CXXOPTIMIZE=""
+P: PORTABILITY=""
+P: CXXPORTABILITY=""
+O: EXTRA_CXXFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_CXXOPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CXXPORTABILITY=""
+COMP: "/usr/bin/gcc     -std=c99   -m64 -c -o options.o -DSPEC -DNDEBUG -Ifrontend -Ibase -I. -Ispec_qsort -DSPEC_AUTO_SUPPRESS_OPENMP  -g -O3               -DSPEC_LP64  <source>"
+C: CC="/usr/bin/gcc     -std=c99   -m64"
+C: COBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-Ifrontend -Ibase -I. -Ispec_qsort -DSPEC_AUTO_SUPPRESS_OPENMP"
+P: BENCH_CFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: COPTIMIZE=""
+P: PORTABILITY=""
+P: CPORTABILITY=""
+O: EXTRA_CFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_COPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CPORTABILITY=""
+LINK: "/usr/bin/g++                -m64      -g -O3          <objects>            -o options  "
+C: LD="/usr/bin/g++                -m64"
+O: OPTIMIZE="-g -O3"
+C: LDOUT="-o options"
+ CXXC_VERSION_OPTION:
+ CC_VERSION_OPTION:
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+  Up to date 511.povray_r base mytest-m64
+------------------------------------------------------------------------
+COMP: "/usr/bin/g++                -m64 -c -o options.o -DSPEC -DNDEBUG -Ispecrand -Iblender/extern/binreloc/include -Iblender/extern/colamd/Include -Iblender/extern/glew/include -Iblender/extern/libmv -Iblender/extern/libmv/intern -Iblender/extern/rangetree -Iblender/extern/wcwidth -Iblender/intern -Iblender/intern/atomic -Iblender/intern/audaspace/intern -Iblender/intern/cycles/blender -Iblender/intern/elbeem/extern -Iblender/intern/ghost -Iblender/intern/ghost/intern -Iblender/intern/glew-mx -Iblender/intern/glew-mx/intern -Iblender/intern/guardedalloc -Iblender/intern/guardedalloc/intern -Iblender/intern/iksolver/extern -Iblender/intern/locale -Iblender/intern/memutil -Iblender/intern/mikktspace -Iblender/intern/opencolorio -Iblender/intern/raskter -Iblender/intern/smoke/extern -Iblender/intern/string -Iblender/intern/utfconv -Iblender/source/blender/blenfont -Iblender/source/blender/blenfont/intern -Iblender/source/blender/blenkernel -Iblender/source/blender/blenkernel/intern -Iblender/source/blender
+/blenlib -Iblender/source/blender/blenlib/intern -Iblender/source/blender/blenloader -Iblender/source/blender/blenloader/intern -Iblender/source/blender/bmesh -Iblender/source/blender/bmesh/intern -Iblender/source/blender/bmesh/tools -Iblender/source/blender/collada -Iblender/source/blender/compositor -Iblender/source/blender/editors/animation -Iblender/source/blender/editors/armature -Iblender/source/blender/editors/curve -Iblender/source/blender/editors/gpencil -Iblender/source/blender/editors/include -Iblender/source/blender/editors/interface -Iblender/source/blender/editors/io -Iblender/source/blender/editors/mask -Iblender/source/blender/editors/mesh -Iblender/source/blender/editors/metaball -Iblender/source/blender/editors/object -Iblender/source/blender/editors/physics -Iblender/source/blender/editors/render -Iblender/source/blender/editors/screen -Iblender/source/blender/editors/sculpt_paint -Iblender/source/blender/editors/sound -Iblender/source/blender/editors/space_action -Iblender/source/blend
+er/editors/space_buttons -Iblender/source/blender/editors/space_clip -Iblender/source/blender/editors/space_console -Iblender/source/blender/editors/space_file -Iblender/source/blender/editors/space_graph -Iblender/source/blender/editors/space_image -Iblender/source/blender/editors/space_info -Iblender/source/blender/editors/space_logic -Iblender/source/blender/editors/space_nla -Iblender/source/blender/editors/space_node -Iblender/source/blender/editors/space_outliner -Iblender/source/blender/editors/space_script -Iblender/source/blender/editors/space_sequencer -Iblender/source/blender/editors/space_text -Iblender/source/blender/editors/space_time -Iblender/source/blender/editors/space_userpref -Iblender/source/blender/editors/space_view3d -Iblender/source/blender/editors/transform -Iblender/source/blender/editors/util -Iblender/source/blender/editors/uvedit -Iblender/source/blender/gpu -Iblender/source/blender/gpu/intern -Iblender/source/blender/ikplugin -Iblender/source/blender/ikplugin/intern -Iblende
+r/source/blender/imbuf -Iblender/source/blender/imbuf/intern -Iblender/source/blender/imbuf/intern/openexr -Iblender/source/blender/makesdna -Iblender/source/blender/makesrna -Iblender/source/blender/makesrna/intern -Iblender/source/blender/modifiers -Iblender/source/blender/modifiers/intern -Iblender/source/blender/nodes -Iblender/source/blender/nodes/composite -Iblender/source/blender/nodes/intern -Iblender/source/blender/nodes/shader -Iblender/source/blender/nodes/texture -Iblender/source/blender/python -Iblender/source/blender/render/extern/include -Iblender/source/blender/render/intern/include -Iblender/source/blender/render/intern/raytrace -Iblender/source/blender/windowmanager -Iblender/source/gameengine/BlenderRoutines -Iblender_bin/source/blender/makesrna/intern -Iinclude -Ilibpng -Izlib -DSPEC_AUTO_SUPPRESS_OPENMP -DSPEC_AUTO_BYTEORDER=0x12345678 -DGLEW_NO_ES -DGLEW_STATIC -DWITH_DNA_GHASH -DWITH_GL_PROFILE_COMPAT -DWITH_HEADLESS -DHAVE_UNSIGNED_CHAR  -g -O3    -funsigned-char -DSPEC_LINUX     -
+DSPEC_LP64  <source>"
+C: CXXC="/usr/bin/g++                -m64"
+C: CXXOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-Ispecrand -Iblender/extern/binreloc/include -Iblender/extern/colamd/Include -Iblender/extern/glew/include -Iblender/extern/libmv -Iblender/extern/libmv/intern -Iblender/extern/rangetree -Iblender/extern/wcwidth -Iblender/intern -Iblender/intern/atomic -Iblender/intern/audaspace/intern -Iblender/intern/cycles/blender -Iblender/intern/elbeem/extern -Iblender/intern/ghost -Iblender/intern/ghost/intern -Iblender/intern/glew-mx -Iblender/intern/glew-mx/intern -Iblender/intern/guardedalloc -Iblender/intern/guardedalloc/intern -Iblender/intern/iksolver/extern -Iblender/intern/locale -Iblender/intern/memutil -Iblender/intern/mikktspace -Iblender/intern/opencolorio -Iblender/intern/raskter -Iblender/intern/smoke/extern -Iblender/intern/string -Iblender/intern/utfconv -Iblender/source/blender/blenfont -Iblender/source/blender/blenfont/intern -Iblender/source/blender/blenkernel -Iblender/source/blender/blenkernel/intern -Iblender/source/blender/blenlib -Iblender/source/blender/blenlib/intern -Iblend
+er/source/blender/blenloader -Iblender/source/blender/blenloader/intern -Iblender/source/blender/bmesh -Iblender/source/blender/bmesh/intern -Iblender/source/blender/bmesh/tools -Iblender/source/blender/collada -Iblender/source/blender/compositor -Iblender/source/blender/editors/animation -Iblender/source/blender/editors/armature -Iblender/source/blender/editors/curve -Iblender/source/blender/editors/gpencil -Iblender/source/blender/editors/include -Iblender/source/blender/editors/interface -Iblender/source/blender/editors/io -Iblender/source/blender/editors/mask -Iblender/source/blender/editors/mesh -Iblender/source/blender/editors/metaball -Iblender/source/blender/editors/object -Iblender/source/blender/editors/physics -Iblender/source/blender/editors/render -Iblender/source/blender/editors/screen -Iblender/source/blender/editors/sculpt_paint -Iblender/source/blender/editors/sound -Iblender/source/blender/editors/space_action -Iblender/source/blender/editors/space_buttons -Iblender/source/blender/editor
+s/space_clip -Iblender/source/blender/editors/space_console -Iblender/source/blender/editors/space_file -Iblender/source/blender/editors/space_graph -Iblender/source/blender/editors/space_image -Iblender/source/blender/editors/space_info -Iblender/source/blender/editors/space_logic -Iblender/source/blender/editors/space_nla -Iblender/source/blender/editors/space_node -Iblender/source/blender/editors/space_outliner -Iblender/source/blender/editors/space_script -Iblender/source/blender/editors/space_sequencer -Iblender/source/blender/editors/space_text -Iblender/source/blender/editors/space_time -Iblender/source/blender/editors/space_userpref -Iblender/source/blender/editors/space_view3d -Iblender/source/blender/editors/transform -Iblender/source/blender/editors/util -Iblender/source/blender/editors/uvedit -Iblender/source/blender/gpu -Iblender/source/blender/gpu/intern -Iblender/source/blender/ikplugin -Iblender/source/blender/ikplugin/intern -Iblender/source/blender/imbuf -Iblender/source/blender/imbuf/in
+tern -Iblender/source/blender/imbuf/intern/openexr -Iblender/source/blender/makesdna -Iblender/source/blender/makesrna -Iblender/source/blender/makesrna/intern -Iblender/source/blender/modifiers -Iblender/source/blender/modifiers/intern -Iblender/source/blender/nodes -Iblender/source/blender/nodes/composite -Iblender/source/blender/nodes/intern -Iblender/source/blender/nodes/shader -Iblender/source/blender/nodes/texture -Iblender/source/blender/python -Iblender/source/blender/render/extern/include -Iblender/source/blender/render/intern/include -Iblender/source/blender/render/intern/raytrace -Iblender/source/blender/windowmanager -Iblender/source/gameengine/BlenderRoutines -Iblender_bin/source/blender/makesrna/intern -Iinclude -Ilibpng -Izlib -DSPEC_AUTO_SUPPRESS_OPENMP -DSPEC_AUTO_BYTEORDER=0x12345678 -DGLEW_NO_ES -DGLEW_STATIC -DWITH_DNA_GHASH -DWITH_GL_PROFILE_COMPAT -DWITH_HEADLESS -DHAVE_UNSIGNED_CHAR"
+P: BENCH_CXXFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: CXXOPTIMIZE=""
+P: PORTABILITY="-funsigned-char -DSPEC_LINUX"
+P: CXXPORTABILITY=""
+O: EXTRA_CXXFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_CXXOPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CXXPORTABILITY=""
+COMP: "/usr/bin/gcc     -std=c99   -m64 -c -o options.o -DSPEC -DNDEBUG -Ispecrand -Iblender/extern/binreloc/include -Iblender/extern/colamd/Include -Iblender/extern/glew/include -Iblender/extern/libmv -Iblender/extern/libmv/intern -Iblender/extern/rangetree -Iblender/extern/wcwidth -Iblender/intern -Iblender/intern/atomic -Iblender/intern/audaspace/intern -Iblender/intern/cycles/blender -Iblender/intern/elbeem/extern -Iblender/intern/ghost -Iblender/intern/ghost/intern -Iblender/intern/glew-mx -Iblender/intern/glew-mx/intern -Iblender/intern/guardedalloc -Iblender/intern/guardedalloc/intern -Iblender/intern/iksolver/extern -Iblender/intern/locale -Iblender/intern/memutil -Iblender/intern/mikktspace -Iblender/intern/opencolorio -Iblender/intern/raskter -Iblender/intern/smoke/extern -Iblender/intern/string -Iblender/intern/utfconv -Iblender/source/blender/blenfont -Iblender/source/blender/blenfont/intern -Iblender/source/blender/blenkernel -Iblender/source/blender/blenkernel/intern -Iblender/source/blender
+/blenlib -Iblender/source/blender/blenlib/intern -Iblender/source/blender/blenloader -Iblender/source/blender/blenloader/intern -Iblender/source/blender/bmesh -Iblender/source/blender/bmesh/intern -Iblender/source/blender/bmesh/tools -Iblender/source/blender/collada -Iblender/source/blender/compositor -Iblender/source/blender/editors/animation -Iblender/source/blender/editors/armature -Iblender/source/blender/editors/curve -Iblender/source/blender/editors/gpencil -Iblender/source/blender/editors/include -Iblender/source/blender/editors/interface -Iblender/source/blender/editors/io -Iblender/source/blender/editors/mask -Iblender/source/blender/editors/mesh -Iblender/source/blender/editors/metaball -Iblender/source/blender/editors/object -Iblender/source/blender/editors/physics -Iblender/source/blender/editors/render -Iblender/source/blender/editors/screen -Iblender/source/blender/editors/sculpt_paint -Iblender/source/blender/editors/sound -Iblender/source/blender/editors/space_action -Iblender/source/blend
+er/editors/space_buttons -Iblender/source/blender/editors/space_clip -Iblender/source/blender/editors/space_console -Iblender/source/blender/editors/space_file -Iblender/source/blender/editors/space_graph -Iblender/source/blender/editors/space_image -Iblender/source/blender/editors/space_info -Iblender/source/blender/editors/space_logic -Iblender/source/blender/editors/space_nla -Iblender/source/blender/editors/space_node -Iblender/source/blender/editors/space_outliner -Iblender/source/blender/editors/space_script -Iblender/source/blender/editors/space_sequencer -Iblender/source/blender/editors/space_text -Iblender/source/blender/editors/space_time -Iblender/source/blender/editors/space_userpref -Iblender/source/blender/editors/space_view3d -Iblender/source/blender/editors/transform -Iblender/source/blender/editors/util -Iblender/source/blender/editors/uvedit -Iblender/source/blender/gpu -Iblender/source/blender/gpu/intern -Iblender/source/blender/ikplugin -Iblender/source/blender/ikplugin/intern -Iblende
+r/source/blender/imbuf -Iblender/source/blender/imbuf/intern -Iblender/source/blender/imbuf/intern/openexr -Iblender/source/blender/makesdna -Iblender/source/blender/makesrna -Iblender/source/blender/makesrna/intern -Iblender/source/blender/modifiers -Iblender/source/blender/modifiers/intern -Iblender/source/blender/nodes -Iblender/source/blender/nodes/composite -Iblender/source/blender/nodes/intern -Iblender/source/blender/nodes/shader -Iblender/source/blender/nodes/texture -Iblender/source/blender/python -Iblender/source/blender/render/extern/include -Iblender/source/blender/render/intern/include -Iblender/source/blender/render/intern/raytrace -Iblender/source/blender/windowmanager -Iblender/source/gameengine/BlenderRoutines -Iblender_bin/source/blender/makesrna/intern -Iinclude -Ilibpng -Izlib -DSPEC_AUTO_SUPPRESS_OPENMP -DSPEC_AUTO_BYTEORDER=0x12345678 -DGLEW_NO_ES -DGLEW_STATIC -DWITH_DNA_GHASH -DWITH_GL_PROFILE_COMPAT -DWITH_HEADLESS -DHAVE_UNSIGNED_CHAR  -g -O3        -funsigned-char -DSPEC_LINUX  
+     -DSPEC_LP64  <source>"
+C: CC="/usr/bin/gcc     -std=c99   -m64"
+C: COBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-Ispecrand -Iblender/extern/binreloc/include -Iblender/extern/colamd/Include -Iblender/extern/glew/include -Iblender/extern/libmv -Iblender/extern/libmv/intern -Iblender/extern/rangetree -Iblender/extern/wcwidth -Iblender/intern -Iblender/intern/atomic -Iblender/intern/audaspace/intern -Iblender/intern/cycles/blender -Iblender/intern/elbeem/extern -Iblender/intern/ghost -Iblender/intern/ghost/intern -Iblender/intern/glew-mx -Iblender/intern/glew-mx/intern -Iblender/intern/guardedalloc -Iblender/intern/guardedalloc/intern -Iblender/intern/iksolver/extern -Iblender/intern/locale -Iblender/intern/memutil -Iblender/intern/mikktspace -Iblender/intern/opencolorio -Iblender/intern/raskter -Iblender/intern/smoke/extern -Iblender/intern/string -Iblender/intern/utfconv -Iblender/source/blender/blenfont -Iblender/source/blender/blenfont/intern -Iblender/source/blender/blenkernel -Iblender/source/blender/blenkernel/intern -Iblender/source/blender/blenlib -Iblender/source/blender/blenlib/intern -Iblend
+er/source/blender/blenloader -Iblender/source/blender/blenloader/intern -Iblender/source/blender/bmesh -Iblender/source/blender/bmesh/intern -Iblender/source/blender/bmesh/tools -Iblender/source/blender/collada -Iblender/source/blender/compositor -Iblender/source/blender/editors/animation -Iblender/source/blender/editors/armature -Iblender/source/blender/editors/curve -Iblender/source/blender/editors/gpencil -Iblender/source/blender/editors/include -Iblender/source/blender/editors/interface -Iblender/source/blender/editors/io -Iblender/source/blender/editors/mask -Iblender/source/blender/editors/mesh -Iblender/source/blender/editors/metaball -Iblender/source/blender/editors/object -Iblender/source/blender/editors/physics -Iblender/source/blender/editors/render -Iblender/source/blender/editors/screen -Iblender/source/blender/editors/sculpt_paint -Iblender/source/blender/editors/sound -Iblender/source/blender/editors/space_action -Iblender/source/blender/editors/space_buttons -Iblender/source/blender/editor
+s/space_clip -Iblender/source/blender/editors/space_console -Iblender/source/blender/editors/space_file -Iblender/source/blender/editors/space_graph -Iblender/source/blender/editors/space_image -Iblender/source/blender/editors/space_info -Iblender/source/blender/editors/space_logic -Iblender/source/blender/editors/space_nla -Iblender/source/blender/editors/space_node -Iblender/source/blender/editors/space_outliner -Iblender/source/blender/editors/space_script -Iblender/source/blender/editors/space_sequencer -Iblender/source/blender/editors/space_text -Iblender/source/blender/editors/space_time -Iblender/source/blender/editors/space_userpref -Iblender/source/blender/editors/space_view3d -Iblender/source/blender/editors/transform -Iblender/source/blender/editors/util -Iblender/source/blender/editors/uvedit -Iblender/source/blender/gpu -Iblender/source/blender/gpu/intern -Iblender/source/blender/ikplugin -Iblender/source/blender/ikplugin/intern -Iblender/source/blender/imbuf -Iblender/source/blender/imbuf/in
+tern -Iblender/source/blender/imbuf/intern/openexr -Iblender/source/blender/makesdna -Iblender/source/blender/makesrna -Iblender/source/blender/makesrna/intern -Iblender/source/blender/modifiers -Iblender/source/blender/modifiers/intern -Iblender/source/blender/nodes -Iblender/source/blender/nodes/composite -Iblender/source/blender/nodes/intern -Iblender/source/blender/nodes/shader -Iblender/source/blender/nodes/texture -Iblender/source/blender/python -Iblender/source/blender/render/extern/include -Iblender/source/blender/render/intern/include -Iblender/source/blender/render/intern/raytrace -Iblender/source/blender/windowmanager -Iblender/source/gameengine/BlenderRoutines -Iblender_bin/source/blender/makesrna/intern -Iinclude -Ilibpng -Izlib -DSPEC_AUTO_SUPPRESS_OPENMP -DSPEC_AUTO_BYTEORDER=0x12345678 -DGLEW_NO_ES -DGLEW_STATIC -DWITH_DNA_GHASH -DWITH_GL_PROFILE_COMPAT -DWITH_HEADLESS -DHAVE_UNSIGNED_CHAR"
+P: BENCH_CFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: COPTIMIZE=""
+P: PORTABILITY="-funsigned-char -DSPEC_LINUX"
+P: CPORTABILITY=""
+O: EXTRA_CFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_COPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CPORTABILITY=""
+LINK: "/usr/bin/g++                -m64      -g -O3     -funsigned-char -DSPEC_LINUX     <objects>            -o options  "
+C: LD="/usr/bin/g++                -m64"
+O: OPTIMIZE="-g -O3"
+P: PORTABILITY="-funsigned-char -DSPEC_LINUX"
+C: LDOUT="-o options"
+ CXXC_VERSION_OPTION:
+ CC_VERSION_OPTION:
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+COMP: "/usr/bin/g++                -m64 -c -o options.o -DSPEC -DNDEBUG -Ispecrand -Iblender/extern/binreloc/include -Iblender/extern/colamd/Include -Iblender/extern/glew/include -Iblender/extern/libmv -Iblender/extern/libmv/intern -Iblender/extern/rangetree -Iblender/extern/wcwidth -Iblender/intern -Iblender/intern/atomic -Iblender/intern/audaspace/intern -Iblender/intern/cycles/blender -Iblender/intern/elbeem/extern -Iblender/intern/ghost -Iblender/intern/ghost/intern -Iblender/intern/glew-mx -Iblender/intern/glew-mx/intern -Iblender/intern/guardedalloc -Iblender/intern/guardedalloc/intern -Iblender/intern/iksolver/extern -Iblender/intern/locale -Iblender/intern/memutil -Iblender/intern/mikktspace -Iblender/intern/opencolorio -Iblender/intern/raskter -Iblender/intern/smoke/extern -Iblender/intern/string -Iblender/intern/utfconv -Iblender/source/blender/blenfont -Iblender/source/blender/blenfont/intern -Iblender/source/blender/blenkernel -Iblender/source/blender/blenkernel/intern -Iblender/source/blender
+/blenlib -Iblender/source/blender/blenlib/intern -Iblender/source/blender/blenloader -Iblender/source/blender/blenloader/intern -Iblender/source/blender/bmesh -Iblender/source/blender/bmesh/intern -Iblender/source/blender/bmesh/tools -Iblender/source/blender/collada -Iblender/source/blender/compositor -Iblender/source/blender/editors/animation -Iblender/source/blender/editors/armature -Iblender/source/blender/editors/curve -Iblender/source/blender/editors/gpencil -Iblender/source/blender/editors/include -Iblender/source/blender/editors/interface -Iblender/source/blender/editors/io -Iblender/source/blender/editors/mask -Iblender/source/blender/editors/mesh -Iblender/source/blender/editors/metaball -Iblender/source/blender/editors/object -Iblender/source/blender/editors/physics -Iblender/source/blender/editors/render -Iblender/source/blender/editors/screen -Iblender/source/blender/editors/sculpt_paint -Iblender/source/blender/editors/sound -Iblender/source/blender/editors/space_action -Iblender/source/blend
+er/editors/space_buttons -Iblender/source/blender/editors/space_clip -Iblender/source/blender/editors/space_console -Iblender/source/blender/editors/space_file -Iblender/source/blender/editors/space_graph -Iblender/source/blender/editors/space_image -Iblender/source/blender/editors/space_info -Iblender/source/blender/editors/space_logic -Iblender/source/blender/editors/space_nla -Iblender/source/blender/editors/space_node -Iblender/source/blender/editors/space_outliner -Iblender/source/blender/editors/space_script -Iblender/source/blender/editors/space_sequencer -Iblender/source/blender/editors/space_text -Iblender/source/blender/editors/space_time -Iblender/source/blender/editors/space_userpref -Iblender/source/blender/editors/space_view3d -Iblender/source/blender/editors/transform -Iblender/source/blender/editors/util -Iblender/source/blender/editors/uvedit -Iblender/source/blender/gpu -Iblender/source/blender/gpu/intern -Iblender/source/blender/ikplugin -Iblender/source/blender/ikplugin/intern -Iblende
+r/source/blender/imbuf -Iblender/source/blender/imbuf/intern -Iblender/source/blender/imbuf/intern/openexr -Iblender/source/blender/makesdna -Iblender/source/blender/makesrna -Iblender/source/blender/makesrna/intern -Iblender/source/blender/modifiers -Iblender/source/blender/modifiers/intern -Iblender/source/blender/nodes -Iblender/source/blender/nodes/composite -Iblender/source/blender/nodes/intern -Iblender/source/blender/nodes/shader -Iblender/source/blender/nodes/texture -Iblender/source/blender/python -Iblender/source/blender/render/extern/include -Iblender/source/blender/render/intern/include -Iblender/source/blender/render/intern/raytrace -Iblender/source/blender/windowmanager -Iblender/source/gameengine/BlenderRoutines -Iblender_bin/source/blender/makesrna/intern -Iinclude -Ilibpng -Izlib -DSPEC_AUTO_SUPPRESS_OPENMP -DSPEC_AUTO_BYTEORDER=0x12345678 -DGLEW_NO_ES -DGLEW_STATIC -DWITH_DNA_GHASH -DWITH_GL_PROFILE_COMPAT -DWITH_HEADLESS -DHAVE_UNSIGNED_CHAR  -g -O3    -funsigned-char -DSPEC_LINUX     -
+DSPEC_LP64  <source>"
+C: CXXC="/usr/bin/g++                -m64"
+C: CXXOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-Ispecrand -Iblender/extern/binreloc/include -Iblender/extern/colamd/Include -Iblender/extern/glew/include -Iblender/extern/libmv -Iblender/extern/libmv/intern -Iblender/extern/rangetree -Iblender/extern/wcwidth -Iblender/intern -Iblender/intern/atomic -Iblender/intern/audaspace/intern -Iblender/intern/cycles/blender -Iblender/intern/elbeem/extern -Iblender/intern/ghost -Iblender/intern/ghost/intern -Iblender/intern/glew-mx -Iblender/intern/glew-mx/intern -Iblender/intern/guardedalloc -Iblender/intern/guardedalloc/intern -Iblender/intern/iksolver/extern -Iblender/intern/locale -Iblender/intern/memutil -Iblender/intern/mikktspace -Iblender/intern/opencolorio -Iblender/intern/raskter -Iblender/intern/smoke/extern -Iblender/intern/string -Iblender/intern/utfconv -Iblender/source/blender/blenfont -Iblender/source/blender/blenfont/intern -Iblender/source/blender/blenkernel -Iblender/source/blender/blenkernel/intern -Iblender/source/blender/blenlib -Iblender/source/blender/blenlib/intern -Iblend
+er/source/blender/blenloader -Iblender/source/blender/blenloader/intern -Iblender/source/blender/bmesh -Iblender/source/blender/bmesh/intern -Iblender/source/blender/bmesh/tools -Iblender/source/blender/collada -Iblender/source/blender/compositor -Iblender/source/blender/editors/animation -Iblender/source/blender/editors/armature -Iblender/source/blender/editors/curve -Iblender/source/blender/editors/gpencil -Iblender/source/blender/editors/include -Iblender/source/blender/editors/interface -Iblender/source/blender/editors/io -Iblender/source/blender/editors/mask -Iblender/source/blender/editors/mesh -Iblender/source/blender/editors/metaball -Iblender/source/blender/editors/object -Iblender/source/blender/editors/physics -Iblender/source/blender/editors/render -Iblender/source/blender/editors/screen -Iblender/source/blender/editors/sculpt_paint -Iblender/source/blender/editors/sound -Iblender/source/blender/editors/space_action -Iblender/source/blender/editors/space_buttons -Iblender/source/blender/editor
+s/space_clip -Iblender/source/blender/editors/space_console -Iblender/source/blender/editors/space_file -Iblender/source/blender/editors/space_graph -Iblender/source/blender/editors/space_image -Iblender/source/blender/editors/space_info -Iblender/source/blender/editors/space_logic -Iblender/source/blender/editors/space_nla -Iblender/source/blender/editors/space_node -Iblender/source/blender/editors/space_outliner -Iblender/source/blender/editors/space_script -Iblender/source/blender/editors/space_sequencer -Iblender/source/blender/editors/space_text -Iblender/source/blender/editors/space_time -Iblender/source/blender/editors/space_userpref -Iblender/source/blender/editors/space_view3d -Iblender/source/blender/editors/transform -Iblender/source/blender/editors/util -Iblender/source/blender/editors/uvedit -Iblender/source/blender/gpu -Iblender/source/blender/gpu/intern -Iblender/source/blender/ikplugin -Iblender/source/blender/ikplugin/intern -Iblender/source/blender/imbuf -Iblender/source/blender/imbuf/in
+tern -Iblender/source/blender/imbuf/intern/openexr -Iblender/source/blender/makesdna -Iblender/source/blender/makesrna -Iblender/source/blender/makesrna/intern -Iblender/source/blender/modifiers -Iblender/source/blender/modifiers/intern -Iblender/source/blender/nodes -Iblender/source/blender/nodes/composite -Iblender/source/blender/nodes/intern -Iblender/source/blender/nodes/shader -Iblender/source/blender/nodes/texture -Iblender/source/blender/python -Iblender/source/blender/render/extern/include -Iblender/source/blender/render/intern/include -Iblender/source/blender/render/intern/raytrace -Iblender/source/blender/windowmanager -Iblender/source/gameengine/BlenderRoutines -Iblender_bin/source/blender/makesrna/intern -Iinclude -Ilibpng -Izlib -DSPEC_AUTO_SUPPRESS_OPENMP -DSPEC_AUTO_BYTEORDER=0x12345678 -DGLEW_NO_ES -DGLEW_STATIC -DWITH_DNA_GHASH -DWITH_GL_PROFILE_COMPAT -DWITH_HEADLESS -DHAVE_UNSIGNED_CHAR"
+P: BENCH_CXXFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: CXXOPTIMIZE=""
+P: PORTABILITY="-funsigned-char -DSPEC_LINUX"
+P: CXXPORTABILITY=""
+O: EXTRA_CXXFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_CXXOPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CXXPORTABILITY=""
+COMP: "/usr/bin/gcc     -std=c99   -m64 -c -o options.o -DSPEC -DNDEBUG -Ispecrand -Iblender/extern/binreloc/include -Iblender/extern/colamd/Include -Iblender/extern/glew/include -Iblender/extern/libmv -Iblender/extern/libmv/intern -Iblender/extern/rangetree -Iblender/extern/wcwidth -Iblender/intern -Iblender/intern/atomic -Iblender/intern/audaspace/intern -Iblender/intern/cycles/blender -Iblender/intern/elbeem/extern -Iblender/intern/ghost -Iblender/intern/ghost/intern -Iblender/intern/glew-mx -Iblender/intern/glew-mx/intern -Iblender/intern/guardedalloc -Iblender/intern/guardedalloc/intern -Iblender/intern/iksolver/extern -Iblender/intern/locale -Iblender/intern/memutil -Iblender/intern/mikktspace -Iblender/intern/opencolorio -Iblender/intern/raskter -Iblender/intern/smoke/extern -Iblender/intern/string -Iblender/intern/utfconv -Iblender/source/blender/blenfont -Iblender/source/blender/blenfont/intern -Iblender/source/blender/blenkernel -Iblender/source/blender/blenkernel/intern -Iblender/source/blender
+/blenlib -Iblender/source/blender/blenlib/intern -Iblender/source/blender/blenloader -Iblender/source/blender/blenloader/intern -Iblender/source/blender/bmesh -Iblender/source/blender/bmesh/intern -Iblender/source/blender/bmesh/tools -Iblender/source/blender/collada -Iblender/source/blender/compositor -Iblender/source/blender/editors/animation -Iblender/source/blender/editors/armature -Iblender/source/blender/editors/curve -Iblender/source/blender/editors/gpencil -Iblender/source/blender/editors/include -Iblender/source/blender/editors/interface -Iblender/source/blender/editors/io -Iblender/source/blender/editors/mask -Iblender/source/blender/editors/mesh -Iblender/source/blender/editors/metaball -Iblender/source/blender/editors/object -Iblender/source/blender/editors/physics -Iblender/source/blender/editors/render -Iblender/source/blender/editors/screen -Iblender/source/blender/editors/sculpt_paint -Iblender/source/blender/editors/sound -Iblender/source/blender/editors/space_action -Iblender/source/blend
+er/editors/space_buttons -Iblender/source/blender/editors/space_clip -Iblender/source/blender/editors/space_console -Iblender/source/blender/editors/space_file -Iblender/source/blender/editors/space_graph -Iblender/source/blender/editors/space_image -Iblender/source/blender/editors/space_info -Iblender/source/blender/editors/space_logic -Iblender/source/blender/editors/space_nla -Iblender/source/blender/editors/space_node -Iblender/source/blender/editors/space_outliner -Iblender/source/blender/editors/space_script -Iblender/source/blender/editors/space_sequencer -Iblender/source/blender/editors/space_text -Iblender/source/blender/editors/space_time -Iblender/source/blender/editors/space_userpref -Iblender/source/blender/editors/space_view3d -Iblender/source/blender/editors/transform -Iblender/source/blender/editors/util -Iblender/source/blender/editors/uvedit -Iblender/source/blender/gpu -Iblender/source/blender/gpu/intern -Iblender/source/blender/ikplugin -Iblender/source/blender/ikplugin/intern -Iblende
+r/source/blender/imbuf -Iblender/source/blender/imbuf/intern -Iblender/source/blender/imbuf/intern/openexr -Iblender/source/blender/makesdna -Iblender/source/blender/makesrna -Iblender/source/blender/makesrna/intern -Iblender/source/blender/modifiers -Iblender/source/blender/modifiers/intern -Iblender/source/blender/nodes -Iblender/source/blender/nodes/composite -Iblender/source/blender/nodes/intern -Iblender/source/blender/nodes/shader -Iblender/source/blender/nodes/texture -Iblender/source/blender/python -Iblender/source/blender/render/extern/include -Iblender/source/blender/render/intern/include -Iblender/source/blender/render/intern/raytrace -Iblender/source/blender/windowmanager -Iblender/source/gameengine/BlenderRoutines -Iblender_bin/source/blender/makesrna/intern -Iinclude -Ilibpng -Izlib -DSPEC_AUTO_SUPPRESS_OPENMP -DSPEC_AUTO_BYTEORDER=0x12345678 -DGLEW_NO_ES -DGLEW_STATIC -DWITH_DNA_GHASH -DWITH_GL_PROFILE_COMPAT -DWITH_HEADLESS -DHAVE_UNSIGNED_CHAR  -g -O3        -funsigned-char -DSPEC_LINUX  
+     -DSPEC_LP64  <source>"
+C: CC="/usr/bin/gcc     -std=c99   -m64"
+C: COBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-Ispecrand -Iblender/extern/binreloc/include -Iblender/extern/colamd/Include -Iblender/extern/glew/include -Iblender/extern/libmv -Iblender/extern/libmv/intern -Iblender/extern/rangetree -Iblender/extern/wcwidth -Iblender/intern -Iblender/intern/atomic -Iblender/intern/audaspace/intern -Iblender/intern/cycles/blender -Iblender/intern/elbeem/extern -Iblender/intern/ghost -Iblender/intern/ghost/intern -Iblender/intern/glew-mx -Iblender/intern/glew-mx/intern -Iblender/intern/guardedalloc -Iblender/intern/guardedalloc/intern -Iblender/intern/iksolver/extern -Iblender/intern/locale -Iblender/intern/memutil -Iblender/intern/mikktspace -Iblender/intern/opencolorio -Iblender/intern/raskter -Iblender/intern/smoke/extern -Iblender/intern/string -Iblender/intern/utfconv -Iblender/source/blender/blenfont -Iblender/source/blender/blenfont/intern -Iblender/source/blender/blenkernel -Iblender/source/blender/blenkernel/intern -Iblender/source/blender/blenlib -Iblender/source/blender/blenlib/intern -Iblend
+er/source/blender/blenloader -Iblender/source/blender/blenloader/intern -Iblender/source/blender/bmesh -Iblender/source/blender/bmesh/intern -Iblender/source/blender/bmesh/tools -Iblender/source/blender/collada -Iblender/source/blender/compositor -Iblender/source/blender/editors/animation -Iblender/source/blender/editors/armature -Iblender/source/blender/editors/curve -Iblender/source/blender/editors/gpencil -Iblender/source/blender/editors/include -Iblender/source/blender/editors/interface -Iblender/source/blender/editors/io -Iblender/source/blender/editors/mask -Iblender/source/blender/editors/mesh -Iblender/source/blender/editors/metaball -Iblender/source/blender/editors/object -Iblender/source/blender/editors/physics -Iblender/source/blender/editors/render -Iblender/source/blender/editors/screen -Iblender/source/blender/editors/sculpt_paint -Iblender/source/blender/editors/sound -Iblender/source/blender/editors/space_action -Iblender/source/blender/editors/space_buttons -Iblender/source/blender/editor
+s/space_clip -Iblender/source/blender/editors/space_console -Iblender/source/blender/editors/space_file -Iblender/source/blender/editors/space_graph -Iblender/source/blender/editors/space_image -Iblender/source/blender/editors/space_info -Iblender/source/blender/editors/space_logic -Iblender/source/blender/editors/space_nla -Iblender/source/blender/editors/space_node -Iblender/source/blender/editors/space_outliner -Iblender/source/blender/editors/space_script -Iblender/source/blender/editors/space_sequencer -Iblender/source/blender/editors/space_text -Iblender/source/blender/editors/space_time -Iblender/source/blender/editors/space_userpref -Iblender/source/blender/editors/space_view3d -Iblender/source/blender/editors/transform -Iblender/source/blender/editors/util -Iblender/source/blender/editors/uvedit -Iblender/source/blender/gpu -Iblender/source/blender/gpu/intern -Iblender/source/blender/ikplugin -Iblender/source/blender/ikplugin/intern -Iblender/source/blender/imbuf -Iblender/source/blender/imbuf/in
+tern -Iblender/source/blender/imbuf/intern/openexr -Iblender/source/blender/makesdna -Iblender/source/blender/makesrna -Iblender/source/blender/makesrna/intern -Iblender/source/blender/modifiers -Iblender/source/blender/modifiers/intern -Iblender/source/blender/nodes -Iblender/source/blender/nodes/composite -Iblender/source/blender/nodes/intern -Iblender/source/blender/nodes/shader -Iblender/source/blender/nodes/texture -Iblender/source/blender/python -Iblender/source/blender/render/extern/include -Iblender/source/blender/render/intern/include -Iblender/source/blender/render/intern/raytrace -Iblender/source/blender/windowmanager -Iblender/source/gameengine/BlenderRoutines -Iblender_bin/source/blender/makesrna/intern -Iinclude -Ilibpng -Izlib -DSPEC_AUTO_SUPPRESS_OPENMP -DSPEC_AUTO_BYTEORDER=0x12345678 -DGLEW_NO_ES -DGLEW_STATIC -DWITH_DNA_GHASH -DWITH_GL_PROFILE_COMPAT -DWITH_HEADLESS -DHAVE_UNSIGNED_CHAR"
+P: BENCH_CFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: COPTIMIZE=""
+P: PORTABILITY="-funsigned-char -DSPEC_LINUX"
+P: CPORTABILITY=""
+O: EXTRA_CFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_COPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CPORTABILITY=""
+LINK: "/usr/bin/g++                -m64      -g -O3     -funsigned-char -DSPEC_LINUX     <objects>            -o options  "
+C: LD="/usr/bin/g++                -m64"
+O: OPTIMIZE="-g -O3"
+P: PORTABILITY="-funsigned-char -DSPEC_LINUX"
+C: LDOUT="-o options"
+ CXXC_VERSION_OPTION:
+ CC_VERSION_OPTION:
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+  Up to date 526.blender_r base mytest-m64
+
+
+Setting Up Run Directories
+  Setting up 508.namd_r refrate (ref) base mytest-m64 (1 copy): run_base_refrate_mytest-m64.0001
+  Setting up 510.parest_r refrate (ref) base mytest-m64 (1 copy): run_base_refrate_mytest-m64.0000
+  Setting up 511.povray_r refrate (ref) base mytest-m64 (1 copy): run_base_refrate_mytest-m64.0001
+  Setting up 526.blender_r refrate (ref) base mytest-m64 (1 copy): run_base_refrate_mytest-m64.0001
+-----------------------------------
+Running Benchmarks
+-----------------------------------
+  Running 508.namd_r refrate (ref) base mytest-m64 (1 copy) [2017-12-20 15:54:50]
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+Commands to run (specinvoke command file):
+    -r
+    -N C
+    -C /spec2017/benchspec/CPU/508.namd_r/run/run_base_refrate_mytest-m64.0001
+    -o namd.out -e namd.err ../run_base_refrate_mytest-m64.0001/namd_r_base.mytest-m64 --input apoa1.input --output apoa1.ref.output --iterations 65 > namd.out 2>> namd.err (timed)
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/508.namd_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/508.namd_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout'
+Start command: 2017-12-20 15:54:50 (1513781690.57192)
+Stop command: 2017-12-20 16:09:09 (1513782549.92828)
+Elapsed time for command: 00:14:19 (859.356353998184)
+Workload elapsed time (copy 0 workload 1) = 859.179029 seconds
+Copy 0 of 508.namd_r (base refrate) run 1 finished at 2017-12-20 16:09:09.  Total elapsed time: 859.179029
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+comparing 'apoa1.ref.output' with abstol=5e-05
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/508.namd_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/508.namd_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout'
+Start command: 2017-12-20 16:09:10 (1513782550.30307)
+Stop command: 2017-12-20 16:09:11 (1513782551.86614)
+Elapsed time for command: 00:00:01 (1.56307196617126)
+Benchmark Times:
+  Run Start:    2017-12-20 15:54:50 (1513781690)
+  Rate Start:   2017-12-20 15:54:50 (1513781690.58728)
+  Rate End:     2017-12-20 16:09:09 (1513782549.76631)
+  Run Stop:     2017-12-20 16:09:09 (1513782549)
+  Run Elapsed:  00:14:19 (859)
+  Run Reported: 00:14:19 (859 179028987 859.179029)
+ Success 508.namd_r base refrate ratio=1.11, runtime=859.179029, copies=1, threads=1, power=0.00W, temp=0.00 degC, humidity=0.00%
+-----------------------------------
+  Running 510.parest_r refrate (ref) base mytest-m64 (1 copy) [2017-12-20 16:09:17]
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+Commands to run (specinvoke command file):
+    -r
+    -N C
+    -C /spec2017/benchspec/CPU/510.parest_r/run/run_base_refrate_mytest-m64.0000
+    -o ref.out -e ref.err ../run_base_refrate_mytest-m64.0000/parest_r_base.mytest-m64 ref.prm > ref.out 2>> ref.err (timed)
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/510.parest_r/run/run_base_refrate_mytest-m64.0000 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/510.parest_r/run/run_base_refrate_mytest-m64.0000 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout'
+Start command: 2017-12-20 16:09:17 (1513782557.72463)
+Stop command: 2017-12-20 16:32:47 (1513783967.54404)
+Elapsed time for command: 00:23:29 (1409.81940507889)
+Workload elapsed time (copy 0 workload 1) = 1409.646165 seconds
+Copy 0 of 510.parest_r (base refrate) run 1 finished at 2017-12-20 16:32:47.  Total elapsed time: 1409.646165
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+comparing '001-m00.vtk' with abstol=0.001, floatcompare=1
+comparing '002-m00.vtk' with abstol=0.001, floatcompare=1
+comparing '003-m00.vtk' with abstol=0.001, floatcompare=1
+comparing '004-m00.vtk' with abstol=0.001, floatcompare=1
+comparing '005-m00.vtk' with abstol=0.001, floatcompare=1
+comparing '006-m00.vtk' with abstol=0.001, floatcompare=1
+comparing '007-m00.vtk' with abstol=0.001, floatcompare=1
+comparing 'log' with abstol=0.001, floatcompare=1
+comparing 'me.prm' with abstol=0.001, floatcompare=1
+comparing 'statistics' with abstol=0.004, floatcompare=1
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/510.parest_r/run/run_base_refrate_mytest-m64.0000 -f compare.cmd -E -e compare.err -o compare.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/510.parest_r/run/run_base_refrate_mytest-m64.0000 -f compare.cmd -E -e compare.err -o compare.stdout'
+Start command: 2017-12-20 16:32:47 (1513783967.70473)
+Stop command: 2017-12-20 16:32:50 (1513783970.94991)
+Elapsed time for command: 00:00:03 (3.24518704414368)
+Benchmark Times:
+  Run Start:    2017-12-20 16:09:17 (1513782557)
+  Rate Start:   2017-12-20 16:09:17 (1513782557.74266)
+  Rate End:     2017-12-20 16:32:47 (1513783967.38882)
+  Run Stop:     2017-12-20 16:32:47 (1513783967)
+  Run Elapsed:  00:23:30 (1410)
+  Run Reported: 00:23:29 (1409 646164894 1409.646165)
+ Success 510.parest_r base refrate ratio=1.86, runtime=1409.646165, copies=1, threads=1, power=0.00W, temp=0.00 degC, humidity=0.00%
+-----------------------------------
+  Running 511.povray_r refrate (ref) base mytest-m64 (1 copy) [2017-12-20 16:32:51]
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+Commands to run (specinvoke command file):
+    -r
+    -N C
+    -C /spec2017/benchspec/CPU/511.povray_r/run/run_base_refrate_mytest-m64.0001
+    -o SPEC-benchmark-ref.stdout -e SPEC-benchmark-ref.stderr ../run_base_refrate_mytest-m64.0001/povray_r_base.mytest-m64 SPEC-benchmark-ref.ini > SPEC-benchmark-ref.stdout 2>> SPEC-benchmark-ref.stderr (timed)
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/511.povray_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/511.povray_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout'
+Start command: 2017-12-20 16:32:51 (1513783971.4934)
+Stop command: 2017-12-20 16:57:10 (1513785430.65007)
+Elapsed time for command: 00:24:19 (1459.15666985512)
+Workload elapsed time (copy 0 workload 1) = 1458.973189 seconds
+Copy 0 of 511.povray_r (base refrate) run 1 finished at 2017-12-20 16:57:10.  Total elapsed time: 1458.973189
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+comparing 'imagevalidate_SPEC-benchmark.tga.out' with reltol=0.06
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/511.povray_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/511.povray_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout'
+Start command: 2017-12-20 16:57:10 (1513785430.90942)
+Stop command: 2017-12-20 16:57:14 (1513785434.61766)
+Elapsed time for command: 00:00:03 (3.70823907852173)
+Benchmark Times:
+  Run Start:    2017-12-20 16:32:51 (1513783971)
+  Rate Start:   2017-12-20 16:32:51 (1513783971.51179)
+  Rate End:     2017-12-20 16:57:10 (1513785430.48498)
+  Run Stop:     2017-12-20 16:57:10 (1513785430)
+  Run Elapsed:  00:24:19 (1459)
+  Run Reported: 00:24:18 (1458 973189115 1458.973189)
+ Success 511.povray_r base refrate ratio=1.60, runtime=1458.973189, copies=1, threads=1, power=0.00W, temp=0.00 degC, humidity=0.00%
+-----------------------------------
+  Running 526.blender_r refrate (ref) base mytest-m64 (1 copy) [2017-12-20 16:57:17]
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+Commands to run (specinvoke command file):
+    -r
+    -N C
+    -C /spec2017/benchspec/CPU/526.blender_r/run/run_base_refrate_mytest-m64.0001
+    -o sh3_no_char.849.spec.out -e sh3_no_char.849.spec.err ../run_base_refrate_mytest-m64.0001/blender_r_base.mytest-m64 sh3_no_char.blend --render-output sh3_no_char_ --threads 1 -b -F RAWTGA -s 849 -e 849 -a > sh3_no_char.849.spec.out 2>> sh3_no_char.849.spec.err (timed)
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/526.blender_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/526.blender_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout'
+Start command: 2017-12-20 16:57:17 (1513785437.61933)
+Stop command: 2017-12-20 17:14:38 (1513786478.43857)
+Elapsed time for command: 00:17:20 (1040.81924581528)
+Workload elapsed time (copy 0 workload 1) = 1040.640379 seconds
+Copy 0 of 526.blender_r (base refrate) run 1 finished at 2017-12-20 17:14:38.  Total elapsed time: 1040.640379
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+comparing 'imagevalidate_sh3_no_char_0849.out' with reltol=0.05
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/526.blender_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/526.blender_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout'
+Start command: 2017-12-20 17:14:38 (1513786478.7956)
+Stop command: 2017-12-20 17:14:41 (1513786481.62483)
+Elapsed time for command: 00:00:02 (2.82923197746277)
+Benchmark Times:
+  Run Start:    2017-12-20 16:57:17 (1513785437)
+  Rate Start:   2017-12-20 16:57:17 (1513785437.64272)
+  Rate End:     2017-12-20 17:14:38 (1513786478.28309)
+  Run Stop:     2017-12-20 17:14:38 (1513786478)
+  Run Elapsed:  00:17:21 (1041)
+  Run Reported: 00:17:20 (1040 640378952 1040.640379)
+ Success 526.blender_r base refrate ratio=1.46, runtime=1040.640379, copies=1, threads=1, power=0.00W, temp=0.00 degC, humidity=0.00%
+Success: 1x508.namd_r 1x510.parest_r 1x511.povray_r 1x526.blender_r
+Producing Raw Reports
+ label: mytest-m64
+  workload: refrate (ref)
+   benchset: intspeed
+   benchset: intrate
+   benchset: fpspeed
+   benchset: fprate
+   metric: SPECrate2017_fp_base
+    format: raw -> /spec2017/result/CPU2017.002.fprate.refrate.rsf
+Parsing flags for 508.namd_r base: done
+Parsing flags for 510.parest_r base: done
+Parsing flags for 511.povray_r base: done
+Parsing flags for 526.blender_r base: done
+Doing flag reduction: done
+    format: flags -> /spec2017/result/CPU2017.002.fprate.refrate.flags.html
+    format: cfg -> /spec2017/result/CPU2017.002.fprate.refrate.cfg, /spec2017/result/CPU2017.002.fprate.refrate.orig.cfg
+    format: CSV -> /spec2017/result/CPU2017.002.fprate.refrate.csv
+    format: PDF -> /spec2017/result/CPU2017.002.fprate.refrate.pdf
+    format: HTML -> /spec2017/result/CPU2017.002.fprate.refrate.html, /spec2017/result/invalid.gif
+    format: Text -> /spec2017/result/CPU2017.002.fprate.refrate.txt
+runcpu finished at 2017-12-20 17:15:41; 4877 total seconds elapsed
+Info: file_tail(31950): file '/spec2017/tmp/CPU2017.002/templogs/preenv.fprate.002.0.debug' was removed and will no longer be followed.  No action is required.
+-------------------------------------------------------------------------------
+
+Setting up environment for running 520.omnetpp_r, 523.xalancbmk_r, 531.deepsjeng_r, 541.leela_r...
+Starting runcpu for 520.omnetpp_r, 523.xalancbmk_r, 531.deepsjeng_r, 541.leela_r...
+Running "specperl /spec2017/bin/sysinfo" to gather system information.
+sysinfo: r5797 of 2017-06-14 (96c45e4568ad54c135fd618bcc091c0f)
+sysinfo: Getting system information for Linux...
+sysinfo: ...getting CPU info
+sysinfo: ...getting info from numactl
+sysinfo: ...getting memory info
+sysinfo: ...getting OS info
+sysinfo: ...getting disk info
+Retrieving flags file (/spec2017/config/flags/gcc.xml)...
+Verbosity = 5
+Action    = validate
+Tune      = base
+Label     = mytest-m64
+Size      = refrate
+benchmarks= 520.omnetpp_r,523.xalancbmk_r,531.deepsjeng_r,541.leela_r
+outputs   = txt,html,cfg,pdf,csv
+username  = root
+Environment settings:
+LD_LIBRARY_PATH = "%{gcc_dir}/lib64/:%{gcc_dir}/lib/:/lib64"
+
+Benchmarks selected: 520.omnetpp_r, 523.xalancbmk_r, 531.deepsjeng_r, 541.leela_r
+Compiling Binaries
+------------------------------------------------------------------------
+COMP: "/usr/bin/g++                -m64 -c -o options.o -DSPEC -DNDEBUG -Isimulator/platdep -Isimulator -Imodel -DWITH_NETBUILDER -DSPEC_AUTO_SUPPRESS_OPENMP  -g -O3         -DSPEC_LP64  <source>"
+C: CXXC="/usr/bin/g++                -m64"
+C: CXXOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-Isimulator/platdep -Isimulator -Imodel -DWITH_NETBUILDER -DSPEC_AUTO_SUPPRESS_OPENMP"
+P: BENCH_CXXFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: CXXOPTIMIZE=""
+P: PORTABILITY=""
+P: CXXPORTABILITY=""
+O: EXTRA_CXXFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_CXXOPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CXXPORTABILITY=""
+LINK: "/usr/bin/g++                -m64      -g -O3          <objects>            -o options  "
+C: LD="/usr/bin/g++                -m64"
+O: OPTIMIZE="-g -O3"
+C: LDOUT="-o options"
+ CXXC_VERSION_OPTION:
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+  Up to date 520.omnetpp_r base mytest-m64
+------------------------------------------------------------------------
+COMP: "/usr/bin/g++                -m64 -c -o options.o -DSPEC -DNDEBUG  -DAPP_NO_THREADS -DXALAN_INMEM_MSG_LOADER -I. -Ixercesc -Ixercesc/dom -Ixercesc/dom/impl -Ixercesc/sax -Ixercesc/util/MsgLoaders/InMemory -Ixercesc/util/Transcoders/Iconv -Ixalanc/include -DPROJ_XMLPARSER -DPROJ_XMLUTIL -DPROJ_PARSERS -DPROJ_SAX4C -DPROJ_SAX2 -DPROJ_DOM -DPROJ_VALIDATORS -DXML_USE_INMEM_MESSAGELOADER -DSPEC_AUTO_SUPPRESS_OPENMP -g -O3    -DSPEC_LINUX     -DSPEC_LP64  <source>"
+C: CXXC="/usr/bin/g++                -m64"
+C: CXXOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS=""
+P: BENCH_CXXFLAGS="-DAPP_NO_THREADS -DXALAN_INMEM_MSG_LOADER -I. -Ixercesc -Ixercesc/dom -Ixercesc/dom/impl -Ixercesc/sax -Ixercesc/util/MsgLoaders/InMemory -Ixercesc/util/Transcoders/Iconv -Ixalanc/include -DPROJ_XMLPARSER -DPROJ_XMLUTIL -DPROJ_PARSERS -DPROJ_SAX4C -DPROJ_SAX2 -DPROJ_DOM -DPROJ_VALIDATORS -DXML_USE_INMEM_MESSAGELOADER -DSPEC_AUTO_SUPPRESS_OPENMP"
+O: OPTIMIZE="-g -O3"
+O: CXXOPTIMIZE=""
+P: PORTABILITY="-DSPEC_LINUX"
+P: CXXPORTABILITY=""
+O: EXTRA_CXXFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_CXXOPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CXXPORTABILITY=""
+LINK: "/usr/bin/g++                -m64      -g -O3     -DSPEC_LINUX     <objects>            -o options  "
+C: LD="/usr/bin/g++                -m64"
+O: OPTIMIZE="-g -O3"
+P: PORTABILITY="-DSPEC_LINUX"
+C: LDOUT="-o options"
+ CXXC_VERSION_OPTION:
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+  Up to date 523.xalancbmk_r base mytest-m64
+------------------------------------------------------------------------
+COMP: "/usr/bin/g++                -m64 -c -o options.o -DSPEC -DNDEBUG -DSMALL_MEMORY -DSPEC_AUTO_SUPPRESS_OPENMP  -g -O3         -DSPEC_LP64  <source>"
+C: CXXC="/usr/bin/g++                -m64"
+C: CXXOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-DSMALL_MEMORY -DSPEC_AUTO_SUPPRESS_OPENMP"
+P: BENCH_CXXFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: CXXOPTIMIZE=""
+P: PORTABILITY=""
+P: CXXPORTABILITY=""
+O: EXTRA_CXXFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_CXXOPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CXXPORTABILITY=""
+LINK: "/usr/bin/g++                -m64      -g -O3          <objects>            -o options  "
+C: LD="/usr/bin/g++                -m64"
+O: OPTIMIZE="-g -O3"
+C: LDOUT="-o options"
+ CXXC_VERSION_OPTION:
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+  Up to date 531.deepsjeng_r base mytest-m64
+------------------------------------------------------------------------
+COMP: "/usr/bin/g++                -m64 -c -o options.o -DSPEC -DNDEBUG -I. -DSPEC_AUTO_SUPPRESS_OPENMP  -g -O3         -DSPEC_LP64  <source>"
+C: CXXC="/usr/bin/g++                -m64"
+C: CXXOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DNDEBUG"
+P: BENCH_FLAGS="-I. -DSPEC_AUTO_SUPPRESS_OPENMP"
+P: BENCH_CXXFLAGS=""
+O: OPTIMIZE="-g -O3"
+O: CXXOPTIMIZE=""
+P: PORTABILITY=""
+P: CXXPORTABILITY=""
+O: EXTRA_CXXFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_CXXOPTIMIZE=""
+P: EXTRA_PORTABILITY="-DSPEC_LP64"
+P: EXTRA_CXXPORTABILITY=""
+LINK: "/usr/bin/g++                -m64      -g -O3          <objects>            -o options  "
+C: LD="/usr/bin/g++                -m64"
+O: OPTIMIZE="-g -O3"
+C: LDOUT="-o options"
+ CXXC_VERSION_OPTION:
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+  Up to date 541.leela_r base mytest-m64
+
+
+Setting Up Run Directories
+  Setting up 520.omnetpp_r refrate (ref) base mytest-m64 (1 copy): run_base_refrate_mytest-m64.0001
+  Setting up 523.xalancbmk_r refrate (ref) base mytest-m64 (1 copy): run_base_refrate_mytest-m64.0001
+  Setting up 531.deepsjeng_r refrate (ref) base mytest-m64 (1 copy): run_base_refrate_mytest-m64.0001
+  Setting up 541.leela_r refrate (ref) base mytest-m64 (1 copy): run_base_refrate_mytest-m64.0001
+-----------------------------------
+Running Benchmarks
+-----------------------------------
+  Running 520.omnetpp_r refrate (ref) base mytest-m64 (1 copy) [2017-12-20 17:16:02]
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+Commands to run (specinvoke command file):
+    -r
+    -N C
+    -C /spec2017/benchspec/CPU/520.omnetpp_r/run/run_base_refrate_mytest-m64.0001
+    -o omnetpp.General-0.out -e omnetpp.General-0.err ../run_base_refrate_mytest-m64.0001/omnetpp_r_base.mytest-m64 -c General -r 0 > omnetpp.General-0.out 2>> omnetpp.General-0.err (timed)
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/520.omnetpp_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/520.omnetpp_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout'
+Start command: 2017-12-20 17:16:02 (1513786562.38006)
+Stop command: 2017-12-20 17:47:00 (1513788420.3168)
+Elapsed time for command: 00:30:57 (1857.93674707413)
+Workload elapsed time (copy 0 workload 1) = 1857.762208 seconds
+Copy 0 of 520.omnetpp_r (base refrate) run 1 finished at 2017-12-20 17:47:00.  Total elapsed time: 1857.762208
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+comparing 'General-0.sca' with abstol=1e-06, reltol=1e-05
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/520.omnetpp_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/520.omnetpp_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout'
+Start command: 2017-12-20 17:47:00 (1513788420.52506)
+Stop command: 2017-12-20 17:47:10 (1513788430.71353)
+Elapsed time for command: 00:00:10 (10.1884698867798)
+Benchmark Times:
+  Run Start:    2017-12-20 17:16:02 (1513786562)
+  Rate Start:   2017-12-20 17:16:02 (1513786562.39062)
+  Rate End:     2017-12-20 17:47:00 (1513788420.15283)
+  Run Stop:     2017-12-20 17:47:00 (1513788420)
+  Run Elapsed:  00:30:58 (1858)
+  Run Reported: 00:30:57 (1857 762207984 1857.762208)
+ Success 520.omnetpp_r base refrate ratio=0.71, runtime=1857.762208, copies=1, threads=1, power=0.00W, temp=0.00 degC, humidity=0.00%
+-----------------------------------
+  Running 523.xalancbmk_r refrate (ref) base mytest-m64 (1 copy) [2017-12-20 17:47:12]
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+Commands to run (specinvoke command file):
+    -r
+    -N C
+    -C /spec2017/benchspec/CPU/523.xalancbmk_r/run/run_base_refrate_mytest-m64.0001
+    -o ref-t5.out -e ref-t5.err ../run_base_refrate_mytest-m64.0001/cpuxalan_r_base.mytest-m64 -v t5.xml xalanc.xsl > ref-t5.out 2>> ref-t5.err (timed)
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/523.xalancbmk_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/523.xalancbmk_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout'
+Start command: 2017-12-20 17:47:12 (1513788432.81732)
+Stop command: 2017-12-20 18:09:21 (1513789761.9814)
+Elapsed time for command: 00:22:09 (1329.164083004)
+Workload elapsed time (copy 0 workload 1) = 1329.001498 seconds
+Copy 0 of 523.xalancbmk_r (base refrate) run 1 finished at 2017-12-20 18:09:21.  Total elapsed time: 1329.001498
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+comparing 'ref-t5.out' with 
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/523.xalancbmk_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/523.xalancbmk_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout'
+Start command: 2017-12-20 18:09:22 (1513789762.13027)
+Stop command: 2017-12-20 18:09:23 (1513789763.31932)
+Elapsed time for command: 00:00:01 (1.18904519081116)
+Benchmark Times:
+  Run Start:    2017-12-20 17:47:12 (1513788432)
+  Rate Start:   2017-12-20 17:47:12 (1513788432.8239)
+  Rate End:     2017-12-20 18:09:21 (1513789761.8254)
+  Run Stop:     2017-12-20 18:09:21 (1513789761)
+  Run Elapsed:  00:22:09 (1329)
+  Run Reported: 00:22:09 (1329 1497983 1329.001498)
+ Success 523.xalancbmk_r base refrate ratio=0.79, runtime=1329.001498, copies=1, threads=1, power=0.00W, temp=0.00 degC, humidity=0.00%
+-----------------------------------
+  Running 531.deepsjeng_r refrate (ref) base mytest-m64 (1 copy) [2017-12-20 18:09:23]
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+Commands to run (specinvoke command file):
+    -r
+    -N C
+    -C /spec2017/benchspec/CPU/531.deepsjeng_r/run/run_base_refrate_mytest-m64.0001
+    -o ref.out -e ref.err ../run_base_refrate_mytest-m64.0001/deepsjeng_r_base.mytest-m64 ref.txt > ref.out 2>> ref.err (timed)
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/531.deepsjeng_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/531.deepsjeng_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout'
+Start command: 2017-12-20 18:09:23 (1513789763.46499)
+Stop command: 2017-12-20 18:27:46 (1513790866.65632)
+Elapsed time for command: 00:18:23 (1103.19132399559)
+Workload elapsed time (copy 0 workload 1) = 1103.017531 seconds
+Copy 0 of 531.deepsjeng_r (base refrate) run 1 finished at 2017-12-20 18:27:46.  Total elapsed time: 1103.017531
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+comparing 'ref.out' with obiwan=1
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/531.deepsjeng_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/531.deepsjeng_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout'
+Start command: 2017-12-20 18:27:46 (1513790866.79836)
+Stop command: 2017-12-20 18:27:47 (1513790867.38915)
+Elapsed time for command: 00:00:00 (0.590790033340454)
+Benchmark Times:
+  Run Start:    2017-12-20 18:09:23 (1513789763)
+  Rate Start:   2017-12-20 18:09:23 (1513789763.48395)
+  Rate End:     2017-12-20 18:27:46 (1513790866.50148)
+  Run Stop:     2017-12-20 18:27:46 (1513790866)
+  Run Elapsed:  00:18:23 (1103)
+  Run Reported: 00:18:23 (1103 17531156 1103.017531)
+ Success 531.deepsjeng_r base refrate ratio=1.04, runtime=1103.017531, copies=1, threads=1, power=0.00W, temp=0.00 degC, humidity=0.00%
+-----------------------------------
+  Running 541.leela_r refrate (ref) base mytest-m64 (1 copy) [2017-12-20 18:27:47]
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+Commands to run (specinvoke command file):
+    -r
+    -N C
+    -C /spec2017/benchspec/CPU/541.leela_r/run/run_base_refrate_mytest-m64.0001
+    -o ref.out -e ref.err ../run_base_refrate_mytest-m64.0001/leela_r_base.mytest-m64 ref.sgf > ref.out 2>> ref.err (timed)
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/541.leela_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/541.leela_r/run/run_base_refrate_mytest-m64.0001 -f speccmds.cmd -q -e speccmds.err -o speccmds.stdout'
+Start command: 2017-12-20 18:27:47 (1513790867.60486)
+Stop command: 2017-12-20 18:53:46 (1513792426.53962)
+Elapsed time for command: 00:25:58 (1558.93476104736)
+Workload elapsed time (copy 0 workload 1) = 1558.752039 seconds
+Copy 0 of 541.leela_r (base refrate) run 1 finished at 2017-12-20 18:53:46.  Total elapsed time: 1558.752039
+OpenMP environment variables removed: None
+OpenMP environment variables in effect:
+	OMP_NUM_THREADS	=> '1'
+	OMP_THREAD_LIMIT	=> '1'
+Pre-run environment changes:
+	'OMP_NUM_THREADS' added: (value now '1')
+	'OMP_THREAD_LIMIT' added: (value now '1')
+comparing 'ref.out' with 
+Specinvoke: /spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/541.leela_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout
+Issuing command '/spec2017/bin/specinvoke -d /spec2017/benchspec/CPU/541.leela_r/run/run_base_refrate_mytest-m64.0001 -f compare.cmd -E -e compare.err -o compare.stdout'
+Start command: 2017-12-20 18:53:46 (1513792426.65538)
+Stop command: 2017-12-20 18:53:47 (1513792427.16337)
+Elapsed time for command: 00:00:00 (0.507995128631592)
+Benchmark Times:
+  Run Start:    2017-12-20 18:27:47 (1513790867)
+  Rate Start:   2017-12-20 18:27:47 (1513790867.62619)
+  Rate End:     2017-12-20 18:53:46 (1513792426.37823)
+  Run Stop:     2017-12-20 18:53:46 (1513792426)
+  Run Elapsed:  00:25:59 (1559)
+  Run Reported: 00:25:58 (1558 752038955 1558.752039)
+ Success 541.leela_r base refrate ratio=1.06, runtime=1558.752039, copies=1, threads=1, power=0.00W, temp=0.00 degC, humidity=0.00%
+Success: 1x520.omnetpp_r 1x523.xalancbmk_r 1x531.deepsjeng_r 1x541.leela_r
+Producing Raw Reports
+ label: mytest-m64
+  workload: refrate (ref)
+   benchset: intspeed
+   benchset: intrate
+   metric: SPECrate2017_int_base
+    format: raw -> /spec2017/result/CPU2017.002.intrate.refrate.rsf
+Parsing flags for 520.omnetpp_r base: done
+Parsing flags for 523.xalancbmk_r base: done
+Parsing flags for 531.deepsjeng_r base: done
+Parsing flags for 541.leela_r base: done
+Doing flag reduction: done
+    format: flags -> /spec2017/result/CPU2017.002.intrate.refrate.flags.html
+    format: cfg -> /spec2017/result/CPU2017.002.intrate.refrate.cfg, /spec2017/result/CPU2017.002.intrate.refrate.orig.cfg
+    format: CSV -> /spec2017/result/CPU2017.002.intrate.refrate.csv
+    format: PDF -> /spec2017/result/CPU2017.002.intrate.refrate.pdf
+    format: HTML -> /spec2017/result/CPU2017.002.intrate.refrate.html
+    format: Text -> /spec2017/result/CPU2017.002.intrate.refrate.txt
+   benchset: fpspeed
+   benchset: fprate
+runcpu finished at 2017-12-20 18:53:54; 5892 total seconds elapsed
+Info: file_tail(32582): file '/spec2017/tmp/CPU2017.002/templogs/preenv.intrate.002.1.debug' was removed and will no longer be followed.  No action is required.
+The log for this run is in /spec2017/result/CPU2017.002.log
+
+runcpu finished at 2017-12-20 18:53:54; 10772 total seconds elapsed

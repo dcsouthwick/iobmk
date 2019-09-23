@@ -1,7 +1,7 @@
 stages:
   - build-base-image
   - test
-  - build
+  - build-image
   - check
 
 variables:
@@ -9,16 +9,15 @@ variables:
   ATLAS_KV_IMAGE: $CI_REGISTRY_IMAGE/atlas-kv-bmk:1.0
 
 # Build the base image which is used to test installation and build the final hep-benchmark-suite image
-.job_build_base_image_defnition: &job_build_base_image_template
-  stage: build-base-image
+.definition_build_image: &template_build_image
   image: # NB enable shared runners and do not specify a CI tag
     name: gitlab-registry.cern.ch/ci-tools/docker-image-builder # CERN version of the Kaniko image
     entrypoint: [""]
   only:
     refs:
-    - qa
-    #changes:
-    #- $CHANGED_PATH
+     - qa
+    changes:
+     - $CHANGED_PATH
   script:
     # Prepare Kaniko configuration file
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
@@ -29,39 +28,66 @@ variables:
 
 
 job_build_base_image_slc6:
+   stage: build-base-image
    before_script:
        - export CHANGED_PATH=docker-images/hep-benchmark-base-slc6/*
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6/Dockerfile
        - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6
        - export DESTINATION=$CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:latest
-   <<: *job_build_base_image_template
+   <<: *template_build_image
 
 job_build_base_image_cc7:
+   stage: build-base-image
    before_script:
        - export CHANGED_PATH=docker-images/hep-benchmark-base-cc7/*
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7/Dockerfile
        - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7
        - export DESTINATION=$CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
-   <<: *job_build_base_image_template
+   <<: *template_build_image
 
-.job_test_installation_definition: &job_test_installation_template
+job_build_image_cc7:
+   stage: build-image
+   before_script:
+       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-cc7/Dockerfile
+       - export CONTEXT=$CI_PROJECT_DIR/
+       - export DESTINATION=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
+   <<: *template_build_image
+   only:
+     refs:
+     - master
+
+.definition_test_installation: &template_test_installation
     # This job installs the cern-benchmark suite using "make" 
     # in a docker container having cvmfs already mounted
     # then runs the three standard benchmarks 
     stage: test
-    image: $START_IMAGE
     script: 
         - yum install -y yum-plugin-ovl #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
         - make -f Makefile all 
     only:
-        - qa
+     changes:
+      - ./*
+      - scripts/*
+      - pyscripts/*
 
 job_test_installation_slc6: 
-   before_script:
-      - export START_IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:latest
+   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:latest
+   <<: *template_test_installation
 
 job_test_installation_cc7: 
-   before_script:
-      - export START_IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
+   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
+   <<: *template_test_installation
+
+
+job_bats_tests:
+   stage: test
+   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
+   script:
+       - yum install -y epel-release
+       - yum -y install python-pip
+       - pip install dictdiffer pyyaml 
+       - $CI_PROJECT_DIR/test/run_bats_tests.sh
+
+
 
       

@@ -1,8 +1,8 @@
 # HEP Benchmark Suite
 
- Branch |  QA | 
-| -------- | -------- |
-| **Pipeline status**     |  [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/qa/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/commits/qa)     |
+| Branch |  QA | Master |
+| -------- | -------- | -------- |
+|     |  [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/qa/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/commits/qa)     |  [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/master/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/commits/master)     |
 
 
 The HEP Benchmark Suite is a toolkit which aggregates several different benchmarks

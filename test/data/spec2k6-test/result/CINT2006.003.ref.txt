@@ -1,0 +1,198 @@
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# 'reportable' flag not set during run                                       #
+# 471.omnetpp (base) did not have enough runs!                               #
+# 456.hmmer (base) did not have enough runs!                                 #
+# 445.gobmk (base) did not have enough runs!                                 #
+# 458.sjeng (base) did not have enough runs!                                 #
+# 429.mcf (base) did not have enough runs!                                   #
+# 473.astar (base) did not have enough runs!                                 #
+# 483.xalancbmk (base) did not have enough runs!                             #
+# 400.perlbench (base) did not have enough runs!                             #
+# 464.h264ref (base) did not have enough runs!                               #
+# 462.libquantum (base) did not have enough runs!                            #
+# 401.bzip2 (base) did not have enough runs!                                 #
+# 403.gcc (base) did not have enough runs!                                   #
+# Unknown flags were used! See                                               #
+#      http://www.spec.org/cpu2006/Docs/runspec.html#flagsurl                #
+# for information about how to get rid of this error.                        #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+                           SPEC(R) CINT2006 Summary
+                                    -- --
+                           Thu Sep 28 22:45:05 2017
+
+CPU2006 License: --                                      Test date: Sep-2017
+Test sponsor: --                             Hardware availability: --      
+Tested by:    --                             Software availability: --      
+
+                                  Estimated                       Estimated
+                Base     Base       Base        Peak     Peak       Peak
+Benchmarks      Ref.   Run Time     Ratio       Ref.   Run Time     Ratio
+-------------- ------  ---------  ---------    ------  ---------  ---------
+400.perlbench                               NR                                 
+401.bzip2                                   NR                                 
+403.gcc                                     NR                                 
+429.mcf                                     NR                                 
+445.gobmk                                   NR                                 
+456.hmmer                                   NR                                 
+458.sjeng                                   NR                                 
+462.libquantum                              NR                                 
+464.h264ref                                 NR                                 
+471.omnetpp      6250       1199       5.21 *                                  
+473.astar        7020       1524       4.61 *                                  
+483.xalancbmk    6900       1020       6.76 *                                  
+==============================================================================
+400.perlbench                               NR                                 
+401.bzip2                                   NR                                 
+403.gcc                                     NR                                 
+429.mcf                                     NR                                 
+445.gobmk                                   NR                                 
+456.hmmer                                   NR                                 
+458.sjeng                                   NR                                 
+462.libquantum                              NR                                 
+464.h264ref                                 NR                                 
+471.omnetpp      6250       1199       5.21 *                                  
+473.astar        7020       1524       4.61 *                                  
+483.xalancbmk    6900       1020       6.76 *                                  
+ Est. SPECint(R)_base2006                --
+ Est. SPECint2006                                                   Not Run
+
+
+                                   HARDWARE
+                                   --------
+            CPU Name: Intel Core (Broadwell)
+ CPU Characteristics:  
+             CPU MHz: --
+                 FPU: --
+      CPU(s) enabled: -1 cores, 2 chips, -1 cores/chip, -1 threads/core
+    CPU(s) orderable: --
+       Primary Cache: --
+     Secondary Cache: --
+            L3 Cache: --
+         Other Cache: --
+              Memory: 3.368 GB fixme: If using DDR3, format is:
+                      'N GB (M x N GB nRxn PCn-nnnnnR-n, ECC)'
+      Disk Subsystem: 30 GB  add more disk info here
+      Other Hardware: --
+
+
+                                   SOFTWARE
+                                   --------
+    Operating System: Scientific Linux CERN SLC release 6.9 (Carbon)
+                      3.10.0-514.10.2.el7.x86_64
+            Compiler: --
+       Auto Parallel: No
+         File System: ext4
+        System State: Run level N (add definition here)
+       Base Pointers: --
+       Peak Pointers: Not Applicable
+      Other Software: --
+
+
+                                Platform Notes
+                                --------------
+     Sysinfo program /hs06/test/test_1/SPEC_CPU2006_v1.2/Docs/sysinfo
+     $Rev: 6775 $ $Date:: 2011-08-16 #$ 8787f7622badcf24e01c368b1db4377c
+     running on f2429109a5a6 Thu Sep 28 22:45:07 2017
+    
+     This section contains SUT (System Under Test) info as seen by
+     some common utilities.  To remove or add to this section, see:
+       http://www.spec.org/cpu2006/Docs/config.html#sysinfo
+    
+     From /proc/cpuinfo
+        model name : Intel Core Processor (Broadwell)
+           2 "physical id"s (chips)
+           2 "processors"
+        cores, siblings (Caution: counting these is hw and system dependent.  The
+        following excerpts from /proc/cpuinfo might not be reliable.  Use with
+        caution.)
+           cpu cores : 1
+           siblings  : 1
+           physical 0: cores 0
+           physical 1: cores 0
+        cache size : 4096 KB
+    
+     From /proc/meminfo
+        MemTotal:        3531712 kB
+        HugePages_Total:       0
+        Hugepagesize:       2048 kB
+    
+     /usr/bin/lsb_release -d
+        Scientific Linux CERN SLC release 6.9 (Carbon)
+    
+     From /etc/*release* /etc/*version*
+        redhat-release: Scientific Linux CERN SLC release 6.9 (Carbon)
+        system-release: Scientific Linux CERN SLC release 6.9 (Carbon)
+        system-release-cpe: cpe:/o:redhat:enterprise_linux:6.9:ga
+    
+     uname -a:
+        Linux f2429109a5a6 3.10.0-514.10.2.el7.x86_64 #1 SMP Fri Mar 3 00:04:05 UTC
+        2017 x86_64 x86_64 x86_64 GNU/Linux
+    
+    
+     SPEC is set to: /hs06/test/test_1/SPEC_CPU2006_v1.2
+        Filesystem     Type  Size  Used Avail Use% Mounted on
+        /dev/vdb       ext4   30G  3.7G   25G  14% /hs06
+    
+     (End of data from sysinfo program)
+
+                                General Notes
+                                -------------
+     400.perlbench: -DSPEC_CPU_LINUX_IA32
+     462.libquantum: -DSPEC_CPU_LINUX
+     C base flags: -O2  -fPIC -pthread
+     C++ base flags: -O2  -fPIC -pthread
+     Fortran base flags: -O2  -fPIC -pthread
+
+                              Base Unknown Flags
+                              ------------------
+   471.omnetpp: "g++ -m32" (in CXX) "g++ -m32" (in LD)
+                "-O2 -fPIC -pthread" (in CXXOPTIMIZE)
+
+     473.astar: "g++ -m32" (in CXX) "g++ -m32" (in LD)
+                "-O2 -fPIC -pthread" (in CXXOPTIMIZE)
+
+ 483.xalancbmk: "g++ -m32" (in CXX) "g++ -m32" (in LD)
+                "-O2 -fPIC -pthread" (in CXXOPTIMIZE)
+
+
+                            Base Portability Flags
+                            ----------------------
+ 483.xalancbmk: -DSPEC_CPU_LINUX
+
+
+    SPEC and SPECint are registered trademarks of the Standard Performance
+    Evaluation Corporation.  All other brand and product names appearing
+    in this result are trademarks or registered trademarks of their
+    respective holders.
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# 'reportable' flag not set during run                                       #
+# 471.omnetpp (base) did not have enough runs!                               #
+# 456.hmmer (base) did not have enough runs!                                 #
+# 445.gobmk (base) did not have enough runs!                                 #
+# 458.sjeng (base) did not have enough runs!                                 #
+# 429.mcf (base) did not have enough runs!                                   #
+# 473.astar (base) did not have enough runs!                                 #
+# 483.xalancbmk (base) did not have enough runs!                             #
+# 400.perlbench (base) did not have enough runs!                             #
+# 464.h264ref (base) did not have enough runs!                               #
+# 462.libquantum (base) did not have enough runs!                            #
+# 401.bzip2 (base) did not have enough runs!                                 #
+# 403.gcc (base) did not have enough runs!                                   #
+# Unknown flags were used! See                                               #
+#      http://www.spec.org/cpu2006/Docs/runspec.html#flagsurl                #
+# for information about how to get rid of this error.                        #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+-----------------------------------------------------------------------------
+For questions about this result, please contact the tester.
+For other inquiries, please contact webmaster@spec.org.
+Copyright 2006-2017 Standard Performance Evaluation Corporation
+Tested with SPEC CPU2006 v1.2.
+Report generated on Fri Sep 29 00:51:23 2017 by CPU2006 ASCII formatter v6400.
