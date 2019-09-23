@@ -1,0 +1,238 @@
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# 'reportable' flag not set during run                                       #
+# 541.leela_r (base) did not have enough runs!                               #
+# 502.gcc_r (base) did not have enough runs!                                 #
+# 525.x264_r (base) did not have enough runs!                                #
+# 548.exchange2_r (base) did not have enough runs!                           #
+# 505.mcf_r (base) did not have enough runs!                                 #
+# 531.deepsjeng_r (base) did not have enough runs!                           #
+# 557.xz_r (base) did not have enough runs!                                  #
+# 520.omnetpp_r (base) did not have enough runs!                             #
+# 523.xalancbmk_r (base) did not have enough runs!                           #
+# 500.perlbench_r (base) did not have enough runs!                           #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+                           SPEC(R) CPU2017 Integer Rate Result
+                                     My Corporation 
+
+       CPU2017 License: nnn (Your SPEC license number)          Test date: Dec-2017
+       Test sponsor: My Corporation                 Hardware availability:         
+       Tested by:    My Corporation                 Software availability:         
+
+                       Estimated                       Estimated
+                Base     Base       Base        Peak     Peak       Peak
+Benchmarks     Copies  Run Time     Rate       Copies  Run Time     Rate 
+-------------- ------  ---------  ---------    ------  ---------  ---------   
+500.perlbench_r                              NR                                 
+502.gcc_r                                   NR                                 
+505.mcf_r                                   NR                                 
+520.omnetpp_r       1       1858      0.706  *                                 
+523.xalancbmk_r      1       1329      0.795  *                                 
+525.x264_r                                  NR                                 
+531.deepsjeng_r      1       1103      1.04   *                                 
+541.leela_r         1       1559      1.06   *                                 
+548.exchange2_r                              NR                                 
+557.xz_r                                    NR                                 
+==============================================================================
+500.perlbench_r                              NR                                 
+502.gcc_r                                   NR                                 
+505.mcf_r                                   NR                                 
+520.omnetpp_r       1       1858      0.706  *                                 
+523.xalancbmk_r      1       1329      0.795  *                                 
+525.x264_r                                  NR                                 
+531.deepsjeng_r      1       1103      1.04   *                                 
+541.leela_r         1       1559      1.06   *                                 
+548.exchange2_r                              NR                                 
+557.xz_r                                    NR                                 
+ Est. SPECrate2017_int_base           0.887
+ Est. SPECrate2017_int_peak                                         Not Run
+
+
+                                         HARDWARE
+                                         --------
+            CPU Name: Intel Core (Broadwell)
+            Max MHz.:  
+             Nominal:  
+             Enabled:  cores, 2 chips,  threads/core
+           Orderable:  
+            Cache L1:  
+                  L2:  
+                  L3:  
+               Other:  
+              Memory: 3.368 GB fixme: If using DDR3, format is:
+                      'N GB (M x N GB nRxn PCn-nnnnnR-n, ECC)'
+             Storage: 30 GB  add more disk info here
+               Other:  
+
+
+                                         SOFTWARE
+                                         --------
+                  OS: Scientific Linux CERN SLC release 6.9 (Carbon)
+                      3.10.0-514.10.2.el7.x86_64
+            Compiler: C/C++/Fortran: Version 6.2.0 of GCC, the
+                      GNU Compiler Collection
+            Parallel: No
+            Firmware:  
+         File System: ext4
+        System State: Run level N (add definition here)
+       Base Pointers: 64-bit
+       Peak Pointers: Not Applicable
+               Other:  
+
+
+                                      General Notes
+                                      -------------
+    Environment variables set by runcpu before the start of the run:
+    LD_LIBRARY_PATH = "/usr/lib64/:/usr/lib/:/lib64"
+    
+
+                                      Platform Notes
+                                      --------------
+     Sysinfo program /spec2017/bin/sysinfo
+     Rev: r5797 of 2017-06-14 96c45e4568ad54c135fd618bcc091c0f
+     running on 4bdabd3c3191 Wed Dec 20 17:15:47 2017
+    
+     SUT (System Under Test) info as seen by some common utilities.
+     For more information on this section, see
+        https://www.spec.org/cpu2017/Docs/config.html#sysinfo
+    
+     From /proc/cpuinfo
+        model name : Intel Core Processor (Broadwell)
+           2  "physical id"s (chips)
+           2 "processors"
+        cores, siblings (Caution: counting these is hw and system dependent. The following
+        excerpts from /proc/cpuinfo might not be reliable.  Use with caution.)
+           cpu cores : 1
+           siblings  : 1
+           physical 0: cores 0
+           physical 1: cores 0
+    
+     From lscpu:
+          Architecture:          x86_64
+          CPU op-mode(s):        32-bit, 64-bit
+          Byte Order:            Little Endian
+          CPU(s):                2
+          On-line CPU(s) list:   0,1
+          Thread(s) per core:    1
+          Core(s) per socket:    1
+          Socket(s):             2
+          NUMA node(s):          1
+          Vendor ID:             GenuineIntel
+          CPU family:            6
+          Model:                 61
+          Model name:            Intel Core Processor (Broadwell)
+          Stepping:              2
+          CPU MHz:               2194.916
+          BogoMIPS:              4389.83
+          Virtualization:        VT-x
+          Hypervisor vendor:     KVM
+          Virtualization type:   full
+          L1d cache:             32K
+          L1i cache:             32K
+          L2 cache:              4096K
+          NUMA node0 CPU(s):     0,1
+    
+     /proc/cpuinfo cache data
+        cache size : 4096 KB
+    
+     From numactl --hardware  WARNING: a numactl 'node' might or might not correspond to a
+     physical chip.
+    
+     From /proc/meminfo
+        MemTotal:        3531712 kB
+        HugePages_Total:       0
+        Hugepagesize:       2048 kB
+    
+     /usr/bin/lsb_release -d
+        Scientific Linux CERN SLC release 6.9 (Carbon)
+    
+     From /etc/*release* /etc/*version*
+        redhat-release: Scientific Linux CERN SLC release 6.9 (Carbon)
+        system-release: Scientific Linux CERN SLC release 6.9 (Carbon)
+        system-release-cpe: cpe:/o:redhat:enterprise_linux:6.9:ga
+    
+     uname -a:
+        Linux 4bdabd3c3191 3.10.0-514.10.2.el7.x86_64 #1 SMP Fri Mar 3 00:04:05 UTC 2017
+        x86_64 x86_64 x86_64 GNU/Linux
+    
+    
+     SPEC is set to: /spec2017
+        Filesystem     Type  Size  Used Avail Use% Mounted on
+        /dev/vdb       ext4   30G   29G     0 100% /spec2017
+    
+     (End of data from sysinfo program)
+
+                                  Compiler Version Notes
+                                  ----------------------
+    ==============================================================================
+     CXXC 520.omnetpp_r(base) 523.xalancbmk_r(base) 531.deepsjeng_r(base)
+          541.leela_r(base)
+    ------------------------------------------------------------------------------
+    Using built-in specs.
+    Target: x86_64-redhat-linux
+    Configured with: ../configure --prefix=/usr --mandir=/usr/share/man
+      --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla
+      --enable-bootstrap --enable-shared --enable-threads=posix
+      --enable-checking=release --with-system-zlib --enable-__cxa_atexit
+      --disable-libunwind-exceptions --enable-gnu-unique-object
+      --enable-languages=c,c++,objc,obj-c++,java,fortran,ada
+      --enable-java-awt=gtk --disable-dssi
+      --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre
+      --enable-libgcj-multifile --enable-java-maintainer-mode
+      --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib
+      --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686
+      --build=x86_64-redhat-linux
+    Thread model: posix
+    gcc version 4.4.7 20120313 (Red Hat 4.4.7-18) (GCC) 
+    ------------------------------------------------------------------------------
+
+                                 Base Compiler Invocation
+                                 ------------------------
+C++ benchmarks: 
+     g++
+
+
+                                  Base Portability Flags
+                                  ----------------------
+   520.omnetpp_r: -DSPEC_LP64
+ 523.xalancbmk_r: -DSPEC_LINUX -DSPEC_LP64
+ 531.deepsjeng_r: -DSPEC_LP64
+     541.leela_r: -DSPEC_LP64
+
+
+                                 Base Optimization Flags
+                                 -----------------------
+C++ benchmarks: 
+     -m64 -g -O3
+
+
+  SPEC is a registered trademark of the Standard Performance Evaluation
+    Corporation.  All other brand and product names appearing in this
+    result are trademarks or registered trademarks of their respective
+    holders.
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# 'reportable' flag not set during run                                       #
+# 541.leela_r (base) did not have enough runs!                               #
+# 502.gcc_r (base) did not have enough runs!                                 #
+# 525.x264_r (base) did not have enough runs!                                #
+# 548.exchange2_r (base) did not have enough runs!                           #
+# 505.mcf_r (base) did not have enough runs!                                 #
+# 531.deepsjeng_r (base) did not have enough runs!                           #
+# 557.xz_r (base) did not have enough runs!                                  #
+# 520.omnetpp_r (base) did not have enough runs!                             #
+# 523.xalancbmk_r (base) did not have enough runs!                           #
+# 500.perlbench_r (base) did not have enough runs!                           #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+------------------------------------------------------------------------------------------
+For questions about this result, please contact the tester.
+For other inquiries, please contact info@spec.org.
+Copyright 2017 Standard Performance Evaluation Corporation
+Tested with SPEC CPU2017 v1.0.2 on 2017-12-20 17:15:42+0100.
+Report generated on 2017-12-20 18:53:53 by CPU2017 ASCII formatter v5178.

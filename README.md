@@ -1,6 +1,11 @@
-# hep-benchmark-suite
+# HEP Benchmark Suite
 
-The Benchmark suite is a toolkit which aggregates several different benchmarks
+| Branch |  QA | Master |
+| -------- | -------- | -------- |
+|     |  [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/qa/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/commits/qa)     |  [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/master/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/commits/master)     |
+
+
+The HEP Benchmark Suite is a toolkit which aggregates several different benchmarks
 in one single application.
 
 It is built to comply with several use cases by allowing the users to specify
