@@ -1,0 +1,17 @@
+
+
+=========================================================
+RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD suite-CI
+=========================================================
+Suite start 2017-10-02T14:09:53Z 
+Suite end   2017-10-02T14:23:02Z
+Machine classification: i6_2_f6m61s2_mhz2194.916
+DIRAC Benchmark = 18.750 (est. HS06)
+HS06 32 bit Benchmark = 14.74
+HS06 64 bit Benchmark = 14.74
+Hyper-Benchmark results: 
+	1-min Load measurements =1.1 
+	1-min Load measurements =1.1 
+	1-min Load measurements =1.1
+KV cpu performance [evt/sec]: score 0.58 over 2 copies. Min Value 0.28 Max Value 0.30
+Whetstone Benchmark = 3292.1235 (MWIPS)
