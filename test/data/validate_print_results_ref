@@ -14,4 +14,5 @@ Hyper-Benchmark results:
 	1-min Load measurements =1.1 
 	1-min Load measurements =1.1
 KV cpu performance [evt/sec]: score 0.58 over 2 copies. Min Value 0.28 Max Value 0.30
+SPEC2017 64 bit Benchmark = 2.29
 Whetstone Benchmark = 3292.1235 (MWIPS)
