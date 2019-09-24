@@ -113,12 +113,12 @@ job_test_full_run_cc7:
 job_test_hs06_run_cc7:
     <<: *template_test_run_bmks
     script:
-        - hep-benchmark-suite --benchmarks=$BMKLIST --mp_num=2 --freetext="test-qa version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC -d --hs06_path=/scratch/HEPSPEC --hs06_iter=1 --hs06_url="$HS06URL" --hs06_bmk=453.povray
+        - hep-benchmark-suite --benchmarks=hs06_32 --mp_num=2 --freetext="test-qa version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC -d --hs06_path=/scratch/HEPSPEC --hs06_iter=1 --hs06_url="$HS06URL" --hs06_bmk=453.povray
 
 job_test_spec2017_run_cc7:
     <<: *template_test_run_bmks
     script:
-        - hep-benchmark-suite --benchmarks=$BMKLIST --mp_num=2 --freetext="test-qa version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC -d --spec2017_path=/scratch/HEPSPEC --spec2017_iter=1 --spec2017_url="$SPEC2017URL" --spec2017_bmk=511.povray_r  
+        - hep-benchmark-suite --benchmarks=spec2017 --mp_num=2 --freetext="test-qa version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC -d --spec2017_path=/scratch/HEPSPEC --spec2017_iter=1 --spec2017_url="$SPEC2017URL" --spec2017_bmk=511.povray_r  
 
 ############################################################
 #####              TEST COMPONENTS                     #####
