@@ -69,7 +69,7 @@ job_build_image_cc7:
     script: 
         - yum install -y yum-plugin-ovl #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
         - make -f Makefile all 
-        - hep-benchmark-suite -o --benchmarks=$BMKLIST --mp_num=2 --freetext="test-qa version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC
+        - hep-benchmark-suite --benchmarks=$BMKLIST --mp_num=2 --freetext="test-qa version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC
         - tar -czf hep-benchmark-suite-test.tgz /tmp/hep-benchmark-suite_root /opt/hep-benchmark-suite 
     only:
      changes:
