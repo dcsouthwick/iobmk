@@ -37,7 +37,7 @@ prepare:
 install_basedep:
 	@echo -e "\n -- Install and configure default dependencies from ./lib... -- \n"
 
-	bash -i -c "source $(SCRIPTDIR)/install-dependencies.sh; base_dependencies; hs06_dependencies ;"\
+	bash -i -c "source $(SCRIPTDIR)/install-dependencies.sh; base_dependencies; hs06_dependencies ; hepscore_dependencies"\
 
 clean:
 	@echo -e "\n -- Deleting $(BMKDIR) and all its content -- \n"
