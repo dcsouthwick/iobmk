@@ -46,7 +46,7 @@ job_build_base_image_cc7:
    <<: *template_build_image
 
 job_build_image_cc7:
-   stage: build-image
+   stage: build-prod-image
    before_script:
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-cc7/Dockerfile
        - export CONTEXT=$CI_PROJECT_DIR/
@@ -87,14 +87,14 @@ job_test_installation_cc7:
        - yum -y install python-pip
        - pip install dictdiffer pyyaml 
        - $CI_PROJECT_DIR/test/run_bats_tests.sh
-   only:
-      except: 
+   except:
+      refs: 
         - master
         - qa
 
 bats_tests_cc7:
    image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
-    <<: *template_bats_tests
+   <<: *template_bats_tests
 
 
       
