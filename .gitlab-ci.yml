@@ -4,9 +4,10 @@ stages:
   - build-prod-image
   - test-components
 
-variables:
-  UTIL_IMAGE: $CI_REGISTRY_IMAGE/bmk-profiler:latest
-  ATLAS_KV_IMAGE: $CI_REGISTRY_IMAGE/atlas-kv-bmk:1.0
+
+############################################################
+#####              BUILD IMAGES                        #####
+############################################################
 
 # Build the base image which is used to test installation and build the final hep-benchmark-suite image
 .definition_build_image: &template_build_image
@@ -56,6 +57,10 @@ job_build_image_cc7:
      refs:
      - master
 
+############################################################
+#####              TEST INSTALLATION                   #####
+############################################################
+
 .definition_test_installation: &template_test_installation
     # This job installs the cern-benchmark suite using "make" 
     # in a docker container having cvmfs already mounted
@@ -64,12 +69,14 @@ job_build_image_cc7:
     script: 
         - yum install -y yum-plugin-ovl #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
         - make -f Makefile all 
-        - hep-benchmark-suite -o --benchmarks=DB12
+        - hep-benchmark-suite -o --benchmarks=DB12 --freetext="test-qa version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC
     only:
      changes:
       - ./*
       - scripts/*
       - pyscripts/*
+     refs:
+      - qa
 
 job_test_installation_slc6: 
    image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:latest
@@ -79,6 +86,9 @@ job_test_installation_cc7:
    image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
    <<: *template_test_installation
 
+############################################################
+#####              TEST COMPONENTS                     #####
+############################################################
 
 .definition_bats_tests: &template_bats_tests
    stage: test-components
