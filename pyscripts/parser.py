@@ -357,7 +357,7 @@ if __name__ == '__main__':
     except Exception as e:
         logger.warning('skipping hs06_64 because of %s'%e)
     try:
-        result['profiles'].update(json.loads(open(args.rundir+"/HEPSCORE/hepscore_result.json", "r").read()))
+        result['profiles'].update({'hepscore':json.loads(open(args.rundir+"/HEPSCORE/hepscore_result.json", "r").read())})
     except Exception as e:
         logger.warning('skipping hepscore because of %s'%e)
     try:
