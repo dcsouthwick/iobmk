@@ -167,6 +167,14 @@ def parse_kv(rundir):
     result['skv'].update(json.loads(file.read()))
     return result
 
+def parse_hepscore(rundir):
+    result = {}
+
+    file_name = rundir+"/HEPSCORE/hepscore_result.json"
+    file = open(file_name, "r")
+    result['hep-score'] = json.loads(file.read())
+    return result
+
     
 def parse_phoronix():
     path = '/home/phoronix/.phoronix-test-suite/test-results'
@@ -298,6 +306,7 @@ def print_results(results):
         "hs06_32": lambda x: "HS06 32 bit Benchmark = %s" %p[x]['score'],
         "hs06_64": lambda x: "HS06 64 bit Benchmark = %s" %p[x]['score'],
         "spec2017": lambda x: "SPEC2017 64 bit Benchmark = %s" %p[x]['score'],
+        "hepscore": lambda x: "HEPSCORE Benchmark = %s over benchmarks %s" % (round(p[x]['score'],2), p[x]['benchmarks'].keys())  ,
         "hyperbenchmark": lambda x:print_hyperbenchmark(p[x])
     }
     
@@ -347,6 +356,10 @@ if __name__ == '__main__':
         result['profiles'].update(json.loads(open(args.rundir+"/HS06/hs06_64_result.json", "r").read()))
     except Exception as e:
         logger.warning('skipping hs06_64 because of %s'%e)
+    try:
+        result['profiles'].update(json.loads(open(args.rundir+"/HEPSCORE/hepscore_result.json", "r").read()))
+    except Exception as e:
+        logger.warning('skipping hepscore because of %s'%e)
     try:
         result['profiles'].update(parse_whetstone(args.rundir))
     except Exception as e:

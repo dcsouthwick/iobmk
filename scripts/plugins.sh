@@ -16,6 +16,8 @@ OPTIONS:
 \t (REQUIRED) Semi-colon separated list of benchmarks to run. Available benchmarks are:
 \t\t - hs06_32 (for 32 bits)
 \t\t - hs06_64 (for 64 bits)
+\t\t - spec2017
+\t\t - hepscore
 \t\t - kv
 \t\t - DB12
 \t\t - hyper-benchmark (*)
@@ -359,12 +361,11 @@ function run_DB12 {
 function run_kv {
   # Receives the following arguments:
   #   - $1 is the TIMES_SOURCE file path
-  #   - $2 is the path where the benchmark is running
-  #   - $3 is the current path, where the package is
+  #   - $2 is the current path, where the package is
 
-  TIMES_SOURCE=$1
-  RUNAREA="$2/KV"
-  ROOTDIR=$3
+  TIMES_SOURCE=$1   #FIXME: is still needed?
+  ROOTDIR=$2        #FIXME: is still needed?
+  RUNAREA=$RUNAREA_PATH/KV
 
   DOCKER_IMAGE_KV=gitlab-registry.cern.ch/hep-benchmarks/hep-workloads/atlas-kv-bmk:ci1.1
 
@@ -384,6 +385,21 @@ function run_kv {
   echo "export end_kv_test=`date +%s`" >> $TIMES_SOURCE
 
   cd $ROOTDIR
+}
+
+
+function run_hepscore {
+  # Receives the following arguments:
+
+  RUNAREA=$RUNAREA_PATH/HEPSCORE
+  [ -e $RUNAREA ] && rm -rf $RUNAREA
+  mkdir -p $RUNAREA
+
+  REFDATE=`date +\%y-\%m-\%d_\%H-\%M-\%S`
+  HEPSCORELOG=$RUNAREA/hepscore_$REFDATE.stdout
+
+  echo "Running   hep-score -d -v -f $ROOTDIR/scripts/hepscore/hepscore.yaml -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG"
+  hep-score -d -v -f $ROOTDIR/scripts/hepscore/hepscore.yaml -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
 }
 
 function download_tarball(){

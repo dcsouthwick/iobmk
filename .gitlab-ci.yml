@@ -93,12 +93,20 @@ job_test_installation_cc7:
        - export BMKLIST=DB12
    <<: *template_test_installation
 
-job_test_full_run_cc7:
+job_test_kv_run_cc7:
    image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
        - export BMKLIST="DB12;kv"
+   <<: *template_test_installation
+
+job_test_hepscore_run_cc7:
+   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
+   tags:
+     -  hep-benchmark-suite-docker-runner 
+   before_script:
+       - export BMKLIST="DB12;hepscore"
    <<: *template_test_installation
 
 .definition_test_run_bmks: &template_test_run_bmks
