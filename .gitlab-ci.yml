@@ -1,8 +1,8 @@
 stages:
   - build-base-image
-  - test
-  - build-image
-  - check
+  - test-installation
+  - build-prod-image
+  - test-components
 
 variables:
   UTIL_IMAGE: $CI_REGISTRY_IMAGE/bmk-profiler:latest
@@ -24,7 +24,7 @@ variables:
     # Build and push the image from the Dockerfile at the root of the project.
     # To push to a specific docker tag, amend the --destination parameter, e.g. --destination $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
     # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
-    - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE --destination $DESTINATION
+    - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE $DESTINATIONS 
 
 
 job_build_base_image_slc6:
@@ -33,7 +33,7 @@ job_build_base_image_slc6:
        - export CHANGED_PATH=docker-images/hep-benchmark-base-slc6/*
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6/Dockerfile
        - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6
-       - export DESTINATION=$CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:latest
+       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:latest --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:${CI_COMMIT_SHA:0:8}"
    <<: *template_build_image
 
 job_build_base_image_cc7:
@@ -42,15 +42,15 @@ job_build_base_image_cc7:
        - export CHANGED_PATH=docker-images/hep-benchmark-base-cc7/*
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7/Dockerfile
        - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7
-       - export DESTINATION=$CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
+       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:${CI_COMMIT_SHA:0:8}"
    <<: *template_build_image
 
 job_build_image_cc7:
-   stage: build-image
+   stage: build-prod-image
    before_script:
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-cc7/Dockerfile
        - export CONTEXT=$CI_PROJECT_DIR/
-       - export DESTINATION=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
+       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_SHA:0:8}"
    <<: *template_build_image
    only:
      refs:
@@ -60,10 +60,11 @@ job_build_image_cc7:
     # This job installs the cern-benchmark suite using "make" 
     # in a docker container having cvmfs already mounted
     # then runs the three standard benchmarks 
-    stage: test
+    stage: test-installation
     script: 
         - yum install -y yum-plugin-ovl #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
         - make -f Makefile all 
+        - hep-benchmark-suite -o --benchmarks=DB12
     only:
      changes:
       - ./*
@@ -79,15 +80,21 @@ job_test_installation_cc7:
    <<: *template_test_installation
 
 
-job_bats_tests:
-   stage: test
-   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
+.definition_bats_tests: &template_bats_tests
+   stage: test-components
    script:
        - yum install -y epel-release
        - yum -y install python-pip
        - pip install dictdiffer pyyaml 
        - $CI_PROJECT_DIR/test/run_bats_tests.sh
+   except:
+      refs: 
+        - master
+        - qa
 
+bats_tests_cc7:
+   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
+   <<: *template_bats_tests
 
 
       

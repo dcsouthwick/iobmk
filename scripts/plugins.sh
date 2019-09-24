@@ -377,10 +377,10 @@ function run_kv {
   cd $RUNAREA
 
   REFDATE=`date +\%y-\%m-\%d_\%H-\%M-\%S`
-  KVLOG=kv_$REFDATE.out
+  KVLOG=$RUNAREA/kv_$REFDATE.out
 
-  echo "Running KV via   docker run --rm -v $RUNAREA:/KV  $DOCKER_IMAGE_KV -c $KVTHR -w /KV"
-  docker run --rm -v $RUNAREA:/results  $DOCKER_IMAGE_KV -c $KVCOPIES -W  -- >&4
+  echo "Running KV by: docker run --rm -v $RUNAREA:/results  $DOCKER_IMAGE_KV -c $KVCOPIES -W > $KVLOG"
+  docker run --rm -v $RUNAREA:/results  $DOCKER_IMAGE_KV -c $KVCOPIES -W  -- > $KVLOG
   echo "export end_kv_test=`date +%s`" >> $TIMES_SOURCE
 
   cd $ROOTDIR
