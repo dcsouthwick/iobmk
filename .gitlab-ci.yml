@@ -173,4 +173,3 @@ job_test_spec2017_run_cc7:
 bats_tests_cc7:
    image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
    <<: *template_bats_tests
-
