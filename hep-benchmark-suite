@@ -7,11 +7,11 @@
 #          Domenico Giordano
 
 
-# Base dir for all. If not specified in a environment variable BMK_ROOTDIR it uses the default /opt/hep-benchmark-suite
-ROOTDIR=${BMK_ROOTDIR:-"/opt/hep-benchmark-suite"}
+# Base dir for all. If not specified in a environment variable BMK_SOURCEDIR it uses the default /opt/hep-benchmark-suite
+SOURCEDIR=${BMK_SOURCEDIR:-"/opt/hep-benchmark-suite"}
 
 # $bmks is defined in plugins.sh
-source "$ROOTDIR"/scripts/plugins.sh
+source "$SOURCEDIR"/scripts/plugins.sh
 
 echo "export init_tests=$(date +%s)" >> ${TIMES_SOURCE_PATH}
 
@@ -22,7 +22,7 @@ do
   if [[ $b == 'kv' ]]; then
     echo "INFO: running KV..."
     # Launch in normal mode
-    run_kv "$TIMES_SOURCE_PATH" "$ROOTDIR" || true
+    run_kv "$TIMES_SOURCE_PATH" "$SOURCEDIR" || true
   elif [[ $b =~ "hepscore" ]]; then
       run_hepscore || true 
   elif [[ $b =~ ^(hs06_(32|64))$ ]]; then
