@@ -408,21 +408,6 @@ function run_hepscore {
   hep-score -d -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
 }
 
-
-function run_hepscore {
-  # Receives the following arguments:
-
-  RUNAREA=$RUNAREA_PATH/HEPSCORE
-  [ -e $RUNAREA ] && rm -rf $RUNAREA
-  mkdir -p $RUNAREA
-
-  REFDATE=`date +\%y-\%m-\%d_\%H-\%M-\%S`
-  HEPSCORELOG=$RUNAREA/hepscore_$REFDATE.stdout
-
-  echo "Running   hep-score -d -v -f $ROOTDIR/scripts/hepscore/hepscore.yaml -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG"
-  hep-score -d -v -f $ROOTDIR/scripts/hepscore/hepscore.yaml -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
-}
-
 function download_tarball(){
     INSTALL_PATH=$1
     TAR_URL=$2
