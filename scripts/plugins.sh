@@ -132,6 +132,8 @@ SPEC2017_PATH=''
 SPEC2017_URL=''
 SPEC2017_BMK='pure_rate_cpp'
 SPEC2017_ITER=3
+HEPSCORE_CONF=$SOURCEDIR/scripts/hepscore/hepscore.yaml
+
 while [ "$1" != "" ]; do
   case $1 in
     -q    )                 QUIET=1;
@@ -183,6 +185,8 @@ while [ "$1" != "" ]; do
     --spec2017_bmk=* )      SPEC2017_BMK=${1#*=};
     ;;
     --spec2017_iter=* )     SPEC2017_ITER=${1#*=};
+    ;;
+    --hepscore_conf=* )     HEPSCORE_CONF=${1#*=};
     ;;
     -d )  DEBUG=1
     ;;
@@ -400,8 +404,8 @@ function run_hepscore {
   REFDATE=`date +\%y-\%m-\%d_\%H-\%M-\%S`
   HEPSCORELOG=$RUNAREA/hepscore_$REFDATE.stdout
 
-  echo "Running   hep-score -d -v -f $SOURCEDIR/scripts/hepscore/hepscore.yaml -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG"
-  hep-score -d -v -f $SOURCEDIR/scripts/hepscore/hepscore.yaml -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
+  echo "Running   hep-score -d -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG"
+  hep-score -d -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
 }
 
 function download_tarball(){
