@@ -2,7 +2,7 @@
 IMAGE=$1
 postfix start
 announcement="announce.txt"
-echo -e "Dear HEP Benchmark developers, \n" > $announcement
+echo -e "Dear, \n" > $announcement
 echo -e "we are pleased to inform that a new version has been released for the container image \n\n${IMAGE}" >> $announcement
 echo -e "\nCOMMIT DESCRIPTION $CI_COMMIT_DESCRIPTION" >> $announcement
 echo -e "\nPlease DO NOT REPLY\nReport automatically generated from GitLab CI in pipeline ${CI_PIPELINE_URL}\n[$(date)]" >> $announcement
