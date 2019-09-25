@@ -59,7 +59,30 @@ At the moment, the available benchmarks on the suite are:
 It is a standalone application that expects the user to pass a list of the benchmarks to be executed (together with the other possible arguments referred in [How to run](./HowToRun.md)).
 
 
-### Execution modes
+### Execution 
+- Preferred mode: Docker image
+
+The hep-benchmark-suite is distributed in a CC7 image ( )
+
+Some of the workloads also run in standalone containers (e.g. the hep-workloads included in the HEPscore )
+In order to enable `docker run` from the running container, the bind mount of the `/var/run/docker.sock` and run in priviledged mode as follow
+```
+DOCKSOCK=/var/run/docker.sock
+BMK_SUITE_IMAGE=gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hep-benchmark-suite-cc7:latest
+ARGUMENTS="--cloud=$CLOUD -d --hs06_path=/var/HEPSPEC --hs06_iter=1  --spec2017_path=/var/HEPSPEC --spec2017_iter=1 --hepscore_conf=/tmp/hepscore_test.yml"
+AMQ_ARGUMENTS="--queue_host=**** --queue_port=**** --username=**** --password=**** --topic=**** "
+ADDITIONAL_ARGUMENTS="--vo=<an aggregate>  --freetext=<a tag text> --pnode=<physical node name>"
+
+docker run --rm  --privileged --net=host -h $HOSTNAME \
+              -v /tmp:/tmp -v /var/HEPSPEC:/var/HEPSPEC -v $DOCKSOCK:$DOCKSOCK \
+              $BMK_SUITE_IMAGE hep-benchmark-suite --benchmarks="DB12;hepscore;hs06_32;hs06_64;spec2017" $ARGUMENTS $ADDITIONAL_ARGUMENTS $AMQ_ARGUMENTS
+```
+
+The additional arguments are not mandatory. 
+
+If publication in a destination AMQ broker is not needed, replace `AMQ_ARGUMENTS=" -o "` to run offline.
+
+In the above example HS06 and SPECCPU2017 are expected to be already installed in /var/HEPSPEC. In case the packages are in another path, change the corresponding entries. 
 
 #### Online vs Offline
 The user has the choice, at launch time, to have the benchmark results uniquely printed in the terminal at the end of the execution. This is the _Offline_ mode and must be specified. The _Online_ mode makes the suite act like a producer, expecting
