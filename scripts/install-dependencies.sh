@@ -90,3 +90,18 @@ function hs06_dependencies {
 function spec2017_dependencies {
     echo "... no additional dependencies for spec2017"
 }
+
+function hepscore_dependencies {
+    echo "... installing hepscore"
+    current_dir=`pwd`
+    install_dir=/tmp/install_hepscore_`date +%s`
+    echo "Downloading into directory $install_dir"
+    [ ! -e $install_dir ] && mkdir -p $install_dir
+    cd $install_dir
+    git clone https://gitlab.cern.ch/hep-benchmarks/hep-score.git
+    cd hep-score
+    git fetch
+    git checkout BMK-223
+    pip install .
+    cd $current_dir
+}
