@@ -2,6 +2,7 @@ stages:
   - build-base-image
   - test-installation
   - build-prod-image
+  - announce-prod-image
   - test-components
 
 
@@ -14,11 +15,6 @@ stages:
   image: # NB enable shared runners and do not specify a CI tag
     name: gitlab-registry.cern.ch/ci-tools/docker-image-builder # CERN version of the Kaniko image
     entrypoint: [""]
-  only:
-    refs:
-     - qa
-    changes:
-     - $CHANGED_PATH
   script:
     # Prepare Kaniko configuration file
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
@@ -27,24 +23,44 @@ stages:
     # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
     - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE $DESTINATIONS 
 
+job_build_announcement_image:
+   stage: build-base-image
+   before_script:
+       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/announcement/Dockerfile
+       - export CONTEXT=$CI_PROJECT_DIR/docker-images/announcement
+       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/announcement:latest --destination $CI_REGISTRY_IMAGE/announcement:${CI_COMMIT_SHA:0:8}"
+   <<: *template_build_image
+   only:
+     refs:
+       - qa
+     changes:
+       - docker-images/announcement/*
 
 job_build_base_image_slc6:
    stage: build-base-image
    before_script:
-       - export CHANGED_PATH=docker-images/hep-benchmark-base-slc6/*
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6/Dockerfile
        - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6
        - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:latest --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:${CI_COMMIT_SHA:0:8}"
    <<: *template_build_image
+   only:
+     refs:
+       - qa
+     changes:
+       - docker-images/hep-benchmark-base-slc6/*
 
 job_build_base_image_cc7:
    stage: build-base-image
    before_script:
-       - export CHANGED_PATH=docker-images/hep-benchmark-base-cc7/*
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7/Dockerfile
        - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7
        - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:${CI_COMMIT_SHA:0:8}"
    <<: *template_build_image
+   only:
+     refs:
+       - qa
+     changes:
+       - docker-images/hep-benchmark-base-cc7/*
 
 job_build_image_cc7:
    stage: build-prod-image
@@ -56,6 +72,16 @@ job_build_image_cc7:
    only:
      refs:
      - master
+
+job_announce_prod_image:
+   stage: announce-prod-image
+   image: $CI_REGISTRY_IMAGE/announcement:latest
+   only:
+     refs:
+     - master
+   script: 
+     - export IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_SHA:0:8}
+     - /announce.sh $IMAGE
 
 ############################################################
 #####              TEST INSTALLATION                   #####

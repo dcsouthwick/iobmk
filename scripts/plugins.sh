@@ -66,13 +66,15 @@ OPTIONS:
 \t the spec2017 benchmark otherwise the default (pure_rate_cpp) is used. Example --spec2017_bmk=511.povray_r 
 --spec2017_iter=<string>
 \t the spec2017 number of iterations for each benchmark in the SPEC2017 suite. Default is 3
+--hepscore_conf=<string>
+\t specify the hepscore configuration yaml file to be used (default is $SOURCEDIR/scripts/hepscore/hepscore.yaml) 
 '
 
 # Execution Directory
-DIRNAME=`readlink -m ${BMK_LOGDIR:-"/tmp/$(basename $0)_$(whoami)"}`
+RUNDIR=`readlink -m ${BMK_LOGDIR:-"/tmp/$(basename $0)_$(whoami)"}`
 
-LOG="$DIRNAME/$(basename $0).out"
-LOCK_FILE="$DIRNAME/$(basename $0).lock"
+LOG="$RUNDIR/$(basename $0).out"
+LOCK_FILE="$RUNDIR/$(basename $0).lock"
 END=0
 
 # If the script is running exit
@@ -81,9 +83,9 @@ if [ -e $LOCK_FILE ]; then
  exit 0
 fi
 
-[ -e $DIRNAME ] && rm -rf $DIRNAME
-mkdir -p $DIRNAME
-chmod 777 $DIRNAME
+[ -e $RUNDIR ] && rm -rf $RUNDIR
+mkdir -p $RUNDIR
+chmod 777 $RUNDIR
 
 touch $LOCK_FILE || (echo "Can't create lock file $LOCK_FILE. Exiting..." && exit 0)
 
@@ -99,8 +101,8 @@ function onEXIT {
   [ -e $LOCK_FILE ] && rm -fr $LOCK_FILE
 
   # Save workdir and clean
-#  cd $DIRNAME && mkdir -p _previous_bmk_results_$(whoami)
-#  tar -czf bmk_out_`date +"%d%m%Y_%s"`.tar.gz $DIRNAME 2>/dev/null
+#  cd $RUNDIR && mkdir -p _previous_bmk_results_$(whoami)
+#  tar -czf bmk_out_`date +"%d%m%Y_%s"`.tar.gz $RUNDIR 2>/dev/null
 #    rm -fr $RUNAREA_PATH $DIRTMP $PARSER_PATH && mv bmk_out*.tar.gz $PREVIOUS_RESULTS_DIR
 #  fi
 
@@ -130,6 +132,8 @@ SPEC2017_PATH=''
 SPEC2017_URL=''
 SPEC2017_BMK='pure_rate_cpp'
 SPEC2017_ITER=3
+HEPSCORE_CONF=$SOURCEDIR/scripts/hepscore/hepscore.yaml
+
 while [ "$1" != "" ]; do
   case $1 in
     -q    )                 QUIET=1;
@@ -181,6 +185,8 @@ while [ "$1" != "" ]; do
     --spec2017_bmk=* )      SPEC2017_BMK=${1#*=};
     ;;
     --spec2017_iter=* )     SPEC2017_ITER=${1#*=};
+    ;;
+    --hepscore_conf=* )     HEPSCORE_CONF=${1#*=};
     ;;
     -d )  DEBUG=1
     ;;
@@ -257,13 +263,13 @@ then
 fi
 
 # Set auxiliary directories and variables
-DIRTMP="$DIRNAME/bmk_utils"
+DIRTMP="$RUNDIR/bmk_utils"
 TIMES_SOURCE_PATH="$DIRTMP/times.source"
 PARSER_PATH="$DIRTMP/parser"
-RUNAREA_PATH="$DIRNAME/bmk_run"
+RUNAREA_PATH="$RUNDIR/bmk_run"
 RESULTS_FILE="$DIRTMP/result_profile.json"
-PREVIOUS_RESULTS_DIR="$DIRNAME/_previous_bmk_results"
-UNIX_BENCH="$ROOTDIR/byte-unixbench/UnixBench"
+PREVIOUS_RESULTS_DIR="$RUNDIR/_previous_bmk_results"
+UNIX_BENCH="$SOURCEDIR/byte-unixbench/UnixBench"
 
 [ -e $DIRTMP ] && rm -rf $DIRTMP
 mkdir -p $DIRTMP
@@ -299,7 +305,7 @@ function run_report(){
 
     echo "export end_tests=`date +%s`" >> $TIMES_SOURCE_PATH
 
-    wrapper_basedir=$ROOTDIR/pyscripts
+    wrapper_basedir=$SOURCEDIR/pyscripts
     write_parser
 
     $PARSER_PATH 
@@ -312,7 +318,7 @@ function run_report(){
 	    --key_file=$AMQ_KEY --cert_file=$AMQ_CERT --file=$RESULTS_FILE
     fi
     
-    cd $ROOTDIR/pyscripts
+    cd $SOURCEDIR/pyscripts
     python -c "import parser; parser.print_results_from_file(\"$RESULTS_FILE\")" >&3
     cd -
 
@@ -353,7 +359,7 @@ function run_DB12 {
   [ -e $DB12_RUNAREA ] && rm -rf $DB12_RUNAREA
   mkdir -p $DB12_RUNAREA
 
-  cp -f "$ROOTDIR/pyscripts/DB12.py" $DB12_RUNAREA
+  cp -f "$SOURCEDIR/pyscripts/DB12.py" $DB12_RUNAREA
 
   python $DB12_RUNAREA/DB12.py --cpu_num=$MP_NUM
 }
@@ -364,7 +370,7 @@ function run_kv {
   #   - $2 is the current path, where the package is
 
   TIMES_SOURCE=$1   #FIXME: is still needed?
-  ROOTDIR=$2        #FIXME: is still needed?
+  SOURCEDIR=$2        #FIXME: is still needed?
   RUNAREA=$RUNAREA_PATH/KV
 
   DOCKER_IMAGE_KV=gitlab-registry.cern.ch/hep-benchmarks/hep-workloads/atlas-kv-bmk:ci1.1
@@ -384,7 +390,22 @@ function run_kv {
   docker run --rm -v $RUNAREA:/results  $DOCKER_IMAGE_KV -c $KVCOPIES -W  -- > $KVLOG
   echo "export end_kv_test=`date +%s`" >> $TIMES_SOURCE
 
-  cd $ROOTDIR
+  cd $SOURCEDIR
+}
+
+
+function run_hepscore {
+  # Receives the following arguments:
+
+  RUNAREA=$RUNAREA_PATH/HEPSCORE
+  [ -e $RUNAREA ] && rm -rf $RUNAREA
+  mkdir -p $RUNAREA
+
+  REFDATE=`date +\%y-\%m-\%d_\%H-\%M-\%S`
+  HEPSCORELOG=$RUNAREA/hepscore_$REFDATE.stdout
+
+  echo "Running   hep-score -d -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG"
+  hep-score -d -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
 }
 
 
@@ -474,11 +495,11 @@ function run_hs06() {
 
     HS06_INSTALLATION_PATH=$(pwd)
 
-    cp $ROOTDIR/scripts/spec2k6/linux*-gcc_cern.cfg ${HS06_INSTALLATION_PATH}/config 
-    [[ $? -ne 0 ]] && echo "Failing to copy config file $ROOTDIR/scripts/spec2k6/linux*-gcc_cern.cfg to ${HS06_INSTALLATION_PATH}/config" && return 1
+    cp $SOURCEDIR/scripts/spec2k6/linux*-gcc_cern.cfg ${HS06_INSTALLATION_PATH}/config 
+    [[ $? -ne 0 ]] && echo "Failing to copy config file $SOURCEDIR/scripts/spec2k6/linux*-gcc_cern.cfg to ${HS06_INSTALLATION_PATH}/config" && return 1
 
     mkdir -p ${RUNAREA_PATH}/HS06
-    . $ROOTDIR/scripts/spec2k6/runhs06.sh 
+    . $SOURCEDIR/scripts/spec2k6/runhs06.sh 
     echo "...${HS06_ARCH}..."
     if [[ -z $HS06_BMK ]];
     then
@@ -498,11 +519,11 @@ function run_spec2017() {
     fi	
     SPEC2017_INSTALLATION_PATH=$(pwd)
 
-    cp $ROOTDIR/scripts/spec2017/cern*.cfg ${SPEC2017_INSTALLATION_PATH}/config && cp $ROOTDIR/scripts/spec2017/pure_rate_cpp.bset ${SPEC2017_INSTALLATION_PATH}/benchspec/CPU/
-    [[ $? -ne 0 ]] && echo "Failing to copy config file $ROOTDIR/scripts/spec2017/cern*.cfg or $ROOTDIR/scripts/spec2017/pure_rate_cpp.bset to ${SPEC2017_INSTALLATION_PATH}/config" && return 1
+    cp $SOURCEDIR/scripts/spec2017/cern*.cfg ${SPEC2017_INSTALLATION_PATH}/config && cp $SOURCEDIR/scripts/spec2017/pure_rate_cpp.bset ${SPEC2017_INSTALLATION_PATH}/benchspec/CPU/
+    [[ $? -ne 0 ]] && echo "Failing to copy config file $SOURCEDIR/scripts/spec2017/cern*.cfg or $SOURCEDIR/scripts/spec2017/pure_rate_cpp.bset to ${SPEC2017_INSTALLATION_PATH}/config" && return 1
 
     mkdir -p "${RUNAREA_PATH}/SPEC2017"
-    . "$ROOTDIR/scripts/spec2017/runspec2017.sh" 
+    . "$SOURCEDIR/scripts/spec2017/runspec2017.sh" 
     runspec2017 -f "${RUNAREA_PATH}/SPEC2017" -s "${SPEC2017_INSTALLATION_PATH}" -n "${MP_NUM}" -i "${SPEC2017_ITER}" -b "${SPEC2017_BMK}"
 
 }
