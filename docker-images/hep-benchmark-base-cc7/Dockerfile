@@ -6,7 +6,8 @@ RUN if [ ! -s /etc/yum.repos.d/docker-ce.repo ]; then echo "Error retrieving doc
 
 RUN yum install -y docker-ce https://linuxsoft.cern.ch/wlcg/centos7/x86_64/wlcg-repo-1.0.0-1.el7.noarch.rpm \
     HEP_OSlibs util-linux  wget git \
-    screen  tar freetype perl jq unzip; yum clean all
+    screen  tar freetype perl jq unzip \ 
+    && yum clean all
 #workaround https://github.com/CentOS/sig-cloud-instance-images/issues/15
 
 # install bats for bash tests
