@@ -22,7 +22,9 @@ do
   if [[ $b == 'kv' ]]; then
     echo "INFO: running KV..."
     # Launch in normal mode
-    run_kv "$TIMES_SOURCE_PATH" "$RUNAREA_PATH" "$ROOTDIR" || true
+    run_kv "$TIMES_SOURCE_PATH" "$ROOTDIR" || true
+  elif [[ $b =~ "hepscore" ]]; then
+      run_hepscore || true 
   elif [[ $b =~ ^(hs06_(32|64))$ ]]; then
       run_hs06 "$b" || true 
   elif [[ $b == "spec2017" ]]; then
