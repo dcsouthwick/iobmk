@@ -74,17 +74,6 @@ job_build_qa_image_cc7:
      refs:
      - qa
 
-job_build_qa_image_cc7:
-   stage: build-qa-image
-   before_script:
-       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-cc7/Dockerfile
-       - export CONTEXT=$CI_PROJECT_DIR/
-       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_SHA:0:8}"
-   <<: *template_build_image
-   only:
-     refs:
-     - qa
-
 ############################################################
 #####              PROMOTE PROD IMAGES                 #####
 ############################################################
