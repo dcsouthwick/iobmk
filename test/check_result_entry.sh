@@ -17,10 +17,6 @@ function find_token(){
 echo -e "List of benchmarks to check $BMKLIST"
 echo -e "File to test $TESTFILE"
 
-echo -e "Dumping $TESTFILE"
-cat $TESTFILE
-echo ""
-
 for bmk in ${BMKLIST//;/ }
 do 
     [ "$bmk" == "kv" ] && find_token "KV cpu performance \[evt/sec\]"

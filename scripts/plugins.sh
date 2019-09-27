@@ -420,6 +420,7 @@ function download_tarball(){
 	return 1
     fi
     #ln -s /hs06/SPEC_CPU2006_v1.2.tar.bz2 hs06_file #FIXME tmp
+    echo "[download_tarball] INSTALL_PATH: $INSTALL_PATH" 
     cd ${INSTALL_PATH}
     tar -xaf ${INSTALL_PATH}/tmp_download/tar_file
     rm -rf ${INSTALL_PATH}/tmp_download # in order to reduce space occupancy
@@ -429,18 +430,22 @@ function prepare_spec(){
 #function to check the SPEC configuration (downlaod path, running path) 
 #and in case untar the application
  
-SPECNAME=$1 
-SPECEXE=$2
-SPECPATH=$3
-SPECURL=$4
+    SPECNAME=$1 
+    SPECEXE=$2
+    SPECPATH=$3
+    SPECURL=$4
 
+    echo "[prepare_spec] SPECNAME $SPECNAME"
+    echo "[prepare_spec] SPECEXE  $SPECEXE"
+    echo "[prepare_spec] SPECPATH $SPECPATH"
+    echo "[prepare_spec] SPECURL  ***"
 
     [[ ! -e ${RUNAREA_PATH}/${SPECNAME} ]] && mkdir -p ${RUNAREA_PATH}/${SPECNAME}
 
     #This path is mandatory. The SPEC2017 installation is expected to be here or to be downlaoded here
     if [[ -z ${SPECPATH} ]];
     then
-	echo "ERROR: Unable to find directory for ${SPECNAME}. Please define it using --${SPECNAME,,}_path=your_path_to_it. Exit from run_${SPECNAME,,} without running" >&4
+	echo "[prepare_spec] ERROR: Unable to find directory for ${SPECNAME}. Please define it using --${SPECNAME,,}_path=your_path_to_it. Exit from run_${SPECNAME,,} without running" >&4
 	return 1
     fi
 
@@ -452,21 +457,25 @@ SPECURL=$4
 	download_tarball ${SPECPATH} ${SPECURL}
 	if [[ $? -ne 0 ]];
 	then 
-	    echo "Exit from ${SPECNAME}">&4  
+	    echo "[prepare_spec] Exit from ${SPECNAME}">&4  
 	    return 1
 	fi	
     fi
 
     #find the SPEC dir, it could be in a subdir
     cd ${SPECPATH}/
-    echo "loogking for ${SPECEXE}"
+    echo "[prepare_spec] in SPECPATH " `pwd` 
+    echo "[prepare_spec] loogking for ${SPECEXE}"
     CHECKPATH=$(find . -path "*${SPECEXE}")
+    echo "[prepare_spec] variable CHECKPATH is $CHECKPATH"
     if [[ -z ${CHECKPATH} ]];
 	then
-	echo "ERROR: unable to find ${SPECEXE} in the path ${SPECPATH}. Exit from run_${SPECNAME,,} without running" >&4
+	echo "[prepare_spec] ERROR: unable to find ${SPECEXE} in the path ${SPECPATH}. Exit from run_${SPECNAME,,} without running" >&4
 	return 1
     fi
-    cd $(dirname "$CHECKPATH")/.. #bin/runspec
+    SPECDIR=$(readlink -f $(dirname "$CHECKPATH")/..)
+    echo "[prepare_spec] moving to dir $SPECDIR"
+    cd $SPECDIR #bin/runspec
 }
 
 function run_hs06() {
@@ -475,6 +484,7 @@ function run_hs06() {
     prepare_spec "HS06" "bin/runspec" "$HS06_PATH" "$HS06_URL" 
     if [[ $? -ne 0 ]];
     then 
+	echo "[run_hs06] ERROR: prepare_spec failed. Won't run HS06"
 	return 1
     fi	
 
@@ -500,6 +510,7 @@ function run_spec2017() {
 
     if [[ $? -ne 0 ]];
     then 
+	echo "[run_spec2017] ERROR: prepare_spec failed. Won't run SPEC2017"
 	return 1
     fi	
     SPEC2017_INSTALLATION_PATH=$(pwd)
