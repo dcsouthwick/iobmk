@@ -86,14 +86,15 @@ job_promote_prod_image_cc7:
    before_script:
        - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN gitlab-registry.cern.ch
    after_script:
+        - docker images
         - docker ps -a
    script: 
-        - docker tag  $CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8} $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG#release-containers-}
-        - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG#release-containers-}
-        - docker tag  $CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8} $CI_REGISTRY_IMAGE:latest
-        - docker push $CI_REGISTRY_IMAGE:latest
-
-        - docker images
+        - echo "current commit is ${CI_COMMIT_SHA:0:8}"
+        - echo "current tag is ${CI_COMMIT_TAG}"
+        - docker tag  $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_SHA:0:8} $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG#release-containers-}
+        - docker push $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG#release-containers-}
+        - docker tag  $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_SHA:0:8} $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
+        - docker push $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
    only:
      refs:
      - master
@@ -118,11 +119,14 @@ job_announce_prod_image:
     # This job installs the cern-benchmark suite using "make" 
     # then runs a configurable set of benchmarks 
     stage: test-installation
+    image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
     script: 
         - yum install -y yum-plugin-ovl #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
         - make -f Makefile all 
         - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
-        - hep-benchmark-suite --benchmarks=$BMKLIST --mp_num=2 --freetext="test-qa $BMKLIST version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC
+        - export BMK_SOURCEDIR=/opt/hep-benchmark-suite
+        - hep-benchmark-suite --benchmarks=$BMKLIST --mp_num=2 --freetext="test-qa $BMKLIST version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC --hs06_path=/scratch/HEPSPEC --hs06_iter=1 --hs06_url="$HS06URL" --hs06_bmk=453.povray --spec2017_path=/scratch/HEPSPEC --spec2017_iter=1 --spec2017_url="$SPEC2017URL" --spec2017_bmk=511.povray_r --hepscore_conf=${BMK_SOURCEDIR}/scripts/hepscore/hepscore_ci.yaml
+        - $CI_PROJECT_DIR/test/check_result_entry.sh "$BMKLIST" $BMK_RUNDIR/hep-benchmark-suite.out
     after_script:
         - tar -czf hep-benchmark-suite-test-$CI_JOB_ID.tgz $BMK_RUNDIR /opt/hep-benchmark-suite 
     only:
@@ -134,21 +138,17 @@ job_announce_prod_image:
         expire_in: 1 week
         when: always
 
-
 job_test_installation_slc6: 
-   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:latest
    before_script:
        - export BMKLIST=DB12
    <<: *template_test_installation
 
 job_test_installation_cc7: 
-   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
    before_script:
        - export BMKLIST=DB12
    <<: *template_test_installation
 
 job_test_kv_run_cc7:
-   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
@@ -156,34 +156,27 @@ job_test_kv_run_cc7:
    <<: *template_test_installation
 
 job_test_hepscore_run_cc7:
-   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
-       - export BMKLIST="DB12;hepscore"
+       - export BMKLIST="hepscore"
    <<: *template_test_installation
-
-.definition_test_run_bmks: &template_test_run_bmks
-   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
-   tags:
-     -  hep-benchmark-suite-docker-runner 
-   <<: *template_test_installation
-   before_script: 
-        - yum install -y yum-plugin-ovl #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
-        - make -f Makefile all 
-        - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
-
-
 
 job_test_hs06_run_cc7:
-    <<: *template_test_run_bmks
-    script:
-        - hep-benchmark-suite --benchmarks=hs06_32 --mp_num=2 --freetext="test-qa hs06 version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC -d --hs06_path=/scratch/HEPSPEC --hs06_iter=1 --hs06_url="$HS06URL" --hs06_bmk=453.povray
+   tags:
+     -  hep-benchmark-suite-docker-runner 
+   before_script:
+       - export BMKLIST="hs06_32"
+   <<: *template_test_installation
+        
 
 job_test_spec2017_run_cc7:
-    <<: *template_test_run_bmks
-    script:
-        - hep-benchmark-suite --benchmarks=spec2017 --mp_num=2 --freetext="test-qa spec2017 version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC -d --spec2017_path=/scratch/HEPSPEC --spec2017_iter=1 --spec2017_url="$SPEC2017URL" --spec2017_bmk=511.povray_r  
+   tags:
+     -  hep-benchmark-suite-docker-runner 
+   before_script:
+       - export BMKLIST="spec2017"
+   <<: *template_test_installation
+
 
 ############################################################
 #####              TEST COMPONENTS                     #####
