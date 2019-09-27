@@ -85,6 +85,10 @@ job_build_qa_image_cc7:
      refs:
      - qa
 
+############################################################
+#####              PROMOTE PROD IMAGES                 #####
+############################################################
+
 job_promote_prod_image_cc7:
    stage: promote-image
    image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa
@@ -94,7 +98,7 @@ job_promote_prod_image_cc7:
        - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN gitlab-registry.cern.ch
    after_script:
         - docker ps -a
-    script: 
+   script: 
         - docker tag  $CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8} $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG#release-containers-}
         - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG#release-containers-}
         - docker tag  $CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8} $CI_REGISTRY_IMAGE:latest
