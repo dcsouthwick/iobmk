@@ -100,8 +100,8 @@ function hepscore_dependencies {
     cd $install_dir
     git clone https://gitlab.cern.ch/hep-benchmarks/hep-score.git
     cd hep-score
-    git fetch
-    git checkout BMK-223
+    git fetch --all --tags --prune
+    git checkout tags/v0.1 -b v0.1
     pip install .
     cd $current_dir
 }
