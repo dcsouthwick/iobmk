@@ -54,3 +54,10 @@ function test_print_results(){
       echo -e "$output"
       [ "$status" -eq 0 ]
 }
+
+# Test the check_result_entry.sh
+@test "Test the functioning check_result_entry.sh" { 
+      run $TESTDIR/check_result_entry.sh "DB12;kv;hepscore;hs06_32;hs06_64;spec2017" $TESTDIR/data/validate_print_results_ref
+      echo -e "$output"
+      [ "$status" -eq 0 ]
+}
