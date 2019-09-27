@@ -106,8 +106,9 @@ job_announce_prod_image:
    image: $CI_REGISTRY_IMAGE/announcement:latest
    only:
      refs:
-     - master
-     - /^release-containers-.*$/
+       - tags
+     variables:
+       - $CI_COMMIT_TAG =~ /^release-containers-.*$/
    script: 
      - export IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG#release-containers-}
      - /announce.sh $IMAGE
