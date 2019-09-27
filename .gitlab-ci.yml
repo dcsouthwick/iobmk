@@ -96,8 +96,6 @@ job_promote_prod_image_cc7:
         - docker push $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG#release-containers-}
         - docker push $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
    only:
-     refs:
-       - tags
      variables:
        - $CI_COMMIT_TAG =~ /^release-containers-.*$/
 
@@ -105,8 +103,6 @@ job_announce_prod_image:
    stage: announce-promoted-image
    image: $CI_REGISTRY_IMAGE/announcement:latest
    only:
-     refs:
-       - tags
      variables:
        - $CI_COMMIT_TAG =~ /^release-containers-.*$/
    script: 
