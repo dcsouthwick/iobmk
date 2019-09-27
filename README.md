@@ -11,7 +11,7 @@ in one single application.
 It is built to comply with several use cases by allowing the users to specify
 which benchmarks to run.
 
-## Requirements
+## Goals
 1. Mimic the usage of WLCG resources for experiment workloads
    * Run representative benchmarks on VMs of the same size used by VOs
 1. Allow collection of a configurable number of benchmarks
@@ -39,7 +39,7 @@ AMQ, running on an offline mode (see [How it works](#markdown-header-how-it-work
 
 Taking the example shown in the above figure, a dedicated consumer inserts messages
 in an Elasticsearch cluster, so that the benchmark results can be visualized and
-aggregated in Kibana dashboards. Several metadata (such as VM UID, CPU architecture,
+aggregated in dashboards. Several metadata (such as VM UID, CPU architecture,
 OS, Cloud name, IP address, etc.) are included in the result message in order to
 enable aggregations.
 
@@ -51,15 +51,38 @@ Further detailed analysis can be performed extracting data from the storage laye
 At the moment, the available benchmarks on the suite are:
  * HS06
  * SPEC CPU 2017
+ * HEPSCORE
  * DIRAC Benchmark
  * ATLAS Kit Validation
- * Whetstone (from the UnixBench benchmark suite)
  * Hyper-benchmark<sup>\*</sup>
 
 It is a standalone application that expects the user to pass a list of the benchmarks to be executed (together with the other possible arguments referred in [How to run](./HowToRun.md)).
 
 
-### Execution modes
+### Execution 
+- Preferred mode: Docker image
+
+The hep-benchmark-suite is distributed in a CC7 image ( )
+
+Some of the workloads also run in standalone containers (e.g. the hep-workloads included in the HEPscore )
+In order to enable `docker run` from the running container, the bind mount of the `/var/run/docker.sock` and run in priviledged mode as follow
+```
+DOCKSOCK=/var/run/docker.sock
+BMK_SUITE_IMAGE=gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hep-benchmark-suite-cc7:latest
+ARGUMENTS="--cloud=$CLOUD -d --hs06_path=/var/HEPSPEC --hs06_iter=1  --spec2017_path=/var/HEPSPEC --spec2017_iter=1 --hepscore_conf=/tmp/hepscore_test.yml"
+AMQ_ARGUMENTS="--queue_host=**** --queue_port=**** --username=**** --password=**** --topic=**** "
+ADDITIONAL_ARGUMENTS="--vo=<an aggregate>  --freetext=<a tag text> --pnode=<physical node name>"
+
+docker run --rm  --privileged --net=host -h $HOSTNAME \
+              -v /tmp:/tmp -v /var/HEPSPEC:/var/HEPSPEC -v $DOCKSOCK:$DOCKSOCK \
+              $BMK_SUITE_IMAGE hep-benchmark-suite --benchmarks="DB12;hepscore;hs06_32;hs06_64;spec2017" $ARGUMENTS $ADDITIONAL_ARGUMENTS $AMQ_ARGUMENTS
+```
+
+The additional arguments are not mandatory. 
+
+If publication in a destination AMQ broker is not needed, replace `AMQ_ARGUMENTS=" -o "` to run offline.
+
+In the above example HS06 and SPECCPU2017 are expected to be already installed in /var/HEPSPEC. In case the packages are in another path, change the corresponding entries. 
 
 #### Online vs Offline
 The user has the choice, at launch time, to have the benchmark results uniquely printed in the terminal at the end of the execution. This is the _Offline_ mode and must be specified. The _Online_ mode makes the suite act like a producer, expecting
@@ -68,15 +91,6 @@ is the chosen transportation layer).
 On both cases, the final structured JSON file will always be generated and
 available in the execution directory (by default at _/tmp_).
 
-#### With vs without Docker
-The application can either be ran with or without using Docker. The requirements will change accordingly as one can see in [Requirements](./Requirements.md).
-
-When running the application with Docker, due to Docker itself and the eventual need to setup CVMFS, running as a regular _user_ is not possible. On the bright side the usage of Docker decouples the benchmarks execution and dependencies resolving, which might be attractive for some use cases where running the benchmark as _root_ is not a problem.
-
-**NOTE**: when running as a _user_, please make sure all the dependencies and requirements
-have already been setup.
-
-
 <sup>\*</sup> _a pre-defined sequence of measurements and fast benchmarks: </br>
-**1-min Load -> read machine&job features -> DB12 -> 1-min Load -> whetstone -> 1-min Load**_
+**1-min Load -> read machine&job features -> DB12 -> 1-min Load -> 1-min Load**_
 

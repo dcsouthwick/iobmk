@@ -1,8 +1,9 @@
 stages:
   - build-base-image
   - test-installation
-  - build-prod-image
-  - announce-prod-image
+  - build-qa-image
+  - promote-image
+  - announce-promoted-image
   - test-components
 
 
@@ -62,25 +63,51 @@ job_build_base_image_cc7:
      changes:
        - docker-images/hep-benchmark-base-cc7/*
 
-job_build_image_cc7:
-   stage: build-prod-image
+job_build_qa_image_cc7:
+   stage: build-qa-image
    before_script:
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-cc7/Dockerfile
        - export CONTEXT=$CI_PROJECT_DIR/
-       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_SHA:0:8}"
+       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_SHA:0:8}"
    <<: *template_build_image
    only:
      refs:
+     - qa
+
+############################################################
+#####              PROMOTE PROD IMAGES                 #####
+############################################################
+
+job_promote_prod_image_cc7:
+   stage: promote-image
+   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa
+   tags:
+     -  hep-benchmark-suite-docker-runner 
+   before_script:
+       - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN gitlab-registry.cern.ch
+   after_script:
+        - docker ps -a
+   script: 
+        - docker tag  $CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8} $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG#release-containers-}
+        - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG#release-containers-}
+        - docker tag  $CI_REGISTRY_IMAGE:${CI_COMMIT_SHA:0:8} $CI_REGISTRY_IMAGE:latest
+        - docker push $CI_REGISTRY_IMAGE:latest
+
+        - docker images
+   only:
+     refs:
      - master
+     - /^release-containers-.*$/
 
 job_announce_prod_image:
-   stage: announce-prod-image
+   stage: announce-promoted-image
    image: $CI_REGISTRY_IMAGE/announcement:latest
    only:
      refs:
      - master
+     - /^release-containers-.*$/
    script: 
-     - export IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_SHA:0:8}
+     - export IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG#release-containers-}
      - /announce.sh $IMAGE
 
 ############################################################
