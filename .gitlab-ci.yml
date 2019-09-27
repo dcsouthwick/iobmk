@@ -98,7 +98,8 @@ job_promote_prod_image_cc7:
    only:
      refs:
      - master
-     - /^release-containers-.*$/
+     variables:
+       - $CI_COMMIT_TAG =~ /^release-containers-.*$/
 
 job_announce_prod_image:
    stage: announce-promoted-image
