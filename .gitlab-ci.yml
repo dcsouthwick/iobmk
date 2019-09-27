@@ -129,12 +129,13 @@ job_announce_prod_image:
         - $CI_PROJECT_DIR/test/check_result_entry.sh "$BMKLIST" $BMK_RUNDIR/hep-benchmark-suite.out
     after_script:
         - tar -czf hep-benchmark-suite-test-$CI_JOB_ID.tgz $BMK_RUNDIR /opt/hep-benchmark-suite 
+        - rm -rf $BMK_RUNDIR
     only:
      refs:
       - qa
     artifacts:
         paths:
-           - hep-benchmark-suite-test.tgz
+           - hep-benchmark-suite-test-$CI_JOB_ID.tgz
         expire_in: 1 week
         when: always
 
