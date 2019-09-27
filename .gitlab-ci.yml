@@ -121,9 +121,10 @@ job_announce_prod_image:
     script: 
         - yum install -y yum-plugin-ovl #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
         - make -f Makefile all 
+        - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
         - hep-benchmark-suite --benchmarks=$BMKLIST --mp_num=2 --freetext="test-qa $BMKLIST version ${CI_COMMIT_SHA:0:8}"  --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC
     after_script:
-        - tar -czf hep-benchmark-suite-test.tgz /tmp/hep-benchmark-suite_root /opt/hep-benchmark-suite 
+        - tar -czf hep-benchmark-suite-test-$CI_JOB_ID.tgz $BMK_RUNDIR /opt/hep-benchmark-suite 
     only:
      refs:
       - qa
@@ -170,6 +171,9 @@ job_test_hepscore_run_cc7:
    before_script: 
         - yum install -y yum-plugin-ovl #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
         - make -f Makefile all 
+        - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+
+
 
 job_test_hs06_run_cc7:
     <<: *template_test_run_bmks

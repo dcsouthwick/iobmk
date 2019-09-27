@@ -71,7 +71,7 @@ OPTIONS:
 '
 
 # Execution Directory
-RUNDIR=`readlink -m ${BMK_LOGDIR:-"/tmp/$(basename $0)_$(whoami)"}`
+RUNDIR=`readlink -m ${BMK_RUNDIR:-"/tmp/$(basename $0)_$(whoami)"}`
 
 LOG="$RUNDIR/$(basename $0).out"
 LOCK_FILE="$RUNDIR/$(basename $0).lock"
