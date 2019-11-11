@@ -5,6 +5,7 @@ RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD suite-CI
 =========================================================
 Suite start 2017-10-02T14:09:53Z 
 Suite end   2017-10-02T14:23:02Z
+Machine CPU Model: Intel Core Processor (Broadwell, IBRS)
 Machine classification: i6_2_f6m61s2_mhz2194.916
 DIRAC Benchmark = 18.750 (est. HS06)
 HEPSCORE Benchmark = 10.21 over benchmarks [u'cms-gen-sim-bmk']

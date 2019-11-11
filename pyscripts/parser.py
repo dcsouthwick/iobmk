@@ -17,7 +17,6 @@ import argparse
 import re
 import multiprocessing
 import logging
-import socket
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger('[RESULT PARSER]')
@@ -209,21 +208,21 @@ def parse_phoronix():
     return result
 
 
-def parse_metadata(id, ip='', cloud='', vo=''):
+def parse_metadata(args): 
     start_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['init_tests'])))
     end_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['end_tests'])))
 
     result = {'host':{}}
-    result.update({'_id': "%s_%s" % (id, start_time)})
+    result.update({'_id': "%s_%s" % (args.id, start_time)})
     result.update({'_timestamp': start_time})
     result.update({'_timestamp_end': end_time})
-    result['host'].update({'ip': ip})
-    result['host'].update({'hostname': socket.gethostname()})
+    result['host'].update({'ip': args.ip})
+    result['host'].update({'hostname': args.name})
     result['host'].update({'classification': os.environ['HWINFO']})
     result['host'].update({'freetext': '%s'%os.environ['FREE_TEXT']})
-    result['host'].update({'cloud': cloud})
-    result['host'].update({'UID': id})
-    result['host'].update({'VO': vo})
+    result['host'].update({'cloud': args.cloud})
+    result['host'].update({'UID': args.id})
+    result['host'].update({'VO': args.vo})
     result['host'].update({'benchmark_target': os.environ['BENCHMARK_TARGET']})
     result['host'].update({'mp_num': int(os.environ['MP_NUM'])})
     result['host'].update({'pnode': os.environ['PNODE']})
@@ -239,27 +238,6 @@ def parse_metadata(id, ip='', cloud='', vo=''):
     result['host'].update({'bogomips': float(commands.getoutput("cat /proc/cpuinfo | grep '^bogomips' | tail -n 1").split(':')[1].lstrip())})
     result['host'].update({'meminfo': float(commands.getoutput("cat /proc/meminfo | grep 'MemTotal:'").split()[1])})
     return result
-
-
-def get_pnode():
-
-    user=os.environ['OS_USERNAME']
-    password=os.environ['OS_PASSWORD']
-    type="NICE"
-    endpoint = "https://network.cern.ch/sc/soap/soap.fcgi?v=5"
-    ns = "http://network.cern.ch/NetworkService"
-    #SOAPserver=SOAPpy.SOAPProxy(endpoint, namespace=ns)
-    #Get the auth token
-    #atoken=SOAPserver.getAuthToken(user,password,type)
-    #Build the auth header
-    #authStruct=SOAPpy.structType(data = {"token" :atoken})
-    #authStruct._ns1=("ns1","urn:NetworkService")
-    #authHeader=SOAPpy.headerType(data = {"Auth":authStruct})
-    hostname = os.environ['HOSTNAME']
-    #SOAPserver.header=authHeader
-    #return SOAPserver.vmGetInfo(hostname).VMParent
-
-
 
 def insert_print_action(alist,akey,astring,adic):
     alist["lambda"].append(lambda x: astring%adic[x])
@@ -327,15 +305,16 @@ def print_results_from_file(afile):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--id", nargs='?', help="VM identifier")
-    parser.add_argument("-p", "--ip", nargs='?', help="VM Public IP")
+    parser.add_argument("-i", "--id", nargs='?', help="UID")
+    parser.add_argument("-n", "--name", nargs='?', help="hostname")
+    parser.add_argument("-p", "--ip", nargs='?', help="ip address")
     parser.add_argument("-v", "--vo", nargs='?', default='', help="VO")
     parser.add_argument("-c", "--cloud", nargs='?', help="Cloud")
     parser.add_argument("-f", "--file", nargs='?', help="File to store the results", default="result_profile.json")
     parser.add_argument("-d", "--rundir", nargs='?', help="Directory where bmks ran")
     args = parser.parse_args()
 
-    result = parse_metadata(args.id, args.ip, args.cloud, args.vo)
+    result = parse_metadata(args)
     result.update({'profiles': {}})
     try:
         result['profiles'].update(parse_phoronix())
