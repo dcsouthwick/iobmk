@@ -24,6 +24,8 @@ cover/
 *~
 .*.swp
 .*sw?
+.#*
+.*
 
 # Desktop Service Store
 *.DS_Store
