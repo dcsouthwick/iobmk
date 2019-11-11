@@ -13,13 +13,15 @@ which benchmarks to run.
 
 ## Goals
 1. Mimic the usage of WLCG resources for experiment workloads
-   * Run representative benchmarks on VMs of the same size used by VOs
+   * Run workloads representative of the production applications running on WLCG
 1. Allow collection of a configurable number of benchmarks
+   * Enable performance studies on a given hardware 
+1. Collect the hardware metadata and the running conditions
    * Compare the benchmark outcome under similar conditions  
-1. Probe randomly assigned slots in a cloud cluster
-   * Not knowing what the neighbor is doing
 1. Have a prompt feedback about executed benchmarks
-   * In production can suggest deletion and re-provisioning of underperforming VMs
+   * By publishing results to a monitoring system
+1. Probe randomly assigned slots in a cloud environment
+   * In production can suggest deletion and re-provisioning of underperforming resources
 
 
 ## Benchmark suite architecture
@@ -46,8 +48,8 @@ The  currently available benchmarks are
 - HS06 ([link](https://w3.hepix.org/benchmarking.html))
 - SPEC CPU2017 ([link](https://www.spec.org/cpu2017/)) 
 - some fast benchmarks: 
-    - DIRAC Benchmark
-    - ATLAS Kit Validation
+    - DIRAC Benchmark (DB12)
+    - ATLAS Kit Validation ([link](https://gitlab.cern.ch/hep-benchmarks/hep-workloads/blob/master/atlas/kv/atlas-kv/DESCRIPTION))
 
 In addition the *Hyper-benchmark* configuration enables a sequence of fast benchmarks and load measurements as follow:
 _**1-min Load -> read machine&job features -> DB12 -> 1-min Load -> 1-min Load**_
@@ -61,7 +63,7 @@ The HEP Benchmark Suite expects the user to pass the list of benchmarks to be ex
 
 The above figure shows a typical adoption of the HEP Benchmark suite for a multi-cloud profiling.
 Servers belonging to different Data Centres (or cloud providers)
-are benchmarked deploying the HEP Benchmark Suite in each of them. 
+are benchmarked deploying the HEP Benchmark Suite in each of them. The mentioned servers can be *bare metal* servers as well as *virtual machines*.
 After running, the final JSON report is 
 published into a AMQ message broker (transport layer).
 
@@ -75,8 +77,7 @@ The data
 storage, analysis and visualization layers in the image above are purely exemplifications, as users
 can opt to build/use their own transport and storage tools.  
 
-The mentioned servers can be *bare metal* servers as well as *virtual machines*.
-As mentioned in another section, due to proprietary license aspects, HS06 and SPEC CPU 2017 need to be pre-installed on the server.
+Due to proprietary license aspects, HS06 and SPEC CPU 2017 need to be pre-installed on the server.
 For what concerns HEP-score, just the availability of docker installation is required.
 
 ## How to run
@@ -105,28 +106,35 @@ docker run --rm  --privileged --net=host -h $HOSTNAME \
 #### Install the suite
 
 The suite is currently supported for Cern CentOS 7 (CC7) OS.
-In a CC7 machine, download the latest tagged version of this gitlab repository and run
+In a CC7 machine, download the latest tagged version of this gitlab repository [from here](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/tags) and run
 `make all` in order to install locally all needed packages
 
 
 ### Running
 
+
 In order to run a sequence of benchmarks, specify the list using the `--benchmarks` argument.
+Multiple benchmarks can be executed in sequence via a single call to the hep-benchmark-suite, passing the dedicated configuration parameters.
+When a benchmark is not specified in the list `--benchmarks`, the dedicated configuration parameters are ignored.
 
-In the following example all benchmarks are running. 
-In the example HS06 and SPEC CPU2 017 are expected to be already installed in `/var/HEPSPEC`. 
-In case the packages are in another path, change the corresponding entries. 
 
-```
-ARGUMENTS="--cloud=$CLOUD --hs06_path=/var/HEPSPEC --hs06_iter=1  --spec2017_path=/var/HEPSPEC --spec2017_iter=1 --hepscore_conf=/tmp/hepscore_test.yml"
-AMQ_ARGUMENTS="--queue_host=**** --queue_port=**** --username=**** --password=**** --topic=**** "
-ADDITIONAL_ARGUMENTS="--vo=<an aggregate>  --freetext=<a tag text> --pnode=<physical node name>  -d"
+If publication in a destination AMQ broker is needed, replace the variable `AMQ_ARGUMENTS=" -o"` with the expected AMQ authentication parameters (host, port, username, password, topic)
+`AMQ_ARGUMENTS="--queue_host=**** --queue_port=**** --username=**** --password=**** --topic=**** "`
 
-hep-benchmark-suite --benchmarks="DB12;kv;hepscore;hs06_32;hs06_64;spec2017" $ARGUMENTS $ADDITIONAL_ARGUMENTS $AMQ_ARGUMENTS
-```
-The additional arguments are not mandatory. 
+A set of examples is available in the examples folder of [this repository](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/tree/master/examples)
+Some of them are linked here:
 
-If publication in a destination AMQ broker is not needed, replace `AMQ_ARGUMENTS=" -o "` to run offline.
+- Run HEP-score [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_hep-score_example.sh)
+- Run HS06 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_hs06_example.sh)
+- Run SPEC2017 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_speccpu2017_example.sh)
+- Run DB12 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_db12_example.sh)
+- Run KV [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_kv_example.sh)
+- Run all benchmark [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_all_benchmarks_example.sh)
+
+
+In the case of running HS06, and/or SPEC CPU2017, the packages are expected to be already installed in `/var/HEPSPEC`. 
+In case the packages are in another path, change the corresponding entries `--hs06_path=`, and/or `--spec2017_path`. 
+
 
 ### Get Description of all arguments
 

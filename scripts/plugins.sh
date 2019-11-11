@@ -294,7 +294,8 @@ export HWINFO=$HWINFO
 export FREE_TEXT="$FREE_TEXT"
 export PNODE=$PNODE
 export MP_NUM=$MP_NUM
-python $wrapper_basedir/parser.py -i $VMUID -c $CLOUD -v $VO -f $RESULTS_FILE -p $PUBLIC_IP -d $RUNAREA_PATH
+export NAME=`hostaname`
+python $wrapper_basedir/parser.py -i $VMUID -c $CLOUD -v $VO -f $RESULTS_FILE -p $PUBLIC_IP -d $RUNAREA_PATH -i $NAME
 X5_EOF
 
   chmod ugo+rx $PARSER_PATH
@@ -347,7 +348,7 @@ function get_classification {
   cpu_stepping=`lscpu | grep Stepping | awk -F' ' '{print $NF}'`
   cpu_speed=`lscpu | grep MHz | awk -F' ' '{print $NF}'`
 
-  echo ${vendor}${osmajorrelease}_${cpus}_f${cpufamily}m${cpumodel}s${cpu_stepping}_mhz${cpu_speed}
+  echo ${vendor}${osmajorrelease}_${cpus}_f${cpufamily}m${cpumodel}s${cpu_stepping}
 }
 
 

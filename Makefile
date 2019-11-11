@@ -13,7 +13,7 @@ SOFTLINK=/usr/bin/hep-benchmark-suite
 SCRIPTFILES=scripts/*
 PYSCRIPTFILES=pyscripts/*
 
-OTHERFILES=LICENSE README.md Makefile
+OTHERFILES=LICENSE README.md Makefile requirements.txt
 
 DIR=$(shell pwd)
 

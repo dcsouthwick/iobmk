@@ -15,8 +15,9 @@ function base_dependencies {
 	echo "ERROR! This script is only supported on SLC6 and CC7"
 	exit 1
     fi
-
     
+    get_requirements
+
     # Install wget 
     if ! yum list installed wget;
     then
@@ -101,7 +102,16 @@ function hepscore_dependencies {
     git clone https://gitlab.cern.ch/hep-benchmarks/hep-score.git
     cd hep-score
     git fetch --all --tags --prune
-    git checkout tags/v0.1 -b v0.1
+    echo "... checking out tag ${hepscore_version}"
+    git checkout tags/${hepscore_version} -b ${hepscore_version}
     pip install .
     cd $current_dir
+}
+
+function get_requirements {
+    echo "... reading requirements from requirements.txt"
+    current_dir=`pwd`
+    cat $current_dir/requirements.txt
+    source $current_dir/requirements.txt
+    export hepscore_version
 }
