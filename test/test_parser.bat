@@ -33,7 +33,7 @@ function test_parser_run(){
 
 
 @test "Test results' json format" { 
-      run $TESTDIR/../pyscripts/json-differ.py $TESTDIR/data/validate_result_profile_ref.json $TESTDIR/data/result_profile.json 
+      run $TESTDIR/../pyscripts/json-differ.py $TESTDIR/data/validate_result_profile_ref.json $TESTDIR/data/result_profile.json '["host.cpunum","host.meminfo"]'
       echo -e "$output"
       [ "$status" -eq 0 ]
 }
