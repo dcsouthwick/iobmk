@@ -296,6 +296,7 @@ def print_results(results):
     print "========================================================="
     print "Suite start %s " % results['_timestamp']
     print "Suite end   %s" % results['_timestamp_end']
+    print "Machine CPU Model: %s" %  results['host']['cpuname']
     print "Machine classification: %s" %  results['host']['classification']
 
     p = results['profiles']
