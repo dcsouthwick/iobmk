@@ -21,7 +21,7 @@ function test_parser_run(){
     export HYPER_1minLoad_2=1.1
     export HYPER_1minLoad_3=1.1
     
-    python $TESTDIR/../pyscripts/parser.py -i f2429109a5a6_a1842eb2-06a5-4ba9-87c8-86ca0f2c49b3 -c "suite-CI" -v  -f $TESTDIR/data/result_profile.json -p 172.17.0.2 -d $TESTDIR/data/bmk_run -v foo
+    python $TESTDIR/../pyscripts/parser.py -i f2429109a5a6_a1842eb2-06a5-4ba9-87c8-86ca0f2c49b3 -c "suite-CI" -v  -f $TESTDIR/data/result_profile.json -p 172.17.0.2 -d $TESTDIR/data/bmk_run -v foo -n "mymachine"
 }
 
 
@@ -35,7 +35,6 @@ function test_parser_run(){
 @test "Test results' json format" { 
       run $TESTDIR/../pyscripts/json-differ.py $TESTDIR/data/validate_result_profile_ref.json $TESTDIR/data/result_profile.json 
       echo -e "$output"
-      skip
       [ "$status" -eq 0 ]
 }
 
