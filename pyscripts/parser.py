@@ -17,6 +17,7 @@ import argparse
 import re
 import multiprocessing
 import logging
+import socket
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger('[RESULT PARSER]')
@@ -217,6 +218,7 @@ def parse_metadata(id, ip='', cloud='', vo=''):
     result.update({'_timestamp': start_time})
     result.update({'_timestamp_end': end_time})
     result['host'].update({'ip': ip})
+    result['host'].update({'hostname': socket.gethostname()})
     result['host'].update({'classification': os.environ['HWINFO']})
     result['host'].update({'freetext': '%s'%os.environ['FREE_TEXT']})
     result['host'].update({'cloud': cloud})
@@ -240,7 +242,7 @@ def parse_metadata(id, ip='', cloud='', vo=''):
 
 
 def get_pnode():
-    import socket
+
     user=os.environ['OS_USERNAME']
     password=os.environ['OS_PASSWORD']
     type="NICE"
