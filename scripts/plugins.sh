@@ -347,7 +347,7 @@ function get_classification {
   cpu_stepping=`lscpu | grep Stepping | awk -F' ' '{print $NF}'`
   cpu_speed=`lscpu | grep MHz | awk -F' ' '{print $NF}'`
 
-  echo ${vendor}${osmajorrelease}_${cpus}_f${cpufamily}m${cpumodel}s${cpu_stepping}_mhz${cpu_speed}
+  echo ${vendor}${osmajorrelease}_${cpus}_f${cpufamily}m${cpumodel}s${cpu_stepping}
 }
 
 
