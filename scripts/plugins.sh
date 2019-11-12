@@ -294,7 +294,7 @@ export HWINFO=$HWINFO
 export FREE_TEXT="$FREE_TEXT"
 export PNODE=$PNODE
 export MP_NUM=$MP_NUM
-export NAME=`hostaname`
+export NAME=`hostname`
 python $wrapper_basedir/parser.py -i $VMUID -c $CLOUD -v $VO -f $RESULTS_FILE -p $PUBLIC_IP -d $RUNAREA_PATH -i $NAME
 X5_EOF
 
