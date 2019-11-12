@@ -6,15 +6,16 @@ RUN if [ ! -s /etc/yum.repos.d/docker-ce.repo ]; then echo "Error retrieving doc
 
 RUN yum install -y docker-ce https://linuxsoft.cern.ch/wlcg/centos7/x86_64/wlcg-repo-1.0.0-1.el7.noarch.rpm \
     HEP_OSlibs util-linux  wget git \
-    screen  tar freetype perl jq unzip \ 
+    screen  tar freetype perl jq unzip \
+    net-tools yum-plugin-ovl python-pip \  
     && yum clean all
 #workaround https://github.com/CentOS/sig-cloud-instance-images/issues/15
+# install net-tools for ifconfig
 
 # install bats for bash tests
 RUN cd /tmp;  wget https://github.com/bats-core/bats-core/archive/v1.1.0.zip; unzip v1.1.0.zip; cd bats-core-1.1.0; ./install.sh /usr
 
-# install net-tools for ifconfig
-RUN yum install -y net-tools yum-plugin-ovl && yum clean all #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
+pip install dictdiffer pyyaml
 
 LABEL multi.maintainer="Domenico Giordano <domenico.giordano@cern.ch>" \
       multi.version="1.0" \

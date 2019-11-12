@@ -37,19 +37,6 @@ job_build_announcement_image:
      changes:
        - docker-images/announcement/*
 
-job_build_base_image_slc6:
-   stage: build-base-image
-   before_script:
-       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6/Dockerfile
-       - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-slc6
-       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:latest --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-slc6:${CI_COMMIT_SHA:0:8}"
-   <<: *template_build_image
-   only:
-     refs:
-       - qa
-     changes:
-       - docker-images/hep-benchmark-base-slc6/*
-
 job_build_base_image_cc7:
    stage: build-base-image
    before_script:
@@ -137,11 +124,6 @@ job_announce_prod_image:
            - hep-benchmark-suite-test-$CI_JOB_ID.tgz
         expire_in: 1 week
         when: always
-
-job_test_installation_slc6: 
-   before_script:
-       - export BMKLIST=DB12
-   <<: *template_test_installation
 
 job_test_installation_cc7: 
    before_script:
