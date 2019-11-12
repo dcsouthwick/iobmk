@@ -14,7 +14,7 @@ RUN yum install -y docker-ce https://linuxsoft.cern.ch/wlcg/centos7/x86_64/wlcg-
 RUN cd /tmp;  wget https://github.com/bats-core/bats-core/archive/v1.1.0.zip; unzip v1.1.0.zip; cd bats-core-1.1.0; ./install.sh /usr
 
 # install net-tools for ifconfig
-RUN yum install -y net-tools && yum clean all
+RUN yum install -y net-tools yum-plugin-ovl && yum clean all #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
 
 LABEL multi.maintainer="Domenico Giordano <domenico.giordano@cern.ch>" \
       multi.version="1.0" \
