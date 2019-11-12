@@ -15,7 +15,7 @@ RUN yum install -y docker-ce https://linuxsoft.cern.ch/wlcg/centos7/x86_64/wlcg-
 # install bats for bash tests
 RUN cd /tmp;  wget https://github.com/bats-core/bats-core/archive/v1.1.0.zip; unzip v1.1.0.zip; cd bats-core-1.1.0; ./install.sh /usr
 
-pip install dictdiffer pyyaml
+RUN pip install dictdiffer pyyaml
 
 LABEL multi.maintainer="Domenico Giordano <domenico.giordano@cern.ch>" \
       multi.version="1.0" \
