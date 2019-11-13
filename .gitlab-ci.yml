@@ -180,7 +180,7 @@ bats_tests_any_branch:
 bats_tests_qa:
    <<: *template_bats_tests
    script:
-       - $CI_PROJECT_DIR/test/qa_send_queue.bat
+       - bats $CI_PROJECT_DIR/test/qa_send_queue.bat
    except:
       refs: 
         - master
