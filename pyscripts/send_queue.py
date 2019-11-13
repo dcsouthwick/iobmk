@@ -4,15 +4,7 @@
 #  Author: Cristovao Cordeiro
 # 
 
-try:
-    import stomp
-except ImportError:
-    import sys
-    sys.path.append('/cvmfs/sft.cern.ch/lcg/releases/LCG_85swan2/stomppy/3.1.3/x86_64-centos7-gcc49-opt/lib/python2.7/site-packages/')
-    import stomp
-except:
-    print "Couldn't import stomp"
-    raise
+import stomp
 import argparse
 import time
 import os
