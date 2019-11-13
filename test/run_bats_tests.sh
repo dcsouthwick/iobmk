@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASEDIR=$(readlink -f $(dirname $0))
-for afile in `ls $BASEDIR/*bat`;
+for afile in `ls $BASEDIR/test_*bat`;
 do
     echo -e "\nRunning tests in $afile"
     bats $afile

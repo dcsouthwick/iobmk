@@ -165,19 +165,22 @@ job_test_spec2017_run_cc7:
 
 .definition_bats_tests: &template_bats_tests
    stage: test-components
+   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
    script:
-       - yum install -y epel-release
-       - yum -y install python-pip
-       - pip install dictdiffer pyyaml 
        - $CI_PROJECT_DIR/test/run_bats_tests.sh
    except:
       refs: 
         - master
         - qa
 
-bats_tests_cc7:
-   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
+bats_tests_any_branch:
    <<: *template_bats_tests
 
-
+bats_tests_qa:
+   <<: *template_bats_tests
+   script:
+       - $CI_PROJECT_DIR/test/qa_send_queue.bat
+   except:
+      refs: 
+        - qa
 
