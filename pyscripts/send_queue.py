@@ -22,6 +22,21 @@ import sys
 logging.basicConfig(stream=sys.stdout,level=logging.INFO)
 logger = logging.getLogger('[send_queue]')
 
+
+class MyListener(stomp.ConnectionListener):
+    def __init__(self, conn):
+        self.conn = conn
+        self.status=True
+        self.message=''
+
+    def on_error(self, headers, message):
+         logger.error('received an error \n%s' % message)
+         self.status=False
+         self.message=message
+         
+    def on_message(self, headers, message):
+         logger.info('received a message "%s"' % message)
+
 def send_message(resdoc, args, stomp_mversion):
 
     if args.key_file != '' and args.cert_file != '':
@@ -35,6 +50,9 @@ def send_message(resdoc, args, stomp_mversion):
 
     conn = stomp.Connection(host_and_ports=[(args.server, int(args.port))], use_ssl=ssl_flag, \
         ssl_key_file=args.key_file, ssl_cert_file=args.cert_file, ssl_version=3)
+    
+    mylistener = MyListener(conn)
+    conn.set_listener('mylistener', mylistener)
 
     conn.start()
     if ssl_flag:
@@ -47,7 +65,10 @@ def send_message(resdoc, args, stomp_mversion):
     else:
         conn.send(body=resdoc, destination=args.name)
 
-    time.sleep(2)
+    time.sleep(5)  #This nees to stay before the check of the status, in order to get it
+
+    if conn.get_listener('mylistener').status == False:
+        raise Exception("Error occurred %s" % conn.get_listener('mylistener').message)
     conn.disconnect()
 
 
@@ -71,10 +92,7 @@ if __name__ == '__main__':
 
     resdoc = open(args.file,'r').read()
 
-    try:      
-        logger.info("Sending results to AMQ topic")
-        send_message(resdoc, args, stomp_mversion)
-        logger.info("Results sent to AMQ topic")
-    except Exception as e:
-        logger.error('%s' %(e) )
-        raise e
+    logger.info("Sending results to AMQ topic")
+    send_message(resdoc, args, stomp_mversion)
+    logger.info("Results sent to AMQ topic")
+    

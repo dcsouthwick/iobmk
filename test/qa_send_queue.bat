@@ -5,15 +5,23 @@ TESTDIR=$BATS_TEST_DIRNAME
 function genData(){
     INSERTTIMESTAMP=`date -u +%Y-%m-%dT%H:%M:%SZ`
     INSERTFREETEXT=$1
-    cd $TESTDIR
-    cat data/result_profile_template.json | sed -e "s@_INSERTTIMESTAMP_@$INSERTTIMESTAMP@g" -e "s@_INSERTFREETEXT_@$INSERTFREETEXT@g" > data/result_profile.json
+    cat $TESTDIR/data/result_profile_template.json | sed -e "s@_INSERTTIMESTAMP_@$INSERTTIMESTAMP@g" -e "s@_INSERTFREETEXT_@$INSERTFREETEXT@g" > $TESTDIR/data/result_profile.json
 }
+
 
 @test "Generate result profile for the next tests" {
     run genData "test amq user-passwd"
     echo -e "$output"
     [ "$status" -eq 0 ]
 }
+
+@test "Test AMQ successful connection" {
+    run python $TESTDIR/../pyscripts/send_queue.py --port=61113 --server=$QUEUE_HOST --name=$QUEUE_NAME  --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --file=$TESTDIR/data/result_profile.json
+    echo -e "$output"
+    [ "$status" -eq 0 ]
+}
+
+
 @test "Test AMQ wrong configuration username-password" { 
     run python $TESTDIR/../pyscripts/send_queue.py --port=61113 --server=$QUEUE_HOST --name=$QUEUE_NAME  --username=$QUEUE_USERNAME  --file=$TESTDIR/data/result_profile.json 
     echo -e "$output" 
@@ -35,14 +43,9 @@ function genData(){
 }
 
 
-@test "Test AMQ successful connection" {
-    run python $TESTDIR/../pyscripts/send_queue.py --port=61113 --server=$QUEUE_HOST --name=$QUEUE_NAME  --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --file=$TESTDIR/data/result_profile.json
-    echo -e "$output"
-    [ "$status" -eq 0 ]
-}
-
 
 @test "Generate result profile for certificate tests" {
+    skip
     run genData "test amq certificate"
     echo -e "$output"
     [ "$status" -eq 0 ]
