@@ -26,37 +26,38 @@ function test_parser_run(){
 
 
 @test "Test parser runs" { 
-      run test_parser_run
-      echo -e "$output"
-      [ "$status" -eq 0 ]
+    run test_parser_run
+    echo -e "$output"
+    [ "$status" -eq 0 ]
 }
 
 
 @test "Test results' json format" { 
-      run $TESTDIR/../pyscripts/json-differ.py $TESTDIR/data/validate_result_profile_ref.json $TESTDIR/data/result_profile.json '["host.cpunum","host.meminfo"]'
-      echo -e "$output"
-      [ "$status" -eq 0 ]
+    # Need to exclude a list of host data because computed at runtime and potentially different in each CI    
+    run $TESTDIR/../pyscripts/json-differ.py $TESTDIR/data/validate_result_profile_ref.json $TESTDIR/data/result_profile.json '["host.cpunum","host.meminfo", "host.osdist", "host.cpuname","host.bogomips"]'
+    echo -e "$output"
+    [ "$status" -eq 0 ]
 }
 
 
 # Test that the printout is generated 
 function test_print_results(){
     cd $TESTDIR/..
-    python -c "from pyscripts import parser; parser.print_results_from_file(\"$TESTDIR/data/result_profile.json\")" > $TESTDIR/data/validate_print_results
+    python -c "from pyscripts import parser; parser.print_results_from_file(\"$TESTDIR/data/validate_result_profile_ref.json\")" > $TESTDIR/data/validate_print_results
     diff $TESTDIR/data/validate_print_results $TESTDIR/data/validate_print_results_ref
     return $?
 }
 
 
 @test "Test parser printout matches ref file" { 
-      run test_print_results
-      echo -e "$output"
-      [ "$status" -eq 0 ]
+    run test_print_results
+    echo -e "$output"
+    [ "$status" -eq 0 ]
 }
 
 # Test the check_result_entry.sh
 @test "Test the functioning check_result_entry.sh" { 
-      run $TESTDIR/check_result_entry.sh "DB12;kv;hepscore;hs06_32;hs06_64;spec2017" $TESTDIR/data/validate_print_results_ref
-      echo -e "$output"
-      [ "$status" -eq 0 ]
+    run $TESTDIR/check_result_entry.sh "DB12;kv;hepscore;hs06_32;hs06_64;spec2017" $TESTDIR/data/validate_print_results_ref
+    echo -e "$output"
+    [ "$status" -eq 0 ]
 }
