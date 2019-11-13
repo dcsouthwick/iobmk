@@ -183,4 +183,7 @@ bats_tests_qa:
    except:
       refs: 
         - master
+   only:
+      refs:
+        - qa     
 
