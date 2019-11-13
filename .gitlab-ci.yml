@@ -1,10 +1,11 @@
 stages:
   - build-base-image
+  - test-components
   - test-installation
   - build-qa-image
   - promote-image
   - announce-promoted-image
-  - test-components
+ 
 
 
 ############################################################
@@ -106,7 +107,6 @@ job_announce_prod_image:
     stage: test-installation
     image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
     script: 
-        - yum install -y yum-plugin-ovl #because of https://github.com/CentOS/sig-cloud-instance-images/issues/15
         - make -f Makefile all 
         - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
         - export BMK_SOURCEDIR=/opt/hep-benchmark-suite
@@ -149,6 +149,7 @@ job_test_hs06_run_cc7:
      -  hep-benchmark-suite-docker-runner 
    before_script:
        - export BMKLIST="hs06_32"
+       - rm -f /scratch/HEPSPEC/SPEC_CPU2006_v1.2/VERIFIED_INSTALLATION
    <<: *template_test_installation
         
 
@@ -166,19 +167,25 @@ job_test_spec2017_run_cc7:
 
 .definition_bats_tests: &template_bats_tests
    stage: test-components
+   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
    script:
-       - yum install -y epel-release
-       - yum -y install python-pip
-       - pip install dictdiffer pyyaml 
        - $CI_PROJECT_DIR/test/run_bats_tests.sh
    except:
       refs: 
         - master
         - qa
 
-bats_tests_cc7:
-   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
+bats_tests_any_branch:
    <<: *template_bats_tests
 
-
+bats_tests_qa:
+   <<: *template_bats_tests
+   script:
+       - bats $CI_PROJECT_DIR/test/qa_send_queue.bat
+   except:
+      refs: 
+        - master
+   only:
+      refs:
+        - qa     
 
