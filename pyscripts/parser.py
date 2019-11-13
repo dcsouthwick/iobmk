@@ -156,15 +156,13 @@ def parse_hyper_benchmark():
 def parse_kv(rundir):
     # This code should be reviewed
     # NOTE: this will fail if KV did not run
-    # 2017-08-14 
-    # reduced report from kv to the only quantities used in the analyses. introduced new key to preserve backward compatibility of other fields: skv stays for slim-kv.
-    result = {'skv': {'start': int(os.environ['init_kv_test']),
+    result = {'kv': {'start': int(os.environ['init_kv_test']),
                      'end': int(os.environ['end_kv_test']),
                      }}
 
     file_name = rundir+"/KV/atlas-kv_summary.json"
     file = open(file_name, "r")
-    result['skv'].update(json.loads(file.read()))
+    result['kv'].update(json.loads(file.read()))
     return result
 
 def parse_hepscore(rundir):
@@ -282,7 +280,7 @@ def print_results(results):
     p = results['profiles']
     bmk_print_action = {
         "whetstone": lambda x: "Whetstone Benchmark = %s (MWIPS)" %p[x]['score'],
-        "skv": lambda x: print_results_kv(p[x]),
+        "kv": lambda x: print_results_kv(p[x]),
         "DB12": lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(p[x]['value']),p[x]['unit']),
         "hs06_32": lambda x: "HS06 32 bit Benchmark = %s" %p[x]['score'],
         "hs06_64": lambda x: "HS06 64 bit Benchmark = %s" %p[x]['score'],
