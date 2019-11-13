@@ -182,5 +182,5 @@ bats_tests_qa:
        - $CI_PROJECT_DIR/test/qa_send_queue.bat
    except:
       refs: 
-        - qa
+        - master
 
