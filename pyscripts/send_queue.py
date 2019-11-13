@@ -56,9 +56,11 @@ def send_message(resdoc, args, stomp_mversion):
 
     conn.start()
     if ssl_flag:
-        conn.connect()
+        conn.connect(wait=True)
     else:
-        conn.connect(login=args.username, passcode=args.password)
+        conn.connect(login=args.username, passcode=args.password, wait=True)
+
+    time.sleep(5)  #This nees to stay before the check of the status, in order to get it
 
     if stomp_mversion == 3:
         conn.send(resdoc, destination=args.name)
