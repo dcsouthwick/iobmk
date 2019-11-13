@@ -149,6 +149,7 @@ job_test_hs06_run_cc7:
      -  hep-benchmark-suite-docker-runner 
    before_script:
        - export BMKLIST="hs06_32"
+       - rm -f /scratch/HEPSPEC/SPEC_CPU2006_v1.2/VERIFIED_INSTALLATION
    <<: *template_test_installation
         
 
