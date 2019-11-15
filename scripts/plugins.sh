@@ -406,7 +406,7 @@ function run_hepscore {
   HEPSCORELOG=$RUNAREA/hepscore_$REFDATE.stdout
 
   echo "Running   hep-score -d -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG"
-  hep-score -d -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
+  hep-score -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
 }
 
 function download_tarball(){
