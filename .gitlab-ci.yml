@@ -109,7 +109,9 @@ job_announce_prod_image:
     script: 
         - make -f Makefile all 
         - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
-        - [ -z $BMK_HEPSCORE_CONF ] && export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci.yaml
+        - if [[ -z $BMK_HEPSCORE_CONF ]]; then 
+           export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci.yaml
+           fi
         - hep-benchmark-suite --benchmarks=$BMKLIST --mp_num=2 --freetext="test-qa $BMKLIST version ${CI_COMMIT_SHA:0:8}"  
           --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC 
           --hs06_path=/scratch/HEPSPEC --hs06_iter=1 --hs06_url="$HS06URL" --hs06_bmk=453.povray 
