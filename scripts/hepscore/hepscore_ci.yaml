@@ -1,12 +1,5 @@
 hepscore_benchmark:
   benchmarks:
-    .atlas-sim-bmk:
-      ref_scores:
-        sim: 0.0052
-      scorekey: wl-scores
-      threads: 2 
-      events: 4
-      version: v1.0
     cms-gen-sim-bmk:
       ref_scores:
         gen-sim: 0.0238
