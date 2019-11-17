@@ -1,1 +1,1 @@
-hepscore_version=v0.2
+hepscore_version=v0.3

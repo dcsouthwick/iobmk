@@ -294,8 +294,7 @@ export HWINFO=$HWINFO
 export FREE_TEXT="$FREE_TEXT"
 export PNODE=$PNODE
 export MP_NUM=$MP_NUM
-export NAME=`hostname`
-python $wrapper_basedir/parser.py -i $VMUID -c $CLOUD -v $VO -f $RESULTS_FILE -p $PUBLIC_IP -d $RUNAREA_PATH -i $NAME
+python $wrapper_basedir/parser.py -i $VMUID -c $CLOUD -v $VO -f $RESULTS_FILE -p $PUBLIC_IP -d $RUNAREA_PATH -n $(hostname)
 X5_EOF
 
   chmod ugo+rx $PARSER_PATH
@@ -406,7 +405,7 @@ function run_hepscore {
   HEPSCORELOG=$RUNAREA/hepscore_$REFDATE.stdout
 
   echo "Running   hep-score -d -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG"
-  hep-score -d -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
+  hep-score -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
 }
 
 function download_tarball(){

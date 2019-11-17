@@ -14,3 +14,4 @@ hepscore_benchmark:
   repetitions: 1
   scaling: 10
   version: 0.3
+  container_exec: singularity
