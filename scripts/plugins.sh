@@ -404,7 +404,7 @@ function run_hepscore {
   REFDATE=`date +\%y-\%m-\%d_\%H-\%M-\%S`
   HEPSCORELOG=$RUNAREA/hepscore_$REFDATE.stdout
 
-  echo "Running   hep-score -d -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG"
+  echo "Running hep-score -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG"
   hep-score -v -f $HEPSCORE_CONF -o $RUNAREA/hepscore_result.json $RUNAREA -- > $HEPSCORELOG
 }
 
