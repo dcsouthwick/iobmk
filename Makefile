@@ -29,7 +29,9 @@ prepare:
 		if test ! -e $(SOFTLINK); then \
 			ln -s $(BMKDIR)/$(MAIN) $(SOFTLINK) ;\
 		fi ;\
-		cp -fr $(SCRIPTFILES) $(SCRIPTDIR) ; cp -f $(PYSCRIPTFILES) $(PYSCRIPTDIR);\
+		cp -fr $(SCRIPTFILES) $(SCRIPTDIR) ;\
+                cp -f $(PYSCRIPTFILES) $(PYSCRIPTDIR);\
+                cp -f test $(BMKDIR)/test;\  
 	else \
 		echo "WARN: $(BMKDIR) already exists. do 'make clean' to remove it" ; \
 	fi
