@@ -1,1 +1,18 @@
-{"hs06_32":{"start":"Mon Sep 23 18:35:20 CEST 2019", "end":"Mon Sep 23 18:35:20 CEST 2019", "score":14.74, "avg_core_score" : 7.37, "num_bmks":7 ,"bmks":{ "444.namd":[ 6.26, 6.27], "447.dealII":[ 11.4, 11.4], "450.soplex":[ 11.5, 11.5], "453.povray":[ 8.90, 8.90], "471.omnetpp":[ 5.21, 5.21], "473.astar":[ 4.62, 4.61], "483.xalancbmk":[ 6.73, 6.76] }}}
+{
+	"hs06_32": {
+		"start": "Mon Sep 23 18:35:20 CEST 2019",
+		"end": "Mon Sep 23 18:35:20 CEST 2019",
+		"score": 14.74,
+		"avg_core_score": 7.37,
+		"num_bmks": 7,
+		"bmks": {
+			"444.namd": [6.26, 6.27],
+			"447.dealII": [11.4, 11.4],
+			"450.soplex": [11.5, 11.5],
+			"453.povray": [8.90, 8.90],
+			"471.omnetpp": [5.21, 5.21],
+			"473.astar": [4.62, 4.61],
+			"483.xalancbmk": [6.73, 6.76]
+		}
+	}
+}
