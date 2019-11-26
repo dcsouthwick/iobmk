@@ -12,8 +12,8 @@ function test_parser_run(){
     
     export DB12=18.7500457765
     export HWINFO=i6_2_f6m61s2_mhz2194.916
-    export FREE_TEXT=""
-    export PNODE=
+    export FREE_TEXT="some free text"
+    export PNODE="abcd"
     export MP_NUM=2
     
     export HYPER_BENCHMARK=1
