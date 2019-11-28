@@ -7,11 +7,13 @@ ROOTDIR?=""
 BMKDIR=$(ROOTDIR)/opt/hep-benchmark-suite
 SCRIPTDIR=$(BMKDIR)/scripts
 PYSCRIPTDIR=$(BMKDIR)/pyscripts
+TESTDIR=$(BMKDIR)/test
 
 MAIN=hep-benchmark-suite
 SOFTLINK=/usr/bin/hep-benchmark-suite
 SCRIPTFILES=scripts/*
 PYSCRIPTFILES=pyscripts/*
+TESTFILES=test/*
 
 OTHERFILES=LICENSE README.md Makefile requirements.txt
 
@@ -23,15 +25,15 @@ prepare:
 	@echo -e "\n -- Prepare installation directories at $(BMKDIR) -- \n"
 
 	@if test ! -d $(BMKDIR); then \
-		mkdir -p $(SCRIPTDIR) $(PYSCRIPTDIR); \
+		mkdir -p $(SCRIPTDIR) $(PYSCRIPTDIR) $(TESTDIR); \
 		cp -f $(MAIN) $(OTHERFILES) $(BMKDIR) ; \
 		chmod a+x $(BMKDIR)/$(MAIN)	; \
 		if test ! -e $(SOFTLINK); then \
 			ln -s $(BMKDIR)/$(MAIN) $(SOFTLINK) ;\
 		fi ;\
 		cp -fr $(SCRIPTFILES) $(SCRIPTDIR) ;\
-                cp -f $(PYSCRIPTFILES) $(PYSCRIPTDIR);\
-                cp -f test $(BMKDIR)/test;\  
+        cp -fr $(PYSCRIPTFILES) $(PYSCRIPTDIR);\
+        cp -fr $(TESTFILES) $(TESTDIR);\
 	else \
 		echo "WARN: $(BMKDIR) already exists. do 'make clean' to remove it" ; \
 	fi
