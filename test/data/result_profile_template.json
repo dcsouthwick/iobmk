@@ -114,7 +114,7 @@
 			"one_min_loads": [1.1, 1.1, 1.1]
 		},
 		"hepscore": {
-			"scaling": 0,
+			"scaling": 1.1,
 			"wl-scores": {
 				"cms-gen-sim-bmk": {
 					"gen-sim": 0.4437
@@ -1008,7 +1008,7 @@
 					"events": 500
 				}
 			},
-			"score": 0.0,
+			"score": 1.0,
 			"method": "geometric_mean",
 			"container_exec": "docker"
 		}
