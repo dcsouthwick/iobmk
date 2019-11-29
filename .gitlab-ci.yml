@@ -79,22 +79,22 @@ job_promote_prod_image_cc7:
    script: 
         - echo "current commit is ${CI_COMMIT_SHA:0:8}"
         - echo "current tag is ${CI_COMMIT_TAG}"
-        - docker tag  $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG#release-containers-}
+        - docker tag  $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG}
         - docker tag  $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
-        - docker push $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG#release-containers-}
+        - docker push $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG}
         - docker push $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
    only:
      variables:
-       - $CI_COMMIT_TAG =~ /^release-containers-.*$/
+       - $CI_COMMIT_TAG =~ /^v.*$/
 
 job_announce_prod_image:
    stage: announce-promoted-image
    image: $CI_REGISTRY_IMAGE/announcement:latest
    only:
      variables:
-       - $CI_COMMIT_TAG =~ /^release-containers-.*$/
+       - $CI_COMMIT_TAG =~ /^v.*$/
    script: 
-     - export IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG#release-containers-}
+     - export IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG}
      - /announce.sh $IMAGE
 
 ############################################################
@@ -113,7 +113,7 @@ job_announce_prod_image:
            export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci.yaml ;
            fi
         - hep-benchmark-suite --benchmarks=$BMKLIST --mp_num=2 --freetext="test-qa $BMKLIST version ${CI_COMMIT_SHA:0:8}"  
-          --cloud="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC 
+          --cloud="suite-CI" --vo="suite-CI" --queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC 
           --hs06_path=/scratch/HEPSPEC --hs06_iter=1 --hs06_url="$HS06URL" --hs06_bmk=453.povray 
           --spec2017_path=/scratch/HEPSPEC --spec2017_iter=1 --spec2017_url="$SPEC2017URL" --spec2017_bmk=511.povray_r 
           --hepscore_conf=${BMK_HEPSCORE_CONF}
