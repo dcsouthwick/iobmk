@@ -82,15 +82,46 @@ For what concerns HEP-score, just the availability of docker installation is req
 
 ## How to run
 
-### Installation
+The preferred running mode of the HEP Benchmark Suite is using a distributed Docker image for the suite (more details below).
 
-The preferred running mode is using a distributed docker image for the suite
-#### Docker container (Preferred mode)
+A set of examples is available in the examples folder of [this repository](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/tree/master/examples)
+These examples are also linked here:
 
-The hep-benchmark-suite is distributed in a Cern Centos 7 image (`gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hep-benchmark-suite-cc7:latest`)
+- Running the HEP Benchmark Suite within a Docker container
+	- Run HEP-score [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_hep-score_example.sh)
+		- Run HEP-score using internally singularity to run the HEP-Workloads containers [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_hep-score_singularity_example.sh)
+
+	- Run HS06 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_hs06_example.sh)
+	- Run SPEC2017 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_speccpu2017_example.sh)
+	- Run DB12 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_db12_example.sh)
+	- Run KV [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_kv_example.sh)
+	- Run all benchmark [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_all_benchmarks_example.sh)
+
+- Running using a singularity container
+    - Install the suite [script](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/install_hep-benchmark-suite.sh)
+	- Run HEP-score [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/singularity/run_hep-score_singularity_example.sh)
+    
+### Description of major arguments
+
+In order to run a sequence of benchmarks, specify the list using the `--benchmarks` argument.
+Multiple benchmarks can be executed in sequence via a single call to the hep-benchmark-suite, passing the dedicated configuration parameters.
+When a benchmark is not specified in the list `--benchmarks`, the dedicated configuration parameters are ignored.
+
+
+If publication in a destination AMQ broker is needed, replace the variable `AMQ_ARGUMENTS=" -o"` with the expected AMQ authentication parameters (host, port, username, password, topic)
+`AMQ_ARGUMENTS="--queue_host=**** --queue_port=**** --username=**** --password=**** --topic=**** "`
+
+In the case of running HS06, and/or SPEC CPU2017, the packages are expected to be already installed in `/var/HEPSPEC`. 
+In case the packages are in another path, change the corresponding entries `--hs06_path=`, and/or `--spec2017_path`. 
+
+
+
+#### Running with Docker container (_Preferred mode_)
+
+The hep-benchmark-suite is distributed in a Cern Centos 7 Docker image. The latest available production image is tagged as `gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hep-benchmark-suite-cc7:latest`
 
 Some of the workloads also run in standalone containers (e.g. the hep-workloads included in the HEPscore )
-In order to enable `docker run` from the running container, the bind mount of the `/var/run/docker.sock` and run in priviledged mode as follow
+In order to enable `docker run` from the running container, bind mount `/var/run/docker.sock` and run in priviledged mode as follow
 ```
 DOCKSOCK=/var/run/docker.sock
 BMK_SUITE_IMAGE=gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hep-benchmark-suite-cc7:latest
@@ -103,40 +134,17 @@ docker run --rm  --privileged --net=host -h $HOSTNAME \
 
 
 
-#### Install the suite
+### Installation 
 
+Another option is to run the suite without using the Docker image. 
+This can be needed, for example, if the running mode of HEP-score is singularity and Docker is not available in the machine under test.
+
+In order to install the suite, please run (as root) the following [script](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/install_hep-benchmark-suite.sh)
 The suite is currently supported for Cern CentOS 7 (CC7) OS.
-In a CC7 machine, download the latest tagged version of this gitlab repository [from here](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/tags) and run
-`make all` in order to install locally all needed packages
 
 
-### Running
 
-
-In order to run a sequence of benchmarks, specify the list using the `--benchmarks` argument.
-Multiple benchmarks can be executed in sequence via a single call to the hep-benchmark-suite, passing the dedicated configuration parameters.
-When a benchmark is not specified in the list `--benchmarks`, the dedicated configuration parameters are ignored.
-
-
-If publication in a destination AMQ broker is needed, replace the variable `AMQ_ARGUMENTS=" -o"` with the expected AMQ authentication parameters (host, port, username, password, topic)
-`AMQ_ARGUMENTS="--queue_host=**** --queue_port=**** --username=**** --password=**** --topic=**** "`
-
-A set of examples is available in the examples folder of [this repository](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/tree/master/examples)
-Some of them are linked here:
-
-- Run HEP-score [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_hep-score_example.sh)
-- Run HS06 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_hs06_example.sh)
-- Run SPEC2017 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_speccpu2017_example.sh)
-- Run DB12 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_db12_example.sh)
-- Run KV [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_kv_example.sh)
-- Run all benchmark [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/run_all_benchmarks_example.sh)
-
-
-In the case of running HS06, and/or SPEC CPU2017, the packages are expected to be already installed in `/var/HEPSPEC`. 
-In case the packages are in another path, change the corresponding entries `--hs06_path=`, and/or `--spec2017_path`. 
-
-
-### Get Description of all arguments
+### Description of all arguments
 
 The `-h` option provides an explanation of all command line arguments
 

@@ -99,12 +99,7 @@ function hepscore_dependencies {
     echo "Downloading into directory $install_dir"
     [ ! -e $install_dir ] && mkdir -p $install_dir
     cd $install_dir
-    git clone https://gitlab.cern.ch/hep-benchmarks/hep-score.git
-    cd hep-score
-    git fetch --all --tags --prune
-    echo "... checking out tag ${hepscore_version}"
-    git checkout tags/${hepscore_version} -b ${hepscore_version}
-    pip install .
+    pip install git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@${hepscore_version}
     cd $current_dir
 }
 
