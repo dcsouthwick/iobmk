@@ -67,6 +67,9 @@ function base_dependencies {
 	fi
 	yum install -y docker-ce
     fi
+
+    # install singularity
+    install_singularity
 }
 
 function unixbench_dependencies {
@@ -101,6 +104,13 @@ function hepscore_dependencies {
     cd $install_dir
     pip install git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@${hepscore_version}
     cd $current_dir
+}
+
+function install_singularity {
+    # Temporarely force a specific old version 3.2.1 of Singularity to resolve BMK-253
+    # (latest version is 3.4.2, a fix for this issue should appear in 3.4.3)
+    rpm --import https://repo.opensciencegrid.org/osg/3.4/RPM-GPG-KEY-OSG
+    yum install -y https://repo.opensciencegrid.org/osg/3.4/el7/release/x86_64/singularity-3.2.1-1.1.osg34.el7.x86_64.rpm
 }
 
 function get_requirements {
