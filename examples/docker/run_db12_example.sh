@@ -21,6 +21,21 @@ AMQ_ARGUMENTS=" -o"
 # Those metadata are not mandatory
 METADATA_ARGUMENTS="--cloud=name_of_your_cloud --vo=an_aggregate  --freetext=a_tag_text --pnode=physical_node_name"
 
+#####################
+#--- WORKING DIR
+#####################
+
+# The directory ${BMK_RUNDIR} will contain all the logs and the output produced by the executed benchmarks
+# Can be changed to point to any volume and directory with enough space 
+RUN_VOLUME=/tmp
+BMK_RUNDIR=${RUN_VOLUME}/hep-benchmark-suite
+
+#####################
+#--- RUN
+#####################
+
 docker run --rm  --privileged --net=host -h $HOSTNAME \
-              -v /tmp:/tmp -v $DOCKSOCK:$DOCKSOCK \
-              $BMK_SUITE_IMAGE hep-benchmark-suite --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $METADATA_ARGUMENTS
+              -e BMK_RUNDIR=$BMK_RUNDIR  -v ${RUN_VOLUME}:${RUN_VOLUME} \
+              -v $DOCKSOCK:$DOCKSOCK \
+              $BMK_SUITE_IMAGE \
+              hep-benchmark-suite --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $METADATA_ARGUMENTS

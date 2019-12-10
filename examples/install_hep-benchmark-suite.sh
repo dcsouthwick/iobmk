@@ -14,7 +14,7 @@ git --version
 echo " "
 make --version
 echo " "
-HBStag="release-containers-v1.4"
+HBStag="v1.5"
 echo -e " The tag ${HBStag} will be used.
 If you prefer to use another tag, 
 please check the list in https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/tags
