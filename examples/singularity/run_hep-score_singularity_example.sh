@@ -25,11 +25,24 @@ AMQ_ARGUMENTS=" -o"
 # Those metadata are not mandatory
 METADATA_ARGUMENTS="--cloud=name_of_your_cloud --vo=an_aggregate  --freetext=a_tag_text --pnode=physical_node_name"
 
+#####################
+#--- WORKING DIR
+#####################
+
+# The directory ${BMK_RUNDIR} will contain all the logs and the output produced by the executed benchmarks
+# Can be changed to point to any volume and directory with enough space 
+RUN_VOLUME=/tmp
+BMK_RUNDIR=${RUN_VOLUME}/hep-benchmark-suite
+export BMK_RUNDIR
+
+#####################
+#--- RUN
+#####################
 
 EXECUTABLE=$(which hep-benchmark-suite)
 
-[ "$EXECUTABLE" -eq "" ] && echo "hep-benchmark-suite not available. Please install it following instructions in https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/install_hep-benchmark-suite.sh" && exit 1
+[ "$EXECUTABLE" == "" ] && echo "hep-benchmark-suite not available. Please install it following instructions in https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/raw/master/examples/install_hep-benchmark-suite.sh" && exit 1
 
-hep-benchmark-suite --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $HEPSCORE_CONF $METADATA_ARGUMENTS
+$EXECUTABLE --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $HEPSCORE_CONF $METADATA_ARGUMENTS
 
 
