@@ -52,7 +52,8 @@ function base_dependencies() {
 
     # Install stop
     if (! pip list | grep stomp); then
-        pip install stomp.py ${stomppy_version}
+        echo "installing stomp.py ${stomppy_version}"
+        pip install stomp.py==${stomppy_version}
     fi
 
     # install docker-ce
