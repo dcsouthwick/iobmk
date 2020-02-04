@@ -28,7 +28,7 @@ hepscore_benchmark:
       ref_scores:
         digi: 1.94
       scorekey: wl-scores
-      version: v1.1
+      version: v1.2
     cms-reco-bmk:
       ref_scores:
         reco: 1.117
