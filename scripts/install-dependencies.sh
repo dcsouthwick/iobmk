@@ -51,8 +51,7 @@ function base_dependencies {
     # Install stop and SOAPpy
     if (! pip list | grep stomp) || (! pip list | grep SOAPpy)
     then
-        pip install stomp.py
-        pip install SOAPpy
+        pip install stomp.py ${stomppy_version}
     fi
 
 
