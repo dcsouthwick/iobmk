@@ -84,13 +84,13 @@ For what concerns HEP-score, just the availability of docker installation is req
 
 The preferred running mode of the HEP Benchmark Suite is using a distributed Docker image for the suite (more details below).
 
-A set of examples is available in the examples folder of [this repository](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/tree/master/examples)
+A set of examples is available in the examples folder of [this repository](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/tree/master/examples).
+
 These examples are also linked here:
 
 - Running the HEP Benchmark Suite within a Docker container
 	- Run HEP-score [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_hep-score_example.sh)
 		- Run HEP-score using internally singularity to run the HEP-Workloads containers [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_hep-score_singularity_example.sh)
-
 	- Run HS06 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_hs06_example.sh)
 	- Run SPEC2017 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_speccpu2017_example.sh)
 	- Run DB12 [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_db12_example.sh)
@@ -126,8 +126,15 @@ In order to enable `docker run` from the running container, bind mount `/var/run
 DOCKSOCK=/var/run/docker.sock
 BMK_SUITE_IMAGE=gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hep-benchmark-suite-cc7:latest
 
+# The directory ${BMK_RUNDIR} will contain all the logs and the output produced by the executed benchmarks
+# Can be changed to point to any volume and directory with enough space 
+RUN_VOLUME=/tmp
+BMK_RUNDIR=${RUN_VOLUME}/hep-benchmark-suite
+
 docker run --rm  --privileged --net=host -h $HOSTNAME \
-              -v /tmp:/tmp -v /var/HEPSPEC:/var/HEPSPEC -v $DOCKSOCK:$DOCKSOCK \
+              -e BMK_RUNDIR=$BMK_RUNDIR  -v ${RUN_VOLUME}:${RUN_VOLUME} \
+			  -v /var/HEPSPEC:/var/HEPSPEC \
+			  -v $DOCKSOCK:$DOCKSOCK \
               $BMK_SUITE_IMAGE hep-benchmark-suite $NEEDED_ARGUMENTS 
 ```
 
