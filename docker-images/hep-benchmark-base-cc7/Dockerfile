@@ -7,7 +7,8 @@ RUN if [ ! -s /etc/yum.repos.d/docker-ce.repo ]; then echo "Error retrieving doc
 RUN yum install -y docker-ce https://linuxsoft.cern.ch/wlcg/centos7/x86_64/wlcg-repo-1.0.0-1.el7.noarch.rpm \
     HEP_OSlibs util-linux  wget git \
     screen  tar freetype perl jq unzip \
-    net-tools yum-plugin-ovl python-pip \  
+    net-tools yum-plugin-ovl python-pip \ 
+    skopeo \ 
     && yum clean all
 #workaround https://github.com/CentOS/sig-cloud-instance-images/issues/15
 # install net-tools for ifconfig
@@ -15,7 +16,7 @@ RUN yum install -y docker-ce https://linuxsoft.cern.ch/wlcg/centos7/x86_64/wlcg-
 # install bats for bash tests
 RUN cd /tmp;  wget https://github.com/bats-core/bats-core/archive/v1.1.0.zip; unzip v1.1.0.zip; cd bats-core-1.1.0; ./install.sh /usr
 
-RUN pip install dictdiffer pyyaml stomp.py skopeo
+RUN pip install dictdiffer pyyaml stomp.py
 
 # Temporarely force a specific old version 3.2.1 of Singularity to resolve BMK-253
 # (latest version is 3.4.2, a fix for this issue should appear in 3.4.3)
