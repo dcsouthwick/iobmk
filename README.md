@@ -126,8 +126,15 @@ In order to enable `docker run` from the running container, bind mount `/var/run
 DOCKSOCK=/var/run/docker.sock
 BMK_SUITE_IMAGE=gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hep-benchmark-suite-cc7:latest
 
+# The directory ${BMK_RUNDIR} will contain all the logs and the output produced by the executed benchmarks
+# Can be changed to point to any volume and directory with enough space 
+RUN_VOLUME=/tmp
+BMK_RUNDIR=${RUN_VOLUME}/hep-benchmark-suite
+
 docker run --rm  --privileged --net=host -h $HOSTNAME \
-              -v /tmp:/tmp -v /var/HEPSPEC:/var/HEPSPEC -v $DOCKSOCK:$DOCKSOCK \
+              -e BMK_RUNDIR=$BMK_RUNDIR  -v ${RUN_VOLUME}:${RUN_VOLUME} \
+			  -v /var/HEPSPEC:/var/HEPSPEC \
+			  -v $DOCKSOCK:$DOCKSOCK \
               $BMK_SUITE_IMAGE hep-benchmark-suite $NEEDED_ARGUMENTS 
 ```
 
