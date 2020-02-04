@@ -12,8 +12,6 @@ import commands
 from os import listdir
 import xml.etree.ElementTree as ET
 import argparse
-#import ipgetter
-#import SOAPpy
 import re
 import multiprocessing
 import logging
