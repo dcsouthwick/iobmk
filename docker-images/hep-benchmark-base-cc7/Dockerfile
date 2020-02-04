@@ -15,7 +15,7 @@ RUN yum install -y docker-ce https://linuxsoft.cern.ch/wlcg/centos7/x86_64/wlcg-
 # install bats for bash tests
 RUN cd /tmp;  wget https://github.com/bats-core/bats-core/archive/v1.1.0.zip; unzip v1.1.0.zip; cd bats-core-1.1.0; ./install.sh /usr
 
-RUN pip install dictdiffer pyyaml stomp.py
+RUN pip install dictdiffer pyyaml stomp.py skopeo
 
 # Temporarely force a specific old version 3.2.1 of Singularity to resolve BMK-253
 # (latest version is 3.4.2, a fix for this issue should appear in 3.4.3)
