@@ -114,6 +114,7 @@
 			"one_min_loads": [1.1, 1.1, 1.1]
 		},
 		"hepscore": {
+			"status": "SUCCESS",
 			"scaling": 1.1,
 			"wl-scores": {
 				"cms-gen-sim-bmk": {
