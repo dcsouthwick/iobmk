@@ -209,7 +209,7 @@ then
   echo "WARN: --benchmarks not specified: $BENCHMARKS. Exit"
   exit 1
 else
-  bmks=$(echo $BENCHMARKS | tr ";" "\n")
+  bmks=$(echo $BENCHMARKS | tr '[:upper:]' '[:lower:]' | tr ";" "\n")
 fi
 
 # Exit when any command fails. To allow failing commands, add "|| true"
