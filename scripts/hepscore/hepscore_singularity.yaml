@@ -12,7 +12,7 @@ hepscore_benchmark:
       scorekey: wl-scores
       threads: 4
       version: v1.1
-    atlas-digi-reco-bmk:
+    .atlas-digi-reco-bmk:
       ref_scores:
         digi-reco: 1.211
       scorekey: wl-scores
