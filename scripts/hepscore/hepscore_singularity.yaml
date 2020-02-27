@@ -23,17 +23,17 @@ hepscore_benchmark:
       ref_scores:
         gen-sim: 0.362
       scorekey: wl-scores
-      version: v1.1
+      version: v1.2
     cms-digi-bmk:
       ref_scores:
         digi: 1.94
       scorekey: wl-scores
-      version: v1.2
+      version: v1.3
     cms-reco-bmk:
       ref_scores:
         reco: 1.117
       scorekey: wl-scores
-      version: v1.1
+      version: v1.2
     lhcb-gen-sim-bmk:
       ref_scores:
         gen-sim: 41.32

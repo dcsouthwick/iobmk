@@ -13,7 +13,7 @@ hepscore_benchmark:
       scorekey: wl-scores
       threads: 2 
       events: 4
-      version: v1.0      
+      version: v1.2      
   method: geometric_mean
   name: HEPscore19
   reference_machine: "An undefined machine"
