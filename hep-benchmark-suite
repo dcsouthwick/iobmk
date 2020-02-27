@@ -64,7 +64,7 @@ do
     export HYPER_DB12=$(run_DB12 "$hyper_bmk_RUNAREA/DB12")
     export HYPER_1minLoad_2=$(uptime | sed 's/.*load average: //' | awk -F\, '{print $1}')
     export HYPER_1minLoad_3=$(uptime | sed 's/.*load average: //' | awk -F\, '{print $1}')
-  elif [[ $b == "DB12" ]]; then
+  elif [[ $b == "db12" ]]; then
     echo "INFO: running DB12..."
     export DB12=$(run_DB12)
   else
