@@ -13,7 +13,8 @@ BMK_LIST='spec2017'
 # Due to proprietary license aspects, HS06 and SPEC CPU 2017 need to be pre-installed on the server.
 # In the case of running HS06, and/or SPEC CPU2017, the packages are expected to be already installed in `/var/HEPSPEC`. 
 # In case the packages are in another path, change the corresponding entries `--spec2017_path=`, and/or `--spec2017_path`. 
-SPEC_ARGUMENTS="--spec2017_path=/var/HEPSPEC"
+SPEC_DIR="/var/HEPSPEC"
+SPEC_ARGUMENTS="--spec2017_path=${SPEC_DIR}"
 
 #--- Optional Config
 
@@ -56,6 +57,7 @@ BMK_RUNDIR=${RUN_VOLUME}/hep-benchmark-suite
 
 docker run --rm  --privileged --net=host -h $HOSTNAME \
               -e BMK_RUNDIR=$BMK_RUNDIR  -v ${RUN_VOLUME}:${RUN_VOLUME} \
+              -v ${SPEC_DIR}:${SPEC_DIR} \
               -v $DOCKSOCK:$DOCKSOCK \
               $BMK_SUITE_IMAGE \
               hep-benchmark-suite --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $SPEC_ARGUMENTS $SPEC_ITERATIONS $SPEC_INSTALL $SPEC_LIMIT_BMK $METADATA_ARGUMENTS

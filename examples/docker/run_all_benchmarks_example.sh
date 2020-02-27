@@ -3,7 +3,7 @@ DOCKSOCK=/var/run/docker.sock
 BMK_SUITE_IMAGE=gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hep-benchmark-suite-cc7:latest
 
 # HS06 runs built at 32 and/or 64 bits
-BMK_LIST='hepscore;hs06_32;hs06_64;db12;kv;spec2017'
+BMK_LIST='hepscore;hs06_32;hs06_64;DB12;kv;spec2017'
 
 #####################
 #--- HEP-score Config
@@ -20,7 +20,8 @@ BMK_LIST='hepscore;hs06_32;hs06_64;db12;kv;spec2017'
 # Due to proprietary license aspects, HS06 and SPEC CPU 2017 need to be pre-installed on the server.
 # In the case of running HS06, and/or SPEC CPU2017, the packages are expected to be already installed in `/var/HEPSPEC`. 
 # In case the packages are in another path, change the corresponding entries `--hs06_path=`, and/or `--spec2017_path`. 
-HS06_ARGUMENTS="--hs06_path=/var/HEPSPEC"
+SPEC_DIR="/var/HEPSPEC"
+HS06_ARGUMENTS="--hs06_path=${SPEC_DIR}"
 
 #--- Optional Config
 
@@ -41,7 +42,7 @@ HS06_ARGUMENTS="--hs06_path=/var/HEPSPEC"
 # Due to proprietary license aspects, HS06 and SPEC CPU 2017 need to be pre-installed on the server.
 # In the case of running HS06, and/or SPEC CPU2017, the packages are expected to be already installed in `/var/HEPSPEC`. 
 # In case the packages are in another path, change the corresponding entries `--spec2017_path=`, and/or `--spec2017_path`. 
-SPEC_ARGUMENTS="--spec2017_path=/var/HEPSPEC"
+SPEC_ARGUMENTS="--spec2017_path=${SPEC_DIR}"
 
 #--- Optional Config
 
@@ -69,6 +70,18 @@ AMQ_ARGUMENTS=" -o"
 # Those metadata are not mandatory
 METADATA_ARGUMENTS="--cloud=name_of_your_cloud --vo=an_aggregate  --freetext=a_tag_text --pnode=physical_node_name"
 
+#####################
+#--- WORKING DIR
+#####################
+
+# The directory ${BMK_RUNDIR} will contain all the logs and the output produced by the executed benchmarks
+# Can be changed to point to any volume and directory with enough space 
+RUN_VOLUME=/tmp
+BMK_RUNDIR=${RUN_VOLUME}/hep-benchmark-suite
+
 docker run --rm  --privileged --net=host -h $HOSTNAME \
-              -v /tmp:/tmp -v /var/HEPSPEC:/var/HEPSPEC -v $DOCKSOCK:$DOCKSOCK \
-              $BMK_SUITE_IMAGE hep-benchmark-suite --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $HEPSCORE_CONF $HS06_ARGUMENTS $HS06_ITERATIONS $HS06_INSTALL $HS06_LIMIT_BMK $SPEC_ARGUMENTS $SPEC_ITERATIONS $SPEC_INSTALL $SPEC_LIMIT_BMK $METADATA_ARGUMENTS
+              -e BMK_RUNDIR=$BMK_RUNDIR  -v ${RUN_VOLUME}:${RUN_VOLUME} \
+              -v ${SPEC_DIR}:${SPEC_DIR} \
+              -v $DOCKSOCK:$DOCKSOCK \
+              $BMK_SUITE_IMAGE \
+              hep-benchmark-suite --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $HEPSCORE_CONF $HS06_ARGUMENTS $HS06_ITERATIONS $HS06_INSTALL $HS06_LIMIT_BMK $SPEC_ARGUMENTS $SPEC_ITERATIONS $SPEC_INSTALL $SPEC_LIMIT_BMK $METADATA_ARGUMENTS
