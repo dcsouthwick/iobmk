@@ -422,12 +422,12 @@ function download_tarball(){
     #ln -s /hs06/SPEC_CPU2006_v1.2.tar.bz2 hs06_file #FIXME tmp
     echo "[download_tarball] INSTALL_PATH: $INSTALL_PATH" 
     cd ${INSTALL_PATH}
-    tar -xaf ${INSTALL_PATH}/tmp_download/tar_file
+    tar --no-overwrite-dir -xak -f ${INSTALL_PATH}/tmp_download/tar_file  # (BMK-365 avoid overwrite of existing folders)
     rm -rf ${INSTALL_PATH}/tmp_download # in order to reduce space occupancy
 }
 
 function prepare_spec(){
-#function to check the SPEC configuration (downlaod path, running path) 
+#function to check the SPEC configuration (download path, running path) 
 #and in case untar the application
  
     SPECNAME=$1 
