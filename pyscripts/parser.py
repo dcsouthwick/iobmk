@@ -15,6 +15,7 @@ import argparse
 import re
 import multiprocessing
 import logging
+from hwmetadata.hwmetadata.extractor import Extractor
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger('[RESULT PARSER]')
@@ -223,6 +224,11 @@ def parse_metadata(args):
     result['host'].update({'benchmark_target': os.environ['BENCHMARK_TARGET']})
     result['host'].update({'mp_num': int(os.environ['MP_NUM'])})
     result['host'].update({'pnode': os.environ['PNODE']})
+
+    # Collect Hardware metadata
+    hw=Extractor()
+    hw.collect()
+    result['host'].update({'HW': hw.export()})
 
     #try:
     #    result['host'].update({'pnode': get_pnode()})

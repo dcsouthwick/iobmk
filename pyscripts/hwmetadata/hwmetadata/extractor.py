@@ -59,7 +59,7 @@ class Extractor(object):
 
     _log.debug("Installed packages: {}".format(self.pkg))
 
-  def exec_cmd(self, cmd_str: str) -> str:
+  def exec_cmd(self, cmd_str):
     """ Accepts command string and returns output. """
 
     _log.debug("Excuting command: {}".format(cmd_str))
@@ -131,7 +131,7 @@ class Extractor(object):
     # Save data
     self._save("CPU", CPU)
 
-  def get_cpu_parser(self, cmd_output: str) -> dict:
+  def get_cpu_parser(self, cmd_output):
     """ Collect all CPU data from lscpu. """
 
     parse_lscpu = self.get_parser(cmd_output, "lscpu")
@@ -166,7 +166,7 @@ class Extractor(object):
     if self.pkg['dmidecode'] and self._permission:
       parse_bios = self.get_parser(self.exec_cmd("dmidecode -t bios"), "bios")
     else:
-      parse_bios = lambda x : "NA"
+      parse_bios = lambda x : "not_available"
 
     self.BIOS = {
       'Vendor'        : parse_bios("Vendor"),
@@ -186,12 +186,12 @@ class Extractor(object):
     if self.pkg['dmidecode'] and self._permission:
       parse_system = self.get_parser(self.exec_cmd("dmidecode -t system"), "system")
     else:
-      parse_system = lambda x : "NA"
+      parse_system = lambda x : "not_available"
 
     if self.pkg['ipmitool'] and self._permission:
       parse_BMC_FRU = self.get_parser(self.exec_cmd("ipmitool fru"), "BMC")
     else:
-      parse_BMC_FRU = lambda x : "NA"
+      parse_BMC_FRU = lambda x : "not_available"
 
     SYSTEM = {
       'Manufacturer'      : parse_system("Manufacturer"),
@@ -219,17 +219,16 @@ class Extractor(object):
     else:
       MEM = {}
 
-
     MEM.update ({
-     'Mem_Total'     : self.exec_cmd("free -h | awk 'NR==2{print $2}'"),
-     'Mem_Available' : self.exec_cmd("free -h | awk 'NR==2{print $7}'"),
-     'Mem_Swap'      : self.exec_cmd("free -h | awk 'NR==3{print $2}'")
+     'Mem_Total'     : self.exec_cmd("free | awk 'NR==2{print $2}'"),
+     'Mem_Available' : self.exec_cmd("free | awk 'NR==2{print $7}'"),
+     'Mem_Swap'      : self.exec_cmd("free | awk 'NR==3{print $2}'")
    })
 
     # Save data
     self._save("MEMORY", MEM)
 
-  def get_mem_parser(self, cmd_output: str) -> dict:
+  def get_mem_parser(self, cmd_output):
     """ Memory parser for dmidecode. """
 
     # Regex for matches
@@ -275,7 +274,7 @@ class Extractor(object):
     # Save data
     self._save("STORAGE", STORAGE)
 
-  def get_storage_parser(self, cmd_output: str) -> dict:
+  def get_storage_parser(self, cmd_output):
     """ Storage parser for lshw -c disk. """
 
     # Regex for matches
@@ -296,7 +295,7 @@ class Extractor(object):
 
     return STORAGE
 
-  def get_parser(self, cmd_output: str, reg="common"):
+  def get_parser(self, cmd_output, reg="common"):
     """ Common regex parser. """
 
     def parser(pattern):
@@ -309,10 +308,13 @@ class Extractor(object):
 
       # Search pattern in output
       result = re.search(exp , cmd_output)
+      try:
+        _log.debug("Parsing = {} | Field = {} | Value = {}".format(reg, pattern, result.group('Value')))
+        return result.group('Value')
 
-      _log.debug("Parsing = {} | Field = {} | Value = {}".format(reg, pattern, result.group('Value')))
-
-      return result.group('Value')
+      except AttributeError:
+        _log.debug("Parsing = {} | Field = {} | Value = {}".format(reg, pattern, "None"))
+        return "not_available"
 
     return parser
 
@@ -338,12 +340,12 @@ class Extractor(object):
       with open(outfile, 'w') as json_file:
         json.dump(self.data, json_file, indent=4, sort_keys=True)
 
-  def export(self) -> dict:
+  def export(self):
     """ Export collected data as a dict """
 
     return self.data
 
-  def _extract(self, cmd_dict: dict) -> dict:
+  def _extract(self, cmd_dict):
     """ Extract the data given a dict with commands """
     data = {}
     for key, val in cmd_dict.items():
@@ -351,6 +353,6 @@ class Extractor(object):
 
     return data
 
-  def _save(self, tag: str, new_data: dict):
+  def _save(self, tag, new_data):
     """ Save a given dict to the final data dict """
     self.data[tag] = new_data
