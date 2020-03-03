@@ -1,0 +1,38 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 2.6 present.
+
+Handle 0x0000, DMI type 0, 24 bytes
+BIOS Information
+	Vendor: Intel Corp.
+	Version: SE5C600.86B.02.01.0002.082220131453
+	Release Date: 08/22/2013
+	Address: 0xF0000
+	Runtime Size: 64 kB
+	ROM Size: 8192 kB
+	Characteristics:
+		PCI is supported
+		BIOS is upgradeable
+		BIOS shadowing is allowed
+		Boot from CD is supported
+		Selectable boot is supported
+		EDD is supported
+		5.25"/1.2 MB floppy services are supported (int 13h)
+		3.5"/720 kB floppy services are supported (int 13h)
+		3.5"/2.88 MB floppy services are supported (int 13h)
+		Print screen service is supported (int 5h)
+		8042 keyboard services are supported (int 9h)
+		Serial services are supported (int 14h)
+		Printer services are supported (int 17h)
+		ACPI is supported
+		USB legacy is supported
+		BIOS boot specification is supported
+		Targeted content distribution is supported
+	BIOS Revision: 4.6
+
+Handle 0x003C, DMI type 13, 22 bytes
+BIOS Language Information
+	Language Description Format: Long
+	Installable Languages: 1
+		en|US|iso8859-1
+	Currently Installed Language: en|US|iso8859-1
