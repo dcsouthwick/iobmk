@@ -274,7 +274,9 @@ UNIX_BENCH="$SOURCEDIR/byte-unixbench/UnixBench"
 [ -e $DIRTMP ] && rm -rf $DIRTMP
 mkdir -p $DIRTMP
 chmod 777 $DIRTMP
-
+# >>>>>>>>>
+# Section to be reviewed if we need it
+# New metadata may render it obsolete
 if [[ ! -z $MP_NUM ]] && [ $MP_NUM -ne $NUM_CPUS ]
 then
   export BENCHMARK_TARGET="core"
@@ -283,7 +285,7 @@ else
   MP_NUM=$NUM_CPUS
 fi
 echo "export BENCHMARK_TARGET=$BENCHMARK_TARGET" > $TIMES_SOURCE_PATH
-
+#<<<<<<<
 function write_parser {
 
   #Parse the tests
@@ -325,7 +327,9 @@ function run_report(){
 
     
 }
-
+# >>>>>>>>>
+# Section to be reviewed if we need it
+# New metadata may render it obsolete
 function get_classification {
   # replaces hwinfo.rb
   vendor_id=`lscpu | grep "Vendor ID" | awk -F' ' '{print $NF}'`
@@ -349,7 +353,7 @@ function get_classification {
 
   echo ${vendor}${osmajorrelease}_${cpus}_f${cpufamily}m${cpumodel}s${cpu_stepping}
 }
-
+#<<<<<<<
 
 function run_DB12 {
   # Expects all the variables below to be set

@@ -19,7 +19,7 @@ OTHERFILES=LICENSE README.md Makefile requirements.txt
 
 DIR=$(shell pwd)
 
-all: safeclean prepare install_basedep 
+all: safeclean prepare install_basedep install_env
 
 prepare:
 	@echo -e "\n -- Prepare installation directories at $(BMKDIR) -- \n"
@@ -65,3 +65,8 @@ safeclean:
 			rm -f $(SOFTLINK) ; \
 		fi ;\
 	fi
+
+install_env:
+	@echo -e "\n -- Install dependencies for hardware metadata... -- \n"
+
+	bash -i -c "source $(SCRIPTDIR)/install-dependencies.sh; install_hardwaretools"\

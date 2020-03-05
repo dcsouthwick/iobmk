@@ -32,7 +32,7 @@ class TestHWExtractor(unittest.TestCase):
 
         hw = Extractor()
         result = hw.exec_cmd('echofail 1')
-        self.assertEqual(result, 'NA')
+        self.assertEqual(result, 'not_available')
 
     def test_parser_bios(self):
         """
@@ -46,7 +46,7 @@ class TestHWExtractor(unittest.TestCase):
 
         parser = hw.get_parser(bios_text)
 
-        self.assertEqual(parser('Version'),'SE5C600.86B.02.01.0002.082220131453', 'BIOS parser mismatch!')
+        self.assertEqual(parser('Version'), 'SE5C600.86B.02.01.0002.082220131453', 'BIOS parser mismatch!')
         self.assertEqual(parser('Vendor'), 'Intel Corp.', 'BIOS parser mismatch!')
         self.assertEqual(parser('Release Date'), '08/22/2013',  'BIOS parser mismatch!')
 
@@ -61,7 +61,7 @@ class TestHWExtractor(unittest.TestCase):
             cpu_text = cpu_file.read()
 
 
-        CPU_OK =  {
+        CPU_OK = {
             "Architecture": "x86_64",
             "CPU_Model": "Intel(R) Xeon(R) CPU E5-2695 v2 @ 2.40GHz",
             "CPU_Family": "6",
