@@ -69,7 +69,7 @@ class Extractor(object):
 
     # Check for errors
     if cmd.returncode != 0:
-      cmd_reply = "NA"
+      cmd_reply = "not_available"
       _log.error(cmd_error)
 
     else:
@@ -91,26 +91,27 @@ class Extractor(object):
     # Extract and save data
     self._extract(BASE)
 
-  def collect_OS(self):
-    """ Collect Operating System Information. """
+  def collect_SW(self):
+    """ Collect Software specific metadata. """
 
-    _log.info("Collecting OS information.")
+    _log.info("Collecting SW information.")
 
-    OS_CMD = {
+    SW_CMD = {
       'os_version'     : "cat /etc/redhat-release",
       'kernel_version' : "uname -r",
       'gcc_version'    : "gcc --version | head -n1",
-      'glibc_version'  : "yum list installed | grep glibc.x86_64 | awk '{print $2}'"
+      'glibc_version'  : "yum list installed | grep glibc.x86_64 | awk '{print $2}'",
     }
 
-    OS = {}
+    SW = {
+      "python_version" : sys.version.split()[0],
+    }
 
     # Execute commands and append result to a dict
-    for key, val in OS_CMD.items():
-      OS[key] = self.exec_cmd(val)
+    for key, val in SW_CMD.items():
+      SW[key] = self.exec_cmd(val)
 
-    # Save data
-    self._save("OS", OS)
+    return SW
 
   def collect_cpu(self):
     """ Collect all relevant CPU information. """
@@ -128,8 +129,7 @@ class Extractor(object):
       'SMT_Enabled?'       : bool(self.exec_cmd("cat /sys/devices/system/cpu/smt/active"))
     })
 
-    # Save data
-    self._save("CPU", CPU)
+    return CPU
 
   def get_cpu_parser(self, cmd_output):
     """ Collect all CPU data from lscpu. """
@@ -168,14 +168,13 @@ class Extractor(object):
     else:
       parse_bios = lambda x : "not_available"
 
-    self.BIOS = {
+    BIOS = {
       'Vendor'        : parse_bios("Vendor"),
       'Version'       : parse_bios("Version"),
       'Release_data'  : parse_bios("Release Date"),
     }
 
-    # Save data
-    self._save("BIOS", self.BIOS)
+    return BIOS
 
   def collect_system(self):
     """ Collect relevant BIOS information. """
@@ -201,8 +200,7 @@ class Extractor(object):
       'Product_Asset_Tag' : parse_BMC_FRU("Product Asset Tag")
     }
 
-    # Save data
-    self._save("SYSTEM", SYSTEM)
+    return SYSTEM
 
   def collect_memory(self):
     """ Collect system memory. """
@@ -225,8 +223,7 @@ class Extractor(object):
      'Mem_Swap'      : self.exec_cmd("free | awk 'NR==3{print $2}'")
    })
 
-    # Save data
-    self._save("MEMORY", MEM)
+    return MEM
 
   def get_mem_parser(self, cmd_output):
     """ Memory parser for dmidecode. """
@@ -271,8 +268,7 @@ class Extractor(object):
     else:
       STORAGE = {}
 
-    # Save data
-    self._save("STORAGE", STORAGE)
+    return STORAGE
 
   def get_storage_parser(self, cmd_output):
     """ Storage parser for lshw -c disk. """
@@ -320,13 +316,26 @@ class Extractor(object):
 
   def collect(self):
     """ Collect all metadata. """
+
+    _log.info("Collecting the full metadata information.")
+
     self.collect_base()
-    self.collect_OS()
-    self.collect_cpu()
-    self.collect_bios()
-    self.collect_system()
-    self.collect_memory()
-    self.collect_storage()
+    self._save("SW", self.collect_SW())
+    self._save("HW", self.collect_HW())
+
+  def collect_HW(self):
+    """ Collect Hardware specific metadata. """
+
+    _log.info("Collecting HW information.")
+
+    HW = {
+      "CPU"     : self.collect_cpu(),
+      "BIOS"    : self.collect_bios(),
+      "SYSTEM"  : self.collect_system(),
+      "MEMORY"  : self.collect_memory(),
+      "STORAGE" : self.collect_storage()
+    }
+    return HW
 
   def dump(self, stdout=False, outfile=False):
     """ Dump data to stdout and json file. """

@@ -209,37 +209,44 @@ def parse_metadata(args):
     start_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['init_tests'])))
     end_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['end_tests'])))
 
+    # Extra tags
+    TAGS = {
+        'cloud'   : args.cloud,
+        'VO'      : args.vo,
+        'pnode'   : os.environ['PNODE'],
+        'freetext': '%s'%os.environ['FREE_TEXT'],
+    }
+
+    # Hep-benchmark-suite flags
+    FLAGS = {
+        'mp_num' : int(os.environ['MP_NUM']),
+    }
+
+    # Create output metadata
     result = {'host':{}}
-    result.update({'_id': "%s_%s" % (args.id, start_time)})
-    result.update({'_timestamp': start_time})
-    result.update({'_timestamp_end': end_time})
-    result.update({'json_version': 'v1.8'})
-    result['host'].update({'ip': args.ip})
-    result['host'].update({'hostname': args.name})
-    result['host'].update({'classification': os.environ['HWINFO']})
-    result['host'].update({'freetext': '%s'%os.environ['FREE_TEXT']})
-    result['host'].update({'cloud': args.cloud})
-    result['host'].update({'UID': args.id})
-    result['host'].update({'VO': args.vo})
-    result['host'].update({'benchmark_target': os.environ['BENCHMARK_TARGET']})
-    result['host'].update({'mp_num': int(os.environ['MP_NUM'])})
-    result['host'].update({'pnode': os.environ['PNODE']})
+    result.update({
+        '_id'            : "%s_%s" % (args.id, start_time),
+        '_timestamp'     : start_time,
+        '_timestamp_end' : end_time,
+        'json_version'   : "2.0"
+        })
 
-    # Collect Hardware metadata
+    result['host'].update({
+        'ip'             : args.ip,
+        'hostname'       : args.name,
+        'UID'            : args.id,
+        'FLAGS'          : FLAGS,
+        'TAGS'           : TAGS
+        })
+
+    # Collect Software and Hardware metadata from hwmetadata plugin
     hw=Extractor()
-    hw.collect()
-    result['host'].update({'HW': hw.export()})
 
-    #try:
-    #    result['host'].update({'pnode': get_pnode()})
-    #except Exception as e:
-    #    pass
-    result['host'].update({'osdist':commands.getoutput("lsb_release -d -s 2>/dev/null").replace('"', '')})
-    result['host'].update({'pyver': sys.version.split()[0]})
-    result['host'].update({'cpuname': commands.getoutput("cat /proc/cpuinfo | grep '^model name' | tail -n 1").split(':')[1].lstrip()})
-    result['host'].update({'cpunum' : int(commands.getoutput("cat /proc/cpuinfo | grep '^processor' |wc -l"))})
-    result['host'].update({'bogomips': float(commands.getoutput("cat /proc/cpuinfo | grep '^bogomips' | tail -n 1").split(':')[1].lstrip())})
-    result['host'].update({'meminfo': float(commands.getoutput("cat /proc/meminfo | grep 'MemTotal:'").split()[1])})
+    result['host'].update({
+        'SW': hw.collect_SW(),
+        'HW': hw.collect_HW(),
+        })
+
     return result
 
 def insert_print_action(alist,akey,astring,adic):
@@ -275,12 +282,11 @@ def print_results_kv(r):
 def print_results(results):
     
     print "\n\n========================================================="
-    print "RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD %s" % results['host']['cloud'] 
+    print "RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD %s" % results['host']['TAGS']['cloud']
     print "========================================================="
     print "Suite start %s " % results['_timestamp']
     print "Suite end   %s" % results['_timestamp_end']
-    print "Machine CPU Model: %s" %  results['host']['cpuname']
-    print "Machine classification: %s" %  results['host']['classification']
+    print "Machine CPU Model: %s" %  results['host']['HW']['CPU']['CPU_Model']
 
     p = results['profiles']
     bmk_print_action = {
