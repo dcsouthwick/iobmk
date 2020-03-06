@@ -209,17 +209,25 @@ def parse_metadata(args):
     start_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['init_tests'])))
     end_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['end_tests'])))
 
-    # Extra tags
-    TAGS = {
-        'cloud'   : args.cloud,
-        'VO'      : args.vo,
-        'pnode'   : os.environ['PNODE'],
-        'freetext': '%s'%os.environ['FREE_TEXT'],
-    }
+    # Convert user tags to json format
+    def convertTagsToJson(tag_str):
+        # Check if user provided a valid tag string to be converted to json
+        try:
+            tags = json.loads(tag_str)
+        except:
+            # User provided wrong format. Default tags are provided.
+            logger.warning("Not a valid tag json format specified: %s" % tag_str)
+            tags = {
+                "pnode":    "not_defined",
+                "freetext": "not_defined",
+                "cloud":    "not_defined",
+                "VO":       "not_defined"
+           }
+        return tags
 
     # Hep-benchmark-suite flags
     FLAGS = {
-        'mp_num' : int(os.environ['MP_NUM']),
+        'mp_num' : args.mp_num,
     }
 
     # Create output metadata
@@ -236,7 +244,7 @@ def parse_metadata(args):
         'hostname'       : args.name,
         'UID'            : args.id,
         'FLAGS'          : FLAGS,
-        'TAGS'           : TAGS
+        'TAGS'           : convertTagsToJson(args.tags),
         })
 
     # Collect Software and Hardware metadata from hwmetadata plugin
@@ -314,13 +322,13 @@ def print_results_from_file(afile):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--id", nargs='?', help="UID")
-    parser.add_argument("-n", "--name", nargs='?', help="hostname")
-    parser.add_argument("-p", "--ip", nargs='?', help="ip address")
-    parser.add_argument("-v", "--vo", nargs='?', default='', help="VO")
-    parser.add_argument("-c", "--cloud", nargs='?', help="Cloud")
-    parser.add_argument("-f", "--file", nargs='?', help="File to store the results", default="result_profile.json")
+    parser.add_argument("-i", "--id",     nargs='?', help="UID")
+    parser.add_argument("-n", "--name",   nargs='?', help="hostname")
+    parser.add_argument("-p", "--ip",     nargs='?', help="ip address")
+    parser.add_argument("-f", "--file",   nargs='?', help="File to store the results", default="result_profile.json")
     parser.add_argument("-d", "--rundir", nargs='?', help="Directory where bmks ran")
+    parser.add_argument("-m", "--mp_num",  nargs='?', help="Number of cpus to run the benchmarks.")
+    parser.add_argument("-t", "--tags",   nargs='?', help="Custom user tags.")
     args = parser.parse_args()
 
     result = parse_metadata(args)
