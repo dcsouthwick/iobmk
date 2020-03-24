@@ -12,16 +12,13 @@ function test_parser_run(){
     
     export DB12=18.7500457765
     export HWINFO=i6_2_f6m61s2_mhz2194.916
-    export FREE_TEXT="some free text"
-    export PNODE="abcd"
-    export MP_NUM=2
     
     export HYPER_BENCHMARK=1
     export HYPER_1minLoad_1=1.1
     export HYPER_1minLoad_2=1.1
     export HYPER_1minLoad_3=1.1
     
-    python $TESTDIR/../pyscripts/parser.py -i f2429109a5a6_a1842eb2-06a5-4ba9-87c8-86ca0f2c49b3 --tags='{\"cloud\":\"suite-CI\",\"pnode\":\"abcd\",\"free_text\":\"somefree text\"}' -v  -f $TESTDIR/data/result_profile.json -p 172.17.0.2 -d $TESTDIR/data/bmk_run -v foo -n "mymachine"
+    python $TESTDIR/../pyscripts/parser.py -i f2429109a5a6_a1842eb2-06a5-4ba9-87c8-86ca0f2c49b3 --mp_num=2 --tags='{\"cloud\":\"suite-CI\",\"pnode\":\"abcd\",\"free_text\":\"some free text\",\"name\":\"mymachine\",\"vo\":\"vo-name\"}' -f $TESTDIR/data/result_profile.json -p 172.17.0.2 -d $TESTDIR/data/bmk_run
 }
 
 
