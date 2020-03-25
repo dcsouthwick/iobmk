@@ -12,6 +12,68 @@
 			"free_text": "some free text",
 			"cloud": "suite-CI",
 			"name": "mymachine"
+		},
+		"SW": {
+			"kernel_version": "3.10.0-1062.9.1.el7.x86_64",
+			"os_version": "CentOS Linux release 7.7.1908 (Core)",
+			"glibc_version": "1:2.12-4.el7.centos\n2.17-292.el7",
+			"python_version": "2.7.5",
+			"gcc_version": "gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-39)"
+		},
+		"HW": {
+			"BIOS": {
+				"Version": "SE5C600.86B.02.01.0002.082220131453",
+				"Vendor": "Intel Corp.",
+				"Release_data": "08/22/2013"
+			},
+			"MEMORY": {
+				"Mem_Swap": "32964604",
+				"dimm4": "8192 MB DDR3 | Nanya | NT8GC72C4NG0NL-CG",
+				"dimm5": "8192 MB DDR3 | Nanya | NT8GC72C4NG0NL-CG",
+				"dimm6": "8192 MB DDR3 | Nanya | NT8GC72C4NG0NL-CG",
+				"dimm7": "8192 MB DDR3 | Nanya | NT8GC72C4NG0NL-CG",
+				"dimm1": "8192 MB DDR3 | Nanya | NT8GC72C4NG0NL-CG",
+				"dimm2": "8192 MB DDR3 | Nanya | NT8GC72C4NG0NL-CG",
+				"dimm3": "8192 MB DDR3 | Nanya | NT8GC72C4NG0NL-CG",
+				"dimm8": "8192 MB DDR3 | Nanya | NT8GC72C4NG0NL-CG",
+				"Mem_Available": "61669632",
+				"Mem_Total": "65703384"
+			},
+			"STORAGE": {
+				"disk1": "/dev/sda | INTEL SSDSC2CW24 | 223GiB (240GB)",
+				"disk2": "/dev/sdb | INTEL SSDSC2CW24 | 223GiB (240GB)",
+				"disk3": "/dev/sdc | INTEL SSDSC2CW24 | 223GiB (240GB)"
+			},
+			"CPU": {
+				"Online_CPUs_list": "0-47",
+				"CPU_Max_Speed_MHz": "3200.0000",
+				"NUMA_node0_CPUs": "0-11,24-35",
+				"Vendor_ID": "GenuineIntel",
+				"Cores_per_socket": "12",
+				"CPU_Model": "Intel Core Processor (Broadwell, IBRS)",
+				"BogoMIPS": "4788.43",
+				"Sockets": "2",
+				"Power_Policy": "powersave",
+				"L2_cache": "256K",
+				"NUMA_node1_CPUs": "12-23,36-47",
+				"Architecture": "x86_64",
+				"Stepping": "4",
+				"CPU_Family": "6",
+				"CPU_Min_Speed_MHz": "1200.0000",
+				"Microcode": "0x42e",
+				"Power_Driver": "intel_pstate",
+				"L3_cache": "30720K",
+				"CPU": "48",
+				"SMT_Enabled?": true,
+				"Threads_per_core": "2"
+			},
+			"SYSTEM": {
+				"Product_Asset_Tag": "....................",
+				"Product_Serial": "............",
+				"Version": "....................",
+				"Product_Name": "S2600JF",
+				"Manufacturer": "Intel Corporation"
+			}
 		}
 	},
 	"_id": "f2429109a5a6_a1842eb2-06a5-4ba9-87c8-86ca0f2c49b3_2017-10-02T14:09:53Z",
