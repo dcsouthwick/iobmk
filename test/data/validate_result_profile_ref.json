@@ -1,21 +1,18 @@
 {
 	"host": {
-		"benchmark_target": "machine",
-		"meminfo": 3531680.0,
 		"UID": "f2429109a5a6_a1842eb2-06a5-4ba9-87c8-86ca0f2c49b3",
-		"classification": "i6_2_f6m61s2_mhz2194.916",
-		"freetext": "some free text",
-		"cpuname": "Intel Core Processor (Broadwell, IBRS)",
 		"ip": "172.17.0.2",
-		"hostname": "mymachine",
-		"osdist": "CentOS Linux release 7.6.1810 (Core) ",
-		"bogomips": 4389.83,
-		"VO": "foo",
-		"cpunum": 2,
-		"pnode": "abcd",
-		"mp_num": 2,
-		"pyver": "2.7.5",
-		"cloud": "suite-CI"
+		"hostname" : "mymachine",
+		"FLAGS": {
+			"mp_num": "2"
+		},
+		"TAGS": {
+			"pnode": "abcd",
+			"vo": "foo",
+			"free_text": "some free text",
+			"cloud": "suite-CI",
+			"name": "mymachine"
+		}
 	},
 	"_id": "f2429109a5a6_a1842eb2-06a5-4ba9-87c8-86ca0f2c49b3_2017-10-02T14:09:53Z",
 	"_timestamp_end": "2017-10-02T14:23:02Z",
@@ -1013,5 +1010,6 @@
 			"container_exec": "docker"
 		}
 	},
-	"_timestamp": "2017-10-02T14:09:53Z"
+	"_timestamp": "2017-10-02T14:09:53Z",
+	"json_version": "2.0"
 }
