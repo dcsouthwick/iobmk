@@ -13,5 +13,5 @@ hepscore_benchmark:
   registry: gitlab-registry.cern.ch/hep-benchmarks/hep-workloads
   repetitions: 1
   scaling: 10
-  version: 0.3
+  version: 0.x
   container_exec: docker
