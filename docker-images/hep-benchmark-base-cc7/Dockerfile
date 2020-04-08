@@ -19,10 +19,8 @@ RUN cd /tmp;  wget https://github.com/bats-core/bats-core/archive/v1.1.0.zip; un
 RUN pip install dictdiffer pyyaml 
 RUN pip install stomp.py==4.1.22
 
-# Temporarely force a specific old version 3.2.1 of Singularity to resolve BMK-253
-# (latest version is 3.4.2, a fix for this issue should appear in 3.4.3)
-RUN rpm --import https://repo.opensciencegrid.org/osg/3.4/RPM-GPG-KEY-OSG
-RUN yum install -y https://repo.opensciencegrid.org/osg/3.4/el7/release/x86_64/singularity-3.2.1-1.1.osg34.el7.x86_64.rpm && yum clean all
+# BMK-375
+RUN yum install -y https://download.fedoraproject.org/pub/epel/7/x86_64/Packages/s/singularity-3.5.3-1.1.el7.x86_64.rpm && yum clean all
 
 LABEL multi.maintainer="Domenico Giordano <domenico.giordano@cern.ch>" \
       multi.version="1.0" \
