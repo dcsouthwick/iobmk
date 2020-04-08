@@ -75,7 +75,7 @@ RUNDIR=$(readlink -m ${BMK_RUNDIR:-"/tmp/$(basename $0)_$(whoami)"})
 
 LOG="$RUNDIR/$(basename $0).out"
 LOCK_FILE="$RUNDIR/$(basename $0).lock"
-END=0
+ENDSTATUS=1
 
 # If the script is running exit
 if [ -e $LOCK_FILE ]; then
@@ -106,7 +106,7 @@ function onEXIT() {
   #    rm -fr $RUNAREA_PATH $DIRTMP $PARSER_PATH && mv bmk_out*.tar.gz $PREVIOUS_RESULTS_DIR
   #  fi
 
-  if [ $END -eq 0 ]; then
+  if [ $ENDSTATUS -ne 0 ]; then
     echo -e "\n
 !! ERROR !!: \nThe script encountered a problem. Exiting without finishing.
 Log snippet ($LOG):
@@ -219,12 +219,12 @@ while [ "$1" != "" ]; do
     ;;
   -h)
     echo -e "${usage}" >&3
-    END=1
+    ENDSTATUS=0
     exit 0
     ;;
   *)
     echo -e "Invalid option $1 \n\n${usage}" >&3
-    END=1
+    ENDSTATUS=0
     exit 1
     ;;
   esac
