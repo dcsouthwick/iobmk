@@ -106,10 +106,8 @@ function hepscore_dependencies() {
 }
 
 function install_singularity() {
-    # Temporarely force a specific old version 3.2.1 of Singularity to resolve BMK-253
-    # (latest version is 3.4.2, a fix for this issue should appear in 3.4.3)
-    rpm --import https://repo.opensciencegrid.org/osg/3.4/RPM-GPG-KEY-OSG
-    yum install -y https://repo.opensciencegrid.org/osg/3.4/el7/release/x86_64/singularity-3.2.1-1.1.osg34.el7.x86_64.rpm
+    # BMK-375
+    yum install -y https://download.fedoraproject.org/pub/epel/7/x86_64/Packages/s/singularity-3.5.3-1.1.el7.x86_64.rpm
 }
 
 function get_requirements() {
