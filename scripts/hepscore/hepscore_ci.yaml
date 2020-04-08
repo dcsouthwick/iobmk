@@ -6,12 +6,12 @@ hepscore_benchmark:
       scorekey: wl-scores
       threads: 2 
       events: 4
-      version: v1.0      
+      version: v1.2      
   method: geometric_mean
   name: HEPscore19
   reference_machine: "An undefined machine"
   registry: gitlab-registry.cern.ch/hep-benchmarks/hep-workloads
   repetitions: 1
   scaling: 10
-  version: 0.3
+  version: 0.x
   container_exec: docker

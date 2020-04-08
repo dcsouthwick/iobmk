@@ -10,11 +10,18 @@
 # Base dir for all. If not specified in a environment variable BMK_SOURCEDIR it uses the default /opt/hep-benchmark-suite
 SOURCEDIR=${BMK_SOURCEDIR:-"/opt/hep-benchmark-suite"}
 
+# include in the PATH also the local path 
+# in case the user had to install anything 
+# in the local area (case of singularity) 
+# see https://its.cern.ch/jira/browse/BMK-332
+export PATH=$HOME/.local/bin:$PATH  
+
 # $bmks is defined in plugins.sh
 source "$SOURCEDIR"/scripts/plugins.sh
 
 echo "export init_tests=$(date +%s)" >> ${TIMES_SOURCE_PATH}
 
+FAIL_BMKS=0
 GOOD_BMKS=0
 for b in $bmks
 do
@@ -22,13 +29,13 @@ do
   if [[ $b == 'kv' ]]; then
     echo "INFO: running KV..."
     # Launch in normal mode
-    run_kv "$TIMES_SOURCE_PATH" "$SOURCEDIR" || true
+    run_kv "$TIMES_SOURCE_PATH" "$SOURCEDIR" || FAIL_BMKS=$((FAIL_BMKS+1))
   elif [[ $b =~ "hepscore" ]]; then
-      run_hepscore || true 
+      run_hepscore || FAIL_BMKS=$((FAIL_BMKS+1))
   elif [[ $b =~ ^(hs06_(32|64))$ ]]; then
-      run_hs06 "$b" || true 
+      run_hs06 "$b" || FAIL_BMKS=$((FAIL_BMKS+1))
   elif [[ $b == "spec2017" ]]; then
-      run_spec2017 || true 
+      run_spec2017 || FAIL_BMKS=$((FAIL_BMKS+1))
   elif [[ $b == "hyper-benchmark" ]]; then
     echo "INFO: running hyper-benchmark..."
     export HYPER_BENCHMARK=1
@@ -64,7 +71,7 @@ do
     export HYPER_DB12=$(run_DB12 "$hyper_bmk_RUNAREA/DB12")
     export HYPER_1minLoad_2=$(uptime | sed 's/.*load average: //' | awk -F\, '{print $1}')
     export HYPER_1minLoad_3=$(uptime | sed 's/.*load average: //' | awk -F\, '{print $1}')
-  elif [[ $b == "DB12" ]]; then
+  elif [[ $b == "db12" ]]; then
     echo "INFO: running DB12..."
     export DB12=$(run_DB12)
   else
@@ -76,4 +83,8 @@ done
 # Generate the report
 [[ $GOOD_BMKS -gt 0 ]] && run_report
 
-END=1
+# Fail if at least a benchmark failed
+[[ $FAIL_BMKS -gt 0 ]] && echo -e "Number of failed benchmarks is $FAIL_BMKS" && ENDSTATUS=1 && exit 1
+
+ENDSTATUS=0
+exit 0
