@@ -10,6 +10,12 @@
 # Base dir for all. If not specified in a environment variable BMK_SOURCEDIR it uses the default /opt/hep-benchmark-suite
 SOURCEDIR=${BMK_SOURCEDIR:-"/opt/hep-benchmark-suite"}
 
+# include in the PATH also the local path 
+# in case the user had to install anything 
+# in the local area (case of singularity) 
+# see https://its.cern.ch/jira/browse/BMK-332
+export PATH=$HOME/.local/bin:$PATH  
+
 # $bmks is defined in plugins.sh
 source "$SOURCEDIR"/scripts/plugins.sh
 
