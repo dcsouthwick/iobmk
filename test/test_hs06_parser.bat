@@ -21,7 +21,7 @@ function test_hs06_parser(){
 
 
 @test "Test results' json format" { 
-      run $TESTDIR/../pyscripts/json-differ.py $TESTDIR/data/validate_hs06_results.json $TESTDIR/data/validate_hs06_results_ref.json
+      run $TESTDIR/../pyscripts/json-differ.py $TESTDIR/data/validate_hs06_results_ref.json $TESTDIR/data/validate_hs06_results.json 
       echo -e "$output"
       [ "$status" -eq 0 ]
 }

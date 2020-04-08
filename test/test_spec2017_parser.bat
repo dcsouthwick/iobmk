@@ -20,7 +20,7 @@ function test_parser(){
 
 
 @test "Test results' json format" { 
-      run $TESTDIR/../pyscripts/json-differ.py $TESTDIR/data/validate_spec2017_results.json $TESTDIR/data/validate_spec2017_results_ref.json
+      run $TESTDIR/../pyscripts/json-differ.py $TESTDIR/data/validate_spec2017_results_ref.json $TESTDIR/data/validate_spec2017_results.json 
       echo -e "$output"
       [ "$status" -eq 0 ]
 }
