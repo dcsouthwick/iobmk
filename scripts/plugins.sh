@@ -472,8 +472,10 @@ function prepare_spec() {
   fi
 
   # At this point the dir ${SPECPATH} must exist
-  if [[ -z ${SPECPATH} ]]; then
-    echo "[prepare_spec] ERROR: Unable to find directory for ${SPECNAME}. Please define it using --${SPECNAME,,}_path=your_path_to_it. Exit from run_${SPECNAME,,} without running" >&4
+  if [[ ! -d ${SPECPATH} ]]; then
+    echo "[prepare_spec] ERROR: Unable to find directory for ${SPECNAME}. \
+    Please install ${SPECNAME} in the directory specified by  --${SPECNAME,,}_path=your_path_to_it, \
+    or provide a url to download ${SPECNAME} using the argument --${SPECNAME,,}_url. Exit from run_${SPECNAME,,} without running" >&4
     return 1
   fi
 
