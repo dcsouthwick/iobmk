@@ -1,4 +1,5 @@
 {
+	"json_version" : "v1.8",
 	"host": {
 		"benchmark_target": "machine",
 		"meminfo": 3531680.0,
