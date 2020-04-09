@@ -148,7 +148,7 @@
 				"system": "Linux bmk20-cc7-6cdk1og9ng.cern.ch 3.10.0-957.27.2.el7.x86_64 #1 SMP Mon Jul 29 17:46:05 UTC 2019 x86_64",
 				"container_exec": "docker"
 			},
-			"version": 0.3,
+			"version": "0.x",
 			"reference_machine": "bmk16-cc7-7xc9mygbzq",
 			"registry": "gitlab-registry.cern.ch/hep-benchmarks/hep-workloads",
 			"benchmarks": {
