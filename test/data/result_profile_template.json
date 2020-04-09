@@ -2,6 +2,7 @@
 	"_timestamp": "_INSERTTIMESTAMP_",
 	"_id": "f2429109a5a6_a1842eb2-06a5-4ba9-87c8-86ca0f2c49b3-_INSERTTIMESTAMP_",
 	"_timestamp_end": "_INSERTTIMESTAMP_",
+	"json_version": "v1.8",
 	"host": {
 		"benchmark_target": "machine",
 		"meminfo": 3531712.0,
