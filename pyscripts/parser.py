@@ -212,6 +212,7 @@ def parse_metadata(args):
     result.update({'_id': "%s_%s" % (args.id, start_time)})
     result.update({'_timestamp': start_time})
     result.update({'_timestamp_end': end_time})
+    result.update({'json_version': 'v1.8'})
     result['host'].update({'ip': args.ip})
     result['host'].update({'hostname': args.name})
     result['host'].update({'classification': os.environ['HWINFO']})
