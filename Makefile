@@ -15,7 +15,7 @@ SCRIPTFILES=scripts/*
 PYSCRIPTFILES=pyscripts/*
 TESTFILES=test/*
 
-OTHERFILES=LICENSE README.md Makefile requirements.txt
+OTHERFILES=LICENSE README.md Makefile requirements.txt VERSION
 
 DIR=$(shell pwd)
 

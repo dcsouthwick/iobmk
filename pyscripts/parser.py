@@ -207,7 +207,7 @@ def parse_phoronix():
 
 def parse_metadata(args): 
     start_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['init_tests'])))
-    end_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['end_tests'])))
+    end_time   = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['end_tests'])))
 
     # Convert user tags to json format
     def convertTagsToJson(tag_str):
@@ -230,13 +230,17 @@ def parse_metadata(args):
         'mp_num' : args.mp_num,
     }
 
+    # Get json metadata version
+    with open(os.path.join(os.getcwd(),'VERSION')) as version_file:
+        _json_version = version_file.readline()
+
     # Create output metadata
     result = {'host':{}}
     result.update({
         '_id'            : "%s_%s" % (args.id, start_time),
         '_timestamp'     : start_time,
         '_timestamp_end' : end_time,
-        'json_version'   : "2.0"
+        'json_version'   : _json_version
         })
 
     result['host'].update({
