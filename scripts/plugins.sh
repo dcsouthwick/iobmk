@@ -154,7 +154,7 @@ while [ "$1" != "" ]; do
   --public_ip=*)
     PUBLIC_IP=${1#*=}
     ;;
-    --tags=* )              TAGS=${1#*};
+  --tags=* )              TAGS=${1#*};
     ;;
   --queue_port=*)
     QUEUE_PORT=${1#*=}
@@ -177,7 +177,7 @@ while [ "$1" != "" ]; do
   --topic=*)
     QUEUE_NAME=${1#*=}
     ;;
-    --hs06_path=* )         HS06_PATH=${1#*=};
+  --hs06_path=* )         HS06_PATH=${1#*=};
     ;;
   --hs06_url=*)
     HS06_URL=${1#*=}
