@@ -27,12 +27,6 @@ OPTIONS:
 \t (Optional) Unique identifier for the host running this script. If not specified, it will be generated
 --public_ip=<ip>
 \t (Optional) Public IP address of the host running this script. If not specified, it will be generated
---cloud=<cloudName>
-\t Cloud name to identify the results - if not specified, CLOUD=test and use -q to avoid prompt
---vo=<VO>
-\t (Optional) Name of the VO responsible for the underlying resource
---pnode=<physicalNode>
-\t (Optional) Name of the hypervisor machine hosting the VM
 --queue_port=<portNumber>
 \t Port number of the ActiveMQ broker where to send the benchmarking results
 --queue_host=<hostname>
@@ -47,8 +41,8 @@ OPTIONS:
 \t Certificate for the AMQ authentication. Expects --amq_key
 --topic=<topicName>
 \t Topic (or Queue) name used in the ActiveMQ broker
---freetext=<string>
-\t (Optional) Any additional free text to add to the generated output JSON
+--tags=<string>
+\t (Optional) Any desired user tags must be passed through json format with string escaping.
 \t (*) this benchmark performs the following measurements sequence: 1-min Load -> read machine&job features -> DB12 -> 1-min Load -
 --hs06_path=<string>
 \t MANDATORY: Path where the HEPSPEC06 installation is expected 
@@ -122,8 +116,7 @@ trap onEXIT EXIT
 
 # Get parameters
 QUIET=0
-CLOUD='test'
-FREE_TEXT=''
+TAGS=''
 HS06_PATH=''
 HS06_URL=''
 HS06_BMK=''
@@ -154,14 +147,7 @@ while [ "$1" != "" ]; do
   --public_ip=*)
     PUBLIC_IP=${1#*=}
     ;;
-  --cloud=*)
-    CLOUD=${1#*=}
-    ;;
-  --vo=*)
-    VO=${1#*=}
-    ;;
-  --pnode=*)
-    PNODE=${1#*=}
+    --tags=* )              TAGS=${1#*};
     ;;
   --queue_port=*)
     QUEUE_PORT=${1#*=}
@@ -184,11 +170,7 @@ while [ "$1" != "" ]; do
   --topic=*)
     QUEUE_NAME=${1#*=}
     ;;
-  --freetext=*)
-    FREE_TEXT=${1#*=}
-    ;;
-  --hs06_path=*)
-    HS06_PATH=${1#*=}
+    --hs06_path=* )         HS06_PATH=${1#*=};
     ;;
   --hs06_url=*)
     HS06_URL=${1#*=}
@@ -279,9 +261,13 @@ if [[ -z $PUBLIC_IP ]]; then
   fi
 fi
 
-if [ $CLOUD == "test" ] && [ $QUIET -eq 0 ]; then
-  echo "CLOUD name is set to 'test'" >&3
-fi
+# >>>>>>>>>
+# Section to be reviewed if we need it
+#if [ $CLOUD == "test" ] && [ $QUIET -eq 0 ]
+#then
+#  echo "CLOUD name is set to 'test'" >&3
+#fi
+#<<<<<<<
 
 # Set auxiliary directories and variables
 DIRTMP="$RUNDIR/bmk_utils"
@@ -295,33 +281,37 @@ UNIX_BENCH="$SOURCEDIR/byte-unixbench/UnixBench"
 [ -e $DIRTMP ] && rm -rf $DIRTMP
 mkdir -p $DIRTMP
 chmod 777 $DIRTMP
-
-if [[ ! -z $MP_NUM ]] && [ $MP_NUM -ne $NUM_CPUS ]; then
+# >>>>>>>>>
+# Section to be reviewed if we need it
+# New metadata may render it obsolete
+if [[ ! -z $MP_NUM ]] && [ $MP_NUM -ne $NUM_CPUS ]
+then
   export BENCHMARK_TARGET="core"
 else
   export BENCHMARK_TARGET="machine"
   MP_NUM=$NUM_CPUS
 fi
-echo "export BENCHMARK_TARGET=$BENCHMARK_TARGET" >$TIMES_SOURCE_PATH
-
-function write_parser() {
+echo "export BENCHMARK_TARGET=$BENCHMARK_TARGET" > $TIMES_SOURCE_PATH
+#<<<<<<<
+function write_parser {
 
   #Parse the tests
   cat <<X5_EOF >$PARSER_PATH
 source $TIMES_SOURCE_PATH
 export DB12=$DB12
 export HWINFO=$HWINFO
-export FREE_TEXT="$FREE_TEXT"
-export PNODE=$PNODE
 export MP_NUM=$MP_NUM
-python $wrapper_basedir/parser.py -i $VMUID -c $CLOUD -v $VO -f $RESULTS_FILE -p $PUBLIC_IP -d $RUNAREA_PATH -n $(hostname)
+python $wrapper_basedir/parser.py --tags "$TAGS" --mp_num $MP_NUM -i $VMUID -f $RESULTS_FILE -p $PUBLIC_IP -d $RUNAREA_PATH -n $(hostname)
 X5_EOF
 
   chmod ugo+rx $PARSER_PATH
 }
 
-function run_report() {
-  export HWINFO=$(get_classification)
+# >>>>>>>>>
+# Section to be reviewed if we need it
+# this section relied on get_classification which was dropped.
+function run_report(){
+    export HWINFO=$(get_classification)
 
   echo "export end_tests=$(date +%s)" >>$TIMES_SOURCE_PATH
 
@@ -342,30 +332,8 @@ function run_report() {
   cd -
 
 }
-
-function get_classification() {
-  # replaces hwinfo.rb
-  vendor_id=$(lscpu | grep "Vendor ID" | awk -F' ' '{print $NF}')
-  if [[ $vendor_id == "GenuineIntel" ]]; then
-    vendor="i"
-  elif [[ $vendor_id == "AuthenticAMD" ]]; then
-    vendor="a"
-  else
-    vendor="o"
-  fi
-
-  osmajorrelease=$(cat /etc/redhat-release | cut -d "." -f 1 | awk '{print $NF}')
-
-  cpus=${NUM_CPUS:-$(grep -c processor /proc/cpuinfo)}
-  cpufamily=$(lscpu | grep "CPU family" | awk -F' ' '{print $NF}')
-  cpumodel=$(lscpu | grep "Model:" | awk -F' ' '{print $NF}')
-  cpu_stepping=$(lscpu | grep Stepping | awk -F' ' '{print $NF}')
-  cpu_speed=$(lscpu | grep MHz | awk -F' ' '{print $NF}')
-
-  echo ${vendor}${osmajorrelease}_${cpus}_f${cpufamily}m${cpumodel}s${cpu_stepping}
-}
-
-function run_DB12() {
+# <<<<<<<<<<
+function run_DB12 {
   # Expects all the variables below to be set
   # Also has optional $1 as basedir for the results
   DB12_RUNAREA=${1:-$RUNAREA_PATH"/DB12"}
