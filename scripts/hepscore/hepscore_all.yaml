@@ -14,7 +14,7 @@ hepscore_benchmark:
       threads: 4
       events: 10
       version: v1.1
-    .atlas-digi-reco-bmk:
+    atlas-digi-reco-bmk:
       ref_scores:
         digi-reco: 2.39
       scorekey: wl-scores
@@ -55,5 +55,5 @@ hepscore_benchmark:
   registry: gitlab-registry.cern.ch/hep-benchmarks/hep-workloads
   repetitions: 3
   scaling: 355
-  container_exec: singularity
+  container_exec: docker
   version: 0.x

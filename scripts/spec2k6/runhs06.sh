@@ -96,8 +96,15 @@ function calculate_results() {
     SUM=`echo "scale=2; ($SUM)/1" | bc`
     echo "Final result: $SUM  over $TOTRUNS runs. Average $AVERAGE"
 
+    #The file result/CPU2006.001.log is the first generated doing build
+    BSET=`grep "action=build" $SPECDIR/result/CPU2006.001.log | awk -F 'action=build' '{print $2}' | sed -e 's@ @@g' | uniq`
+    LINK=`grep 'LINK' $SPECDIR/result/CPU2006.001.log | cut -d":" -f2 | uniq -c | tr "\n" ";" | sed -e 's@   @@g'`
+    RUNCPU_ARGS=`grep 'runspec\s*=' $SPECDIR/result/CPU2006.001.log | uniq  -c | tr "\n" ";" | sed -e 's@   @@g'`
+
     #Now build the JSON output that will be used for the suite
-    JSON="{\"hs06_$ARCH\":{\"start\":\"$START\", \"end\":\"$END\", \"score\":$SUM, \"avg_core_score\" : $AVERAGE, \"num_bmks\":$count ,\"bmks\":{"
+    JSON="{\"hs06_$ARCH\":{\"start\":\"$START\", \"end\":\"$END\",
+           \"runcpu_args\":\"$RUNCPU_ARGS\", \"bset\":\"$BSET\", \"LINK\":\"$LINK\",
+           \"score\":$SUM, \"avg_core_score\" : $AVERAGE, \"num_bmks\":$count ,\"bmks\":{"
     for bmk in `echo $LISTBMKS | tr " " "\n" | sort | uniq`;
     do
 	reslist=""

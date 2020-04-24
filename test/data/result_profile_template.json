@@ -2,6 +2,7 @@
 	"_timestamp": "_INSERTTIMESTAMP_",
 	"_id": "f2429109a5a6_a1842eb2-06a5-4ba9-87c8-86ca0f2c49b3-_INSERTTIMESTAMP_",
 	"_timestamp_end": "_INSERTTIMESTAMP_",
+	"json_version": "v1.8",
 	"host": {
 		"benchmark_target": "machine",
 		"meminfo": 3531712.0,
@@ -147,7 +148,7 @@
 				"system": "Linux bmk20-cc7-6cdk1og9ng.cern.ch 3.10.0-957.27.2.el7.x86_64 #1 SMP Mon Jul 29 17:46:05 UTC 2019 x86_64",
 				"container_exec": "docker"
 			},
-			"version": 0.3,
+			"version": "0.x",
 			"reference_machine": "bmk16-cc7-7xc9mygbzq",
 			"registry": "gitlab-registry.cern.ch/hep-benchmarks/hep-workloads",
 			"benchmarks": {
