@@ -1,0 +1,33 @@
+  *-disk:0
+       description: ATA Disk
+       product: INTEL SSDSC2CW24
+       physical id: 0.0.0
+       bus info: scsi@0:0.0.0
+       logical name: /dev/sda
+       version: 400i
+       serial: CVCV2125008R240CGN
+       size: 223GiB (240GB)
+       capabilities: partitioned partitioned:dos
+       configuration: ansiversion=5 logicalsectorsize=512 sectorsize=512 signature=00029e0f
+  *-disk:1
+       description: ATA Disk
+       product: INTEL SSDSC2CW24
+       physical id: 0.1.0
+       bus info: scsi@0:0.1.0
+       logical name: /dev/sdb
+       version: 400i
+       serial: CVCV21220ADY240CGN
+       size: 223GiB (240GB)
+       capabilities: partitioned partitioned:dos
+       configuration: ansiversion=5 logicalsectorsize=512 sectorsize=512 signature=0007d9a3
+  *-disk:2
+       description: ATA Disk
+       product: INTEL SSDSC2CW24
+       physical id: 0.2.0
+       bus info: scsi@0:0.2.0
+       logical name: /dev/sdc
+       version: 400i
+       serial: CVCV2125008V240CGN
+       size: 223GiB (240GB)
+       capabilities: partitioned partitioned:dos
+       configuration: ansiversion=5 logicalsectorsize=512 sectorsize=512 signature=000cc396

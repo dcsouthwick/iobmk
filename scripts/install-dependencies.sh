@@ -117,3 +117,8 @@ function get_requirements() {
     source $current_dir/requirements.txt
     export hepscore_version
 }
+
+function install_hardwaretools() {
+    echo "... installing hardware tools."
+    yum install -y lshw ipmitool dmidecode
+}

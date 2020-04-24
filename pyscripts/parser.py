@@ -15,6 +15,7 @@ import argparse
 import re
 import multiprocessing
 import logging
+from hwmetadata.hwmetadata.extractor import Extractor
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger('[RESULT PARSER]')
@@ -206,34 +207,58 @@ def parse_phoronix():
 
 def parse_metadata(args): 
     start_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['init_tests'])))
-    end_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['end_tests'])))
+    end_time   = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['end_tests'])))
 
+    # Convert user tags to json format
+    def convertTagsToJson(tag_str):
+        # Check if user provided a valid tag string to be converted to json
+        try:
+            tags = json.loads(tag_str)
+        except:
+            # User provided wrong format. Default tags are provided.
+            logger.warning("Not a valid tag json format specified: %s" % tag_str)
+            tags = {
+                "pnode":    "not_defined",
+                "freetext": "not_defined",
+                "cloud":    "not_defined",
+                "VO":       "not_defined"
+           }
+        return tags
+
+    # Hep-benchmark-suite flags
+    FLAGS = {
+        'mp_num' : args.mp_num,
+    }
+
+    # Get json metadata version
+    with open(os.path.join(os.getcwd(),'VERSION')) as version_file:
+        _json_version = version_file.readline()
+
+    # Create output metadata
     result = {'host':{}}
-    result.update({'_id': "%s_%s" % (args.id, start_time)})
-    result.update({'_timestamp': start_time})
-    result.update({'_timestamp_end': end_time})
-    result.update({'json_version': 'v1.8'})
-    result['host'].update({'ip': args.ip})
-    result['host'].update({'hostname': args.name})
-    result['host'].update({'classification': os.environ['HWINFO']})
-    result['host'].update({'freetext': '%s'%os.environ['FREE_TEXT']})
-    result['host'].update({'cloud': args.cloud})
-    result['host'].update({'UID': args.id})
-    result['host'].update({'VO': args.vo})
-    result['host'].update({'benchmark_target': os.environ['BENCHMARK_TARGET']})
-    result['host'].update({'mp_num': int(os.environ['MP_NUM'])})
-    result['host'].update({'pnode': os.environ['PNODE']})
+    result.update({
+        '_id'            : "%s_%s" % (args.id, start_time),
+        '_timestamp'     : start_time,
+        '_timestamp_end' : end_time,
+        'json_version'   : _json_version
+        })
 
-    #try:
-    #    result['host'].update({'pnode': get_pnode()})
-    #except Exception as e:
-    #    pass
-    result['host'].update({'osdist':commands.getoutput("lsb_release -d -s 2>/dev/null").replace('"', '')})
-    result['host'].update({'pyver': sys.version.split()[0]})
-    result['host'].update({'cpuname': commands.getoutput("cat /proc/cpuinfo | grep '^model name' | tail -n 1").split(':')[1].lstrip()})
-    result['host'].update({'cpunum' : int(commands.getoutput("cat /proc/cpuinfo | grep '^processor' |wc -l"))})
-    result['host'].update({'bogomips': float(commands.getoutput("cat /proc/cpuinfo | grep '^bogomips' | tail -n 1").split(':')[1].lstrip())})
-    result['host'].update({'meminfo': float(commands.getoutput("cat /proc/meminfo | grep 'MemTotal:'").split()[1])})
+    result['host'].update({
+        'ip'             : args.ip,
+        'hostname'       : args.name,
+        'UID'            : args.id,
+        'FLAGS'          : FLAGS,
+        'TAGS'           : convertTagsToJson(args.tags),
+        })
+
+    # Collect Software and Hardware metadata from hwmetadata plugin
+    hw=Extractor()
+
+    result['host'].update({
+        'SW': hw.collect_SW(),
+        'HW': hw.collect_HW(),
+        })
+
     return result
 
 def insert_print_action(alist,akey,astring,adic):
@@ -269,12 +294,11 @@ def print_results_kv(r):
 def print_results(results):
     
     print "\n\n========================================================="
-    print "RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD %s" % results['host']['cloud'] 
+    print "RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD %s" % results['host']['TAGS']['cloud']
     print "========================================================="
     print "Suite start %s " % results['_timestamp']
     print "Suite end   %s" % results['_timestamp_end']
-    print "Machine CPU Model: %s" %  results['host']['cpuname']
-    print "Machine classification: %s" %  results['host']['classification']
+    print "Machine CPU Model: %s" %  results['host']['HW']['CPU']['CPU_Model']
 
     p = results['profiles']
     bmk_print_action = {
@@ -302,13 +326,13 @@ def print_results_from_file(afile):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--id", nargs='?', help="UID")
-    parser.add_argument("-n", "--name", nargs='?', help="hostname")
-    parser.add_argument("-p", "--ip", nargs='?', help="ip address")
-    parser.add_argument("-v", "--vo", nargs='?', default='', help="VO")
-    parser.add_argument("-c", "--cloud", nargs='?', help="Cloud")
-    parser.add_argument("-f", "--file", nargs='?', help="File to store the results", default="result_profile.json")
+    parser.add_argument("-i", "--id",     nargs='?', help="UID")
+    parser.add_argument("-n", "--name",   nargs='?', help="hostname")
+    parser.add_argument("-p", "--ip",     nargs='?', help="ip address")
+    parser.add_argument("-f", "--file",   nargs='?', help="File to store the results", default="result_profile.json")
     parser.add_argument("-d", "--rundir", nargs='?', help="Directory where bmks ran")
+    parser.add_argument("-m", "--mp_num",  nargs='?', help="Number of cpus to run the benchmarks.")
+    parser.add_argument("-t", "--tags",   nargs='?', help="Custom user tags.")
     args = parser.parse_args()
 
     result = parse_metadata(args)
