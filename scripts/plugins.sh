@@ -138,9 +138,6 @@ while [ "$1" != "" ]; do
   --benchmarks=*)
     BENCHMARKS=${1#*=}
     ;;
-<<<<<<< HEAD
-    --tags=* )              TAGS=${1#*};
-=======
   --mp_num=*)
     MP_NUM=${1#*=}
     ;;
@@ -149,9 +146,8 @@ while [ "$1" != "" ]; do
     ;;
   --public_ip=*)
     PUBLIC_IP=${1#*=}
->>>>>>> qa-v2.0
     ;;
-    --tags=* )              TAGS=${1#*};
+  --tags=* )              TAGS=${1#*};
     ;;
   --queue_port=*)
     QUEUE_PORT=${1#*=}
@@ -171,13 +167,10 @@ while [ "$1" != "" ]; do
   --amq_cert=*)
     AMQ_CERT=${1#*=}
     ;;
-<<<<<<< HEAD
-=======
   --topic=*)
     QUEUE_NAME=${1#*=}
     ;;
->>>>>>> qa-v2.0
-    --hs06_path=* )         HS06_PATH=${1#*=};
+  --hs06_path=* )         HS06_PATH=${1#*=};
     ;;
   --hs06_url=*)
     HS06_URL=${1#*=}
@@ -325,9 +318,6 @@ function run_report(){
   wrapper_basedir=$SOURCEDIR/pyscripts
   write_parser
 
-<<<<<<< HEAD
-    
-=======
   $PARSER_PATH
 
   if [ -z $OFFLINE ]; then
@@ -341,7 +331,6 @@ function run_report(){
   python -c "import parser; parser.print_results_from_file(\"$RESULTS_FILE\")" >&3
   cd -
 
->>>>>>> qa-v2.0
 }
 # <<<<<<<<<<
 function run_DB12 {

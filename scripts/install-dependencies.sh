@@ -121,8 +121,4 @@ function get_requirements() {
 function install_hardwaretools() {
     echo "... installing hardware tools."
     yum install -y lshw ipmitool dmidecode
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> qa-v2.0
