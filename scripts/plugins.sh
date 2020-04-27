@@ -147,7 +147,8 @@ while [ "$1" != "" ]; do
   --public_ip=*)
     PUBLIC_IP=${1#*=}
     ;;
-  --tags=* )              TAGS=${1#*};
+  --tags=* )
+    TAGS=${1#*=};
     ;;
   --queue_port=*)
     QUEUE_PORT=${1#*=}
@@ -170,7 +171,8 @@ while [ "$1" != "" ]; do
   --topic=*)
     QUEUE_NAME=${1#*=}
     ;;
-  --hs06_path=* )         HS06_PATH=${1#*=};
+  --hs06_path=* )
+    HS06_PATH=${1#*=};
     ;;
   --hs06_url=*)
     HS06_URL=${1#*=}
@@ -301,7 +303,7 @@ source $TIMES_SOURCE_PATH
 export DB12=$DB12
 export HWINFO=$HWINFO
 export MP_NUM=$MP_NUM
-python $wrapper_basedir/parser.py --tags "$TAGS" --mp_num $MP_NUM -i $VMUID -f $RESULTS_FILE -p $PUBLIC_IP -d $RUNAREA_PATH -n $(hostname)
+python $wrapper_basedir/parser.py --tags '$TAGS' --mp_num $MP_NUM -i $VMUID -f $RESULTS_FILE -p $PUBLIC_IP -d $RUNAREA_PATH -n $(hostname)
 X5_EOF
 
   chmod ugo+rx $PARSER_PATH
