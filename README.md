@@ -170,7 +170,7 @@ OPTIONS:
 -d	 debug verbosity
 -q	 Quiet mode. Do not prompt user
 -o	 Offline mode. Do not publish results. If not used, the script expects the publishing parameters
---benchmarks=<bmk1;bmk2>
+--benchmarks=<bmk1,bmk2>
 	 (REQUIRED) Semi-colon separated list of benchmarks to run. Available benchmarks are:
 		 - hs06_32 (for 32 bits)
 		 - hs06_64 (for 64 bits)

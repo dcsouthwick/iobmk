@@ -3,7 +3,7 @@ DOCKSOCK=/var/run/docker.sock
 BMK_SUITE_IMAGE=gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hep-benchmark-suite-cc7:latest
 
 # HS06 runs built at 32 and/or 64 bits
-BMK_LIST='hepscore;hs06_32;hs06_64;DB12;kv;spec2017'
+BMK_LIST='hepscore,hs06_32,hs06_64,DB12,kv,spec2017'
 
 #####################
 #--- HEP-score Config

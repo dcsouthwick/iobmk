@@ -139,7 +139,7 @@ job_test_kv_run_cc7:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
-       - export BMKLIST="DB12;kv"
+       - export BMKLIST="DB12,kv"
    <<: *template_test_installation
 
 job_test_hepscore_run_cc7:
