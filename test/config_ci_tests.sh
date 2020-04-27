@@ -11,7 +11,8 @@ else
     echo "CI_PROJECT_DIR=${CI_PROJECT_DIR}"
 fi
 
-[[ -z ${BMK_RUNDIR} ]] && export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+[[ -z ${BMK_VOLUME} ]] && export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID} && export BMK_RUNDIR=${BMK_VOLUME}/hep-benchmark-suite
+echo "BMK_VOLUME $BMK_VOLUME"
 echo "BMK_RUNDIR $BMK_RUNDIR"
 
 [[ -z ${BMK_HEPSCORE_CONF} ]] &&  export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml
