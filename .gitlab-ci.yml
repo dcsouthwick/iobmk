@@ -1,9 +1,9 @@
 stages:
   - build-base-image
   - test-components
-  - test-qa-image  # Fixme should be after build-qa-image
   - test-installation
   - build-qa-image
+  - test-qa-image
   - promote-image
   - announce-promoted-image
  
