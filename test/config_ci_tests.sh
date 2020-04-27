@@ -17,6 +17,7 @@ echo "BMK_RUNDIR $BMK_RUNDIR"
 
 [[ -z ${BMK_HEPSCORE_CONF} ]] &&  export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml
 echo "BMK_HEPSCORE_CONF=${BMK_HEPSCORE_CONF}"
+export HEPSCORE_CONF="--hepscore_conf=${BMK_HEPSCORE_CONF}"
 
 [[ -z ${AMQ_ARGUMENTS} ]] && export AMQ_ARGUMENTS="-o" && echo "running with offline AMQ_ARGUMENTS"
 
