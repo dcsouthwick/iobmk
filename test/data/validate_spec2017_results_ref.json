@@ -5,7 +5,7 @@
 		"compiler": " C/C++/Fortran: Version 6.2.0 of GCC, the GNU Compiler Collection ",
 		"optimize": " -g -O3",
 		"extra_coptimize": " -fno-strict-aliasing",
-		"runcpu_args": "/spec2017/bin/harness/runcpu --configfile cern-gcc-linux-x86.cfg --nobuild --noreportable --iterations 1 --noreportable --nopower --runmode rate --tune base --size refrate 508.namd_r 510.parest_r 511.povray_r 526.blender_r;/spec2017/bin/harness/runcpu --configfile cern-gcc-linux-x86.cfg --nobuild --noreportable --iterations 1 --noreportable --nopower --runmode rate --tune base --size refrate 520.omnetpp_r 523.xalancbmk_r 531.deepsjeng_r 541.leela_r;",
+		"runcpu_args": "2 /spec2017/bin/harness/runcpu --configfile cern-gcc-linux-x86.cfg --nobuild --noreportable --iterations 1 --noreportable --nopower --runmode rate --tune base --size refrate 508.namd_r 510.parest_r 511.povray_r 526.blender_r;2 /spec2017/bin/harness/runcpu --configfile cern-gcc-linux-x86.cfg --nobuild --noreportable --iterations 1 --noreportable --nopower --runmode rate --tune base --size refrate 520.omnetpp_r 523.xalancbmk_r 531.deepsjeng_r 541.leela_r;",
 		"bset": "pure_rate_cpp",
 		"score": 2.290,
 		"avg_core_score": 1.145,
