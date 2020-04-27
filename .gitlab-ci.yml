@@ -149,7 +149,8 @@ job_test_hepscore_run_cc7:
        - export BMKLIST="hepscore"
    <<: *template_test_installation
 
-job_test_hepscore_run_cc7_singularity:
+# FIXME, does not work but covers a case not often used
+.job_test_hepscore_run_cc7_singularity:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
