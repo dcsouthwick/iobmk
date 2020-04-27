@@ -214,12 +214,8 @@ def parse_metadata(args):
         logger.info("User specified tags: %s " % args.tags)
 
         # Check if user provided a valid tag string to be converted to json
-        tags ={}
         try:
-            # Deconstruct tag pair list ["key1:value1", "key2:value2"] into dict
-            for arg_pair in tag_str:
-                key, value     = arg_pair.split(":")
-                tags[str(key)] = str(value)
+            tags = json.loads(tag_str)
 
         except:
             # User provided wrong format. Default tags are provided.
@@ -339,7 +335,7 @@ if __name__ == '__main__':
     parser.add_argument("-f", "--file",   nargs='?', help="File to store the results", default="result_profile.json")
     parser.add_argument("-d", "--rundir", nargs='?', help="Directory where bmks ran")
     parser.add_argument("-m", "--mp_num",  nargs='?', help="Number of cpus to run the benchmarks.")
-    parser.add_argument("-t", "--tags",   nargs='*',  help="Custom user tags.")
+    parser.add_argument("-t", "--tags",   nargs='?',  help="Custom user tags.")
     args = parser.parse_args()
 
     result = parse_metadata(args)
