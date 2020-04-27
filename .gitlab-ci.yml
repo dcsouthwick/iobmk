@@ -215,6 +215,7 @@ bats_tests_qa:
         - groupadd bmkuser 
         - useradd -g bmkuser --create-home --shell /bin/bash bmkuser
         - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+        - export BMK_SUITE_IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa
         - export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
         - export SINGULARITY_CACHEDIR=/tmp/${CI_JOB_NAME}_${CI_PIPELINE_ID}_singularity_cache
         - $CI_PROJECT_DIR/test/test_singularity_in_singularity_in_docker.sh
