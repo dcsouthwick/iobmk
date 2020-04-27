@@ -1,6 +1,7 @@
 stages:
   - build-base-image
   - test-components
+  - test-qa-image  # Fixme should be after build-qa-image
   - test-installation
   - build-qa-image
   - promote-image
@@ -60,7 +61,7 @@ job_build_qa_image_cc7:
    <<: *template_build_image
    only:
       variables:
-       - $CI_COMMIT_BRANCH =~ /^qa-*$/
+       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
        - $CI_COMMIT_BRANCH =~ /^qa$/
 
 ############################################################
@@ -103,7 +104,7 @@ job_announce_prod_image:
 ############################################################
 
 .definition_test_installation: &template_test_installation
-    # This job installs the cern-benchmark suite using "make" 
+    # This job installs the hep-benchmark-suite using "make" 
     # then runs a configurable set of benchmarks 
     stage: test-installation
     image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
@@ -125,7 +126,7 @@ job_announce_prod_image:
         - rm -rf $BMK_RUNDIR
     only:
      variables:
-       - $CI_COMMIT_BRANCH =~ /^qa-*$/
+       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
        - $CI_COMMIT_BRANCH =~ /^qa$/
     artifacts:
         paths:
@@ -206,3 +207,40 @@ bats_tests_qa:
       refs:
         - qa     
 
+############################################################
+#####              TEST SINGULARITY                    #####
+############################################################
+
+.definition_test_qa_singularity: &template_test_qa_singularity
+    # This job tests the hep-benchmark-suite
+    # running a configurable set of benchmarks
+    stage: test-qa-image
+    image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa
+    script: 
+        - useradd -g bmkuser --create-home --shell /bin/bash bmkuser
+        - groupadd bmkuser
+        - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+        - export AMQ_ARGUMENTS=--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
+        - export SINGULARITY_CACHEDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}_singularity_cache
+        - $CI_PROJECT_DIR/test/test_singularity_in_singularity_in_docker.sh
+    after_script:
+        - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+        - tar -czf hep-benchmark-suite-test-$CI_JOB_ID.tgz $BMK_RUNDIR /opt/hep-benchmark-suite 
+        - rm -rf $BMK_RUNDIR
+    only:
+     variables:
+       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
+       - $CI_COMMIT_BRANCH =~ /^qa$/
+    artifacts:
+        paths:
+           - hep-benchmark-suite-test-$CI_JOB_ID.tgz
+        expire_in: 1 week
+        when: always
+
+job_test_singularity_in_singularity_qa:
+    tags:
+      -  hep-benchmark-suite-docker-runner 
+    before_script:
+        - export BMKLIST="hepscore"
+        - export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml
+    <<: *template_test_qa_singularity

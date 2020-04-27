@@ -67,7 +67,7 @@ are benchmarked deploying the HEP Benchmark Suite in each of them. The mentioned
 After running, the final JSON report is 
 published into a AMQ message broker (transport layer).
 
-A dedicated consumer digests those messages and inserts them 
+A dedicated consumer digests those messages and inserts them
 in an Elasticsearch cluster, so that the benchmark results can be visualized and
 aggregated in dashboards. Several metadata (such as UID, CPU architecture,
 OS, Cloud name, IP address, etc.) are included in the result message in order to
@@ -86,7 +86,7 @@ The preferred running mode of the HEP Benchmark Suite is using a distributed Doc
 
 A set of examples is available in the examples folder of [this repository](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/tree/master/examples).
 
-These examples are also linked here:
+These examples are also listed here:
 
 - Running the HEP Benchmark Suite within a Docker container
 	- Run HEP-score [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_hep-score_example.sh)
@@ -97,9 +97,14 @@ These examples are also linked here:
 	- Run KV [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_kv_example.sh)
 	- Run all benchmark [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/docker/run_all_benchmarks_example.sh)
 
-- Running using a singularity container
+- Running using a Singularity container
+	Approach A)
+	- **Recommended** Singularity-in-Singularity:
+	    - [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/singularity/run_hep-score_singularity_in_singularity_example.sh)
+	    - NB: It can be useful to define the SINGULARITY_CACHEDIR to a directory with enough space, as well as SINGULARITYENV_SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR}, as show in example.
+	Approach B)
     - Install the suite [script](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/install_hep-benchmark-suite.sh)
-	- Run HEP-score [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/singularity/run_hep-score_singularity_example.sh)
+	- Run HEP-score in singularity [example](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/blob/master/examples/singularity/run_hep-score_singularity_example.sh)
     
 ### Description of major arguments
 

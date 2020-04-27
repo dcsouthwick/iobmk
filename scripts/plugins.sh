@@ -231,6 +231,12 @@ while [ "$1" != "" ]; do
   shift
 done
 
+echo "
+  #######################################
+  ###    CERN Benchmarking Suite      ###
+  #######################################
+"
+
 # No point moving forward if bmks are not specified
 if [[ -z $BENCHMARKS ]]; then
   echo "No benchmarks provided. Please use --benchmarks. Exiting..." >&3
@@ -245,13 +251,9 @@ set -o errexit
 
 [ ! -z $DEBUG ] && echo "DEBUG is $DEBUG" && set -x
 
-echo "
-  #######################################
-  ###    CERN Benchmarking Suite      ###
-  #######################################
-"
-
 echo "INFO: Log file at $LOG" >&3
+
+[ ! -z $DEBUG ] && echo "SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR}"
 
 NUM_CPUS=$(grep -c processor /proc/cpuinfo)
 
