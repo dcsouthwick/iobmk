@@ -36,8 +36,8 @@ if [[ ! -z ${SPEC2017URL} ]]; then
 fi
 export SPEC_ARGUMENTS=`echo "$SPEC_PATH $SPEC_ITERATIONS $SPEC_INSTALL $SPEC_LIMIT_BMK"`
 
-[[ -z ${FREETEXT} ]] && FREETEXT="\'test $CI_COMMIT_BRANCH $BMKLIST version ${CI_COMMIT_SHA:0:8}\'" 
+[[ -z ${FREETEXT} ]] && FREETEXT="test $CI_COMMIT_BRANCH $BMKLIST version ${CI_COMMIT_SHA:0:8}" 
 
-[[ -z ${METADATA_ARGUMENTS} ]] && METADATA_ARGUMENTS="--mp_num=2 --cloud='suite-CI' --vo='suite-CI'  --freetext=$FREETEXT"
+[[ -z ${METADATA_ARGUMENTS} ]] && METADATA_ARGUMENTS="--mp_num=2 --cloud='suite-CI' --vo='suite-CI'"
 
-export ARGUMENTS=`echo "$AMQ_ARGUMENTS $HEPSCORE_CONF $HS06_ARGUMENTS $SPEC_ARGUMENTS $METADATA_ARGUMENTS"`
+
