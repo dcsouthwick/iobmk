@@ -120,6 +120,12 @@ Log snippet ($LOG):
 }
 trap onEXIT EXIT
 
+echo "
+  #######################################
+  ###    CERN Benchmarking Suite      ###
+  #######################################
+" 
+
 # Get parameters
 QUIET=0
 CLOUD='test'
@@ -144,6 +150,7 @@ while [ "$1" != "" ]; do
     ;;
   --benchmarks=*)
     BENCHMARKS=${1#*=}
+    echo "BENCHMARKS=$BENCHMARKS"
     ;;
   --mp_num=*)
     MP_NUM=${1#*=}
@@ -185,7 +192,8 @@ while [ "$1" != "" ]; do
     QUEUE_NAME=${1#*=}
     ;;
   --freetext=*)
-    FREE_TEXT=${1#*=}
+    FREE_TEXT="${1#*=}"
+    echo "FREETEXT=$FREE_TEXT"
     ;;
   --hs06_path=*)
     HS06_PATH=${1#*=}
@@ -231,11 +239,6 @@ while [ "$1" != "" ]; do
   shift
 done
 
-echo "
-  #######################################
-  ###    CERN Benchmarking Suite      ###
-  #######################################
-"
 
 # No point moving forward if bmks are not specified
 if [[ -z $BENCHMARKS ]]; then
@@ -243,7 +246,7 @@ if [[ -z $BENCHMARKS ]]; then
   echo "WARN: --benchmarks not specified: $BENCHMARKS. Exit"
   exit 1
 else
-  bmks=$(echo $BENCHMARKS | tr '[:upper:]' '[:lower:]' | tr ";" "\n")
+  bmks=$(echo $BENCHMARKS | tr '[:upper:]' '[:lower:]' | tr "," "\n")
 fi
 
 # Exit when any command fails. To allow failing commands, add "|| true"
