@@ -48,10 +48,9 @@ export SINGULARITY_CACHEDIR=${RUN_VOLUME}/singularity_cachedir
 SINGULARITYENV_BMK_RUNDIR=${BMK_RUNDIR}
 SINGULARITYENV_SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR}
 
-[ ! -e ${BMK_RUNDIR} ] && mkdir -p ${BMK_RUNDIR}
-
 singularity exec --hostname $HOSTNAME \
               -B ${RUN_VOLUME}:${RUN_VOLUME} \
+              -B ${BMK_RUNDIR}:${BMK_RUNDIR} \
               docker://$BMK_SUITE_IMAGE \
               hep-benchmark-suite --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $HEPSCORE_CONF $METADATA_ARGUMENTS
 
