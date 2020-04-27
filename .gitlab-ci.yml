@@ -243,4 +243,4 @@ job_test_singularity_in_singularity_qa:
     before_script:
         - export BMKLIST="hepscore"
         - export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml
-    <<: *template_test_installation   test-qa-image
+    <<: *template_test_qa_singularity
