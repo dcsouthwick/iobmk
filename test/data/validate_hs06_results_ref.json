@@ -5,7 +5,7 @@
 		"score": 14.74,
 		"avg_core_score": 7.37,
 		"num_bmks": 7,
-		"runcpu_args": "7 runspec = /hs06/test/test_1/SPEC_CPU2006_v1.2/bin/runspec --config=linux32-gcc_cern.cfg --action=build all_cpp;",
+		"runcpu_args": "1 runspec: runspec --config=linux32-gcc_cern.cfg --action=build all_cpp; 2 runspec: runspec --config=linux32-gcc_cern.cfg --nobuild --noreportable --iterations=1 all_cpp;",
 		"bset": "all_cpp",
 		"LINK": "6 g++ -m32-O2 -fPIC -pthread <objects> -o options;1 g++ -m32-O2 -fPIC -pthread-DSPEC_CPU_LINUX <objects> -o options;",
 		"bmks": {

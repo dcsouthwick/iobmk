@@ -216,9 +216,9 @@ bats_tests_qa:
     # running a configurable set of benchmarks
     stage: test-qa-image
     image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa
-    script: 
+    script:
+        - groupadd bmkuser 
         - useradd -g bmkuser --create-home --shell /bin/bash bmkuser
-        - groupadd bmkuser
         - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
         - export AMQ_ARGUMENTS=--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
         - export SINGULARITY_CACHEDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}_singularity_cache
