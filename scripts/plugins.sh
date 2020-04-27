@@ -185,7 +185,7 @@ while [ "$1" != "" ]; do
     QUEUE_NAME=${1#*=}
     ;;
   --freetext=*)
-    FREE_TEXT=${1#*=}
+    FREE_TEXT="${1#*=}"
     ;;
   --hs06_path=*)
     HS06_PATH=${1#*=}
@@ -235,7 +235,7 @@ echo "
   #######################################
   ###    CERN Benchmarking Suite      ###
   #######################################
-"
+" >&3
 
 # No point moving forward if bmks are not specified
 if [[ -z $BENCHMARKS ]]; then
