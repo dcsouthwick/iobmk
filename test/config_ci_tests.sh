@@ -7,14 +7,17 @@ if [[ -z ${CI_PROJECT_DIR} ]]; then
     export CI_JOB_ID="noid"
     export CI_COMMIT_SHA='nocommit'
     env | grep "CI_"
+else 
+    echo "CI_PROJECT_DIR=${CI_PROJECT_DIR}"
 fi
 
 [[ -z ${BMK_RUNDIR} ]] && export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
 echo "BMK_RUNDIR $BMK_RUNDIR"
 
 [[ -z ${BMK_HEPSCORE_CONF} ]] &&  export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml
+echo "BMK_HEPSCORE_CONF=${BMK_HEPSCORE_CONF}"
 
-[[ -z ${AMQ_ARGUMENTS} ]] && export AMQ_ARGUMENTS="-o"
+[[ -z ${AMQ_ARGUMENTS} ]] && export AMQ_ARGUMENTS="-o" && echo "running with offline AMQ_ARGUMENTS"
 
 if [[ ! -z ${HS06URL} ]]; then
     HS06_PATH="--hs06_path=/scratch/HEPSPEC"
