@@ -60,7 +60,7 @@ job_build_qa_image_cc7:
    <<: *template_build_image
    only:
       variables:
-       - $CI_COMMIT_BRANCH =~ /^qa-*$/
+       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
        - $CI_COMMIT_BRANCH =~ /^qa$/
 
 ############################################################
@@ -125,7 +125,7 @@ job_announce_prod_image:
         - rm -rf $BMK_RUNDIR
     only:
      variables:
-       - $CI_COMMIT_BRANCH =~ /^qa-*$/
+       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
        - $CI_COMMIT_BRANCH =~ /^qa$/
     artifacts:
         paths:
