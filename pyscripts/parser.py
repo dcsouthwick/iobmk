@@ -233,8 +233,9 @@ def parse_metadata(args):
         'mp_num' : args.mp_num,
     }
 
-    # Get json metadata version
-    with open(os.path.join(os.getcwd(),'VERSION')) as version_file:
+    # Get json metadata version from install folder
+    install_dir, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(install_dir,'VERSION')) as version_file:
         _json_version = version_file.readline()
 
     # Create output metadata
