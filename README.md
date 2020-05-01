@@ -185,12 +185,6 @@ OPTIONS:
 	 (Optional) Unique identifier for the host running this script. If not specified, it will be generated
 --public_ip=<ip>
 	 (Optional) Public IP address of the host running this script. If not specified, it will be generated
---cloud=<cloudName>
-	 Cloud name to identify the results - if not specified, CLOUD=test and use -q to avoid prompt
---vo=<VO>
-	 (Optional) Name of the VO responsible for the underlying resource
---pnode=<physicalNode>
-	 (Optional) Name of the hypervisor machine hosting the VM
 --queue_port=<portNumber>
 	 Port number of the ActiveMQ broker where to send the benchmarking results
 --queue_host=<hostname>
@@ -205,9 +199,8 @@ OPTIONS:
 	 Certificate for the AMQ authentication. Expects --amq_key
 --topic=<topicName>
 	 Topic (or Queue) name used in the ActiveMQ broker
---freetext=<string>
-	 (Optional) Any additional free text to add to the generated output JSON
-	 (*) this benchmark performs the following measurements sequence: 1-min Load -> read machine&job features -> DB12 -> 1-min Load -
+--tags=<string>
+	(Optional) Any desired user tags must be passed through json format with string escaping.
 --hs06_path=<string>
 	 MANDATORY: Path where the HEPSPEC06 installation is expected
 --hs06_url=<string>
