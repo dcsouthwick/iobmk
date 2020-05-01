@@ -9,7 +9,7 @@ BMK_LIST='hepscore'
 #####################
 
 # Optional configuration parameter to specify a different configuration file
-HEPSCORE_CONF="--hepscore_conf=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml"
+HEPSCORE_CONF="--hepscore_conf=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_singularity.yaml"
  
 
 #####################
@@ -32,25 +32,28 @@ METADATA_ARGUMENTS="--cloud=name_of_your_cloud --vo=an_aggregate  --freetext=a_t
 #--- WORKING DIR
 #####################
 
-# The directory ${BMK_RUNDIR} will contain all the logs and the output produced by the executed benchmarks
+# The RUN_VOLUME directory will include the hep-benchmark-suite running directory (${BMK_RUNDIR})
+# and the singularity cache directory
 # Can be changed to point to any volume and directory with enough space 
 RUN_VOLUME=/tmp
-BMK_RUNDIR=${RUN_VOLUME}/hep-benchmark-suite
-export BMK_RUNDIR
+[ ! -e ${RUN_VOLUME} ] && mkdir -p ${RUN_VOLUME}
 
+# The directory ${BMK_RUNDIR} will contain all the logs and the output produced by the executed benchmarks
+export BMK_RUNDIR=${RUN_VOLUME}/hep-benchmark-suite
+
+# The directory ${BMK_RUNDIR} will contain the singularity cache
 export SINGULARITY_CACHEDIR=${RUN_VOLUME}/singularity_cachedir
-[ ! -e ${SINGULARITY_CACHEDIR} ] && mkdir ${SINGULARITY_CACHEDIR}
+[ ! -e ${SINGULARITY_CACHEDIR} ] && mkdir -p ${SINGULARITY_CACHEDIR}
 
 #####################
 #--- RUN
 #####################
 
-SINGULARITYENV_BMK_RUNDIR=${BMK_RUNDIR}
-SINGULARITYENV_SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR}
+export SINGULARITYENV_BMK_RUNDIR=${BMK_RUNDIR}
+export SINGULARITYENV_SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR}
 
 singularity exec --hostname $HOSTNAME \
               -B ${RUN_VOLUME}:${RUN_VOLUME} \
-              -B ${BMK_RUNDIR}:${BMK_RUNDIR} \
               docker://$BMK_SUITE_IMAGE \
               hep-benchmark-suite --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $HEPSCORE_CONF $METADATA_ARGUMENTS
 

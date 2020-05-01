@@ -3,7 +3,7 @@
 . $(readlink -f $(dirname $0))/config_ci_tests.sh
 
 # Working dir must belong to bmkuser to avoid problems in docker
-SINGULARITYENV_BMK_RUNDIR=${BMK_RUNDIR}
+export SINGULARITYENV_BMK_RUNDIR=${BMK_RUNDIR}
 if [[ ! -e ${BMK_VOLUME} ]]; then
     su bmkuser -c "mkdir -p ${BMK_VOLUME}"
 else
