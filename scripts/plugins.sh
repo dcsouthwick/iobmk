@@ -256,7 +256,7 @@ set -o errexit
 
 echo "INFO: Log file at $LOG" >&3
 
-[ ! -z $DEBUG ] && echo "SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR}"
+[ ! -z $SINGULARITY_CACHEDIR ] && echo "SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR}" && export SINGULARITY_CACHEDIR
 
 NUM_CPUS=$(grep -c processor /proc/cpuinfo)
 
