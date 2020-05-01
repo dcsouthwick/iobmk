@@ -21,8 +21,9 @@ export HEPSCORE_CONF="--hepscore_conf=${BMK_HEPSCORE_CONF}"
 
 [[ -z ${AMQ_ARGUMENTS} ]] && export AMQ_ARGUMENTS="-o" && echo "running with offline AMQ_ARGUMENTS"
 
+[[ -z ${SPEC_DIR} ]] && SPEC_DIR=/scratch/HEPSPEC
 if [[ ! -z ${HS06URL} ]]; then
-    HS06_PATH="--hs06_path=/scratch/HEPSPEC"
+    HS06_PATH="--hs06_path=${SPEC_DIR}"
     HS06_ITERATIONS="--hs06_iter=1"
     HS06_INSTALL="--hs06_url=$HS06URL"
     HS06_LIMIT_BMK="--hs06_bmk=453.povray"
@@ -30,7 +31,7 @@ fi
 export HS06_ARGUMENTS=`echo "$HS06_PATH $HS06_ITERATIONS $HS06_INSTALL $HS06_LIMIT_BMK"`
 
 if [[ ! -z ${SPEC2017URL} ]]; then
-    SPEC_PATH="--spec2017_path=/scratch/HEPSPEC"
+    SPEC_PATH="--spec2017_path=${SPEC_DIR}"
     SPEC_ITERATIONS="--spec2017_iter=1"
     SPEC_INSTALL="--spec2017_url=$SPEC2017URL"
     SPEC_LIMIT_BMK="--spec2017_bmk=511.povray_r"
