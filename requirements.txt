@@ -1,2 +1,2 @@
-hepscore_version=v0.5
+hepscore_version=v0.6
 stomppy_version=4.1.22
