@@ -10,6 +10,12 @@ else
     chown -R bmkuser ${BMK_VOLUME}
 fi
 
+if [[ ! -e ${SPEC_DIR} ]]; then
+    su bmkuser -c "mkdir -p ${SPEC_DIR}"
+else
+    chown -R bmkuser ${SPEC_DIR}
+fi
+
 if [[ -z ${SINGULARITY_CACHEDIR} ]]; then
     export SINGULARITY_CACHEDIR=${BMK_VOLUME}/singularity_cache
 fi
