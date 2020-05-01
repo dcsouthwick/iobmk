@@ -18,6 +18,7 @@ export SINGULARITYENV_SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR}
 # Run the benchmark with all the parameters 
 su bmkuser -c "singularity exec \
               -B ${BMK_VOLUME}:${BMK_VOLUME} \
+              -B ${SPEC_DIR}:${SPEC_DIR} \
               docker://$BMK_SUITE_IMAGE \
               hep-benchmark-suite --benchmarks=\"$BMKLIST\" $AMQ_ARGUMENTS $HEPSCORE_CONF $HS06_ARGUMENTS $SPEC_ARGUMENTS $METADATA_ARGUMENTS --freetext=\"$FREETEXT\""
 

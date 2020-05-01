@@ -1,11 +1,11 @@
 stages:
-  - build-base-image
-  - test-components
-  - test-installation
-  - build-qa-image
+#  - build-base-image
+#  - test-components
+#  - test-installation
+#  - build-qa-image
   - test-qa-image
-  - promote-image
-  - announce-promoted-image
+#  - promote-image
+#  - announce-promoted-image
  
 
 
