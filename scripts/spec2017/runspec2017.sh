@@ -92,7 +92,7 @@ function compute_spec2017_results() {
     OPTIMIZE=`grep "^OPTIMIZE" $SPECDIR/result/CPU2017.001.log  | sort | uniq | cut -d"=" -f2`
     EXTRA_COPTIMIZE=`grep "^EXTRA_COPTIMIZE" $SPECDIR/result/CPU2017.001.log  | sort | uniq | cut -d"=" -f2`
     BSET=`grep "action=build" $SPECDIR/result/CPU2017.001.log | awk -F 'action=build' '{print $2}' | sed -e 's@ @@g'`
-    RUNCPU_ARGS=`grep -i  "runcpu command" $SPECDIR/result/CPU2017.00*csv | sort | uniq  | grep config  | awk -F '"runcpu command:",' '{print $2}' | sort | uniq | tr "\n" ";" | sed -e 's@"@@g'`
+    RUNCPU_ARGS=`grep -i  "runcpu command" $SPECDIR/result/CPU2017.00*csv | sort | uniq  | grep config  | awk -F '"runcpu command:",' '{print $2}' | sort | uniq -c | tr "\n" ";" | sed -e 's@"@@g' -e 's@\s\{2,10\}@@g'`
 
     #Now build the JSON output that will be used for the suite
     JSON="{\"spec2017\":{\"start\":\"$START\", \"end\":\"$END\", 

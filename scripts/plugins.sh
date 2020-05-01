@@ -114,6 +114,12 @@ Log snippet ($LOG):
 }
 trap onEXIT EXIT
 
+echo "
+  #######################################
+  ###    CERN Benchmarking Suite      ###
+  #######################################
+" 
+
 # Get parameters
 QUIET=0
 TAGS=''
@@ -137,6 +143,7 @@ while [ "$1" != "" ]; do
     ;;
   --benchmarks=*)
     BENCHMARKS=${1#*=}
+    echo "BENCHMARKS=$BENCHMARKS"
     ;;
   --mp_num=*)
     MP_NUM=${1#*=}
@@ -215,13 +222,14 @@ while [ "$1" != "" ]; do
   shift
 done
 
+
 # No point moving forward if bmks are not specified
 if [[ -z $BENCHMARKS ]]; then
   echo "No benchmarks provided. Please use --benchmarks. Exiting..." >&3
   echo "WARN: --benchmarks not specified: $BENCHMARKS. Exit"
   exit 1
 else
-  bmks=$(echo $BENCHMARKS | tr '[:upper:]' '[:lower:]' | tr ";" "\n")
+  bmks=$(echo $BENCHMARKS | tr '[:upper:]' '[:lower:]' | tr "," "\n")
 fi
 
 # Exit when any command fails. To allow failing commands, add "|| true"
@@ -229,13 +237,9 @@ set -o errexit
 
 [ ! -z $DEBUG ] && echo "DEBUG is $DEBUG" && set -x
 
-echo "
-  #######################################
-  ###    CERN Benchmarking Suite      ###
-  #######################################
-"
-
 echo "INFO: Log file at $LOG" >&3
+
+[ ! -z $SINGULARITY_CACHEDIR ] && echo "SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR}" && export SINGULARITY_CACHEDIR
 
 NUM_CPUS=$(grep -c processor /proc/cpuinfo)
 
