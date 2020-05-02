@@ -19,7 +19,7 @@ AMQ_ARGUMENTS=" -o"
 #####################
 
 # Those metadata are not mandatory
-METADATA_ARGUMENTS="--cloud=name_of_your_cloud --vo=an_aggregate  --freetext=a_tag_text --pnode=physical_node_name"
+METADATA_ARGUMENTS="{\"cloud\":\"Name of your cloud\",\"free_text\":\"Free text field\",\"vo\":\"an aggregate\", \"pnode\":\"physical node name\"}"
 
 #####################
 #--- WORKING DIR
@@ -38,5 +38,5 @@ docker run --rm  --privileged --net=host -h $HOSTNAME \
               -e BMK_RUNDIR=$BMK_RUNDIR  -v ${RUN_VOLUME}:${RUN_VOLUME} \
               -v $DOCKSOCK:$DOCKSOCK \
               $BMK_SUITE_IMAGE \
-              hep-benchmark-suite --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $METADATA_ARGUMENTS
+              hep-benchmark-suite --benchmarks=$BMK_LIST $AMQ_ARGUMENTS --tags="$METADATA_ARGUMENTS"
 
