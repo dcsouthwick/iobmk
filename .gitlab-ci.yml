@@ -109,17 +109,18 @@ job_announce_prod_image:
     stage: test-installation
     image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
     script: 
-      - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
-      - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}/hep-benchmark-suite
+      - export BMK_VOLUME=/scratch/jobs/${CI_JOB_NAME}_${CI_JOB_ID}
+      - export BMK_RUNDIR=${BMK_VOLUME}/hep-benchmark-suite
       - export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
       - if [[ -z $BMK_HEPSCORE_CONF ]]; then
           export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci.yaml;
         fi
       - $CI_PROJECT_DIR/test/test_installation_and_run.sh
     after_script:
-        - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}/hep-benchmark-suite
-        - tar -czf hep-benchmark-suite-test-$CI_JOB_ID.tgz $BMK_RUNDIR /opt/hep-benchmark-suite 
-        - rm -rf $BMK_RUNDIR
+      - export BMK_VOLUME=/scratch/jobs/${CI_JOB_NAME}_${CI_JOB_ID}
+      - export BMK_RUNDIR=${BMK_VOLUME}/hep-benchmark-suite
+      - tar -czf hep-benchmark-suite-test-$CI_JOB_ID.tgz ${BMK_RUNDIR} /opt/hep-benchmark-suite 
+      - rm -rf ${BMK_VOLUME}
     only:
      variables:
        - $CI_COMMIT_BRANCH =~ /^qa-.*$/
@@ -227,18 +228,19 @@ test_python_plugins:
     stage: test-qa-image
     image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa
     script:
-        - if [[ -z $BMK_SUITE_IMAGE ]]; then
-          export BMK_SUITE_IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa;
-          fi
-        - export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
-        - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
-        - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}/hep-benchmark-suite
-        - export SINGULARITY_CACHEDIR=${BMK_VOLUME}/singularity_cache
-        - $CI_PROJECT_DIR/test/test_singularity_in_singularity_in_docker.sh
+      - if [[ -z $BMK_SUITE_IMAGE ]]; then
+        export BMK_SUITE_IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa;
+        fi
+      - export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
+      - export BMK_VOLUME=/scratch/jobs/${CI_JOB_NAME}_${CI_JOB_ID}
+      - export BMK_RUNDIR=${BMK_VOLUME}/hep-benchmark-suite
+      - export SINGULARITY_CACHEDIR=${BMK_VOLUME}/singularity_cache
+      - $CI_PROJECT_DIR/test/test_singularity_in_singularity_in_docker.sh
     after_script:
-        - export BMK_RUNDIR=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}/hep-benchmark-suite
-        - tar -czf hep-benchmark-suite-test-$CI_JOB_ID.tgz $BMK_RUNDIR /opt/hep-benchmark-suite 
-        - rm -rf $BMK_RUNDIR
+      - export BMK_VOLUME=/scratch/jobs/${CI_JOB_NAME}_${CI_JOB_ID}
+      - export BMK_RUNDIR=${BMK_VOLUME}/hep-benchmark-suite
+      - tar -czf hep-benchmark-suite-test-$CI_JOB_ID.tgz $BMK_RUNDIR /opt/hep-benchmark-suite 
+      - rm -rf ${BMK_VOLUME}
     only:
      variables:
        - $CI_COMMIT_BRANCH =~ /^qa-.*$/
