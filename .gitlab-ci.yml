@@ -208,7 +208,7 @@ test_python_plugins:
   stage: test-components
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
   script:
-      - pip3 install tox
+      - pip install tox
       - cd $CI_PROJECT_DIR/
       - tox
   except:
