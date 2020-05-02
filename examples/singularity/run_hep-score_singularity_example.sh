@@ -23,7 +23,7 @@ AMQ_ARGUMENTS=" -o"
 #####################
 
 # Those metadata are not mandatory
-METADATA_ARGUMENTS="--cloud=name_of_your_cloud --vo=an_aggregate  --freetext=a_tag_text --pnode=physical_node_name"
+METADATA_ARGUMENTS="{\"cloud\":\"Name of your cloud\",\"free_text\":\"Free text field\",\"vo\":\"an aggregate\", \"pnode\":\"physical node name\"}"
 
 #####################
 #--- WORKING DIR
@@ -43,6 +43,6 @@ EXECUTABLE=$(which hep-benchmark-suite)
 
 [ "$EXECUTABLE" == "" ] && echo "hep-benchmark-suite not available. Please install it following instructions in https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/raw/master/examples/install_hep-benchmark-suite.sh" && exit 1
 
-$EXECUTABLE --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $HEPSCORE_CONF $METADATA_ARGUMENTS
+$EXECUTABLE --benchmarks=$BMK_LIST $AMQ_ARGUMENTS $HEPSCORE_CONF --tags="$METADATA_ARGUMENTS"
 
 

@@ -15,7 +15,7 @@ import argparse
 import re
 import multiprocessing
 import logging
-from hwmetadata.hwmetadata.extractor import Extractor
+from hwmetadata.extractor import Extractor
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger('[RESULT PARSER]')

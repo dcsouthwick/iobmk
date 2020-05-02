@@ -11,7 +11,7 @@ In case of issues, bugs, suggestions, etc. please contact:
 Author:  Miguel F. Medeiros
 *********************************************************"""
 
-from hwmetadata.extractor import Extractor
+from extractor import Extractor
 import logging
 import sys
 
@@ -31,7 +31,7 @@ hw=Extractor()
 hw.collect()
 
 # Print the output to stdout and save metadata to json file
-hw.dump(stdout=True, outfile='hw.json')
+hw.dump(stdout=True)
 
 # hw.export() returns a dict which can be used for other python integrations.
 print(hw.export())

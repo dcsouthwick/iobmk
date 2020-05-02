@@ -5,16 +5,14 @@
 # Working dir must belong to bmkuser to avoid problems in docker
 export SINGULARITYENV_BMK_RUNDIR=${BMK_RUNDIR}
 if [[ ! -e ${BMK_VOLUME} ]]; then
-    su bmkuser -c "mkdir -p ${BMK_VOLUME}"
-else
-    chown -R bmkuser ${BMK_VOLUME}
+    mkdir -p ${BMK_VOLUME}
 fi
+chown -R bmkuser ${BMK_VOLUME}
 
 if [[ ! -e ${SPEC_DIR} ]]; then
-    su bmkuser -c "mkdir -p ${SPEC_DIR}"
-else
-    chown -R bmkuser ${SPEC_DIR}
+    mkdir -p ${SPEC_DIR}
 fi
+chown -R bmkuser ${SPEC_DIR}
 
 if [[ -z ${SINGULARITY_CACHEDIR} ]]; then
     export SINGULARITY_CACHEDIR=${BMK_VOLUME}/singularity_cache

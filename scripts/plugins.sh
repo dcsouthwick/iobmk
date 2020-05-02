@@ -305,7 +305,6 @@ function write_parser {
   cat <<X5_EOF >$PARSER_PATH
 source $TIMES_SOURCE_PATH
 export DB12=$DB12
-export HWINFO=$HWINFO
 export MP_NUM=$MP_NUM
 python $wrapper_basedir/parser.py --tags '$TAGS' --mp_num $MP_NUM -i $VMUID -f $RESULTS_FILE -p $PUBLIC_IP -d $RUNAREA_PATH -n $(hostname)
 X5_EOF
@@ -317,7 +316,6 @@ X5_EOF
 # Section to be reviewed if we need it
 # this section relied on get_classification which was dropped.
 function run_report(){
-    export HWINFO=$(get_classification)
 
   echo "export end_tests=$(date +%s)" >>$TIMES_SOURCE_PATH
 
