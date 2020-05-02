@@ -204,6 +204,18 @@ bats_tests_qa:
       refs:
         - qa     
 
+test_python_plugins:
+  stage: test-components
+  image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
+  script:
+      - pip3 install tox
+      - cd $CI_PROJECT_DIR/
+      - tox
+  except:
+      refs:
+        - master
+        - qa
+
 ############################################################
 #####              TEST SINGULARITY                    #####
 ############################################################

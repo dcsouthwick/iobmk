@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import unittest
-from hwmetadata.extractor import Extractor
+from extractor import Extractor
 
 class TestHWExtractor(unittest.TestCase):
     """********************************************************
