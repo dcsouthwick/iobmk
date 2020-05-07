@@ -52,7 +52,7 @@ job_build_base_image_cc7:
      changes:
        - docker-images/hep-benchmark-base-cc7/*
 
-..job_build_qa_image_cc7:
+.job_build_qa_image_cc7:
    stage: build-qa-image
    before_script:
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-cc7/Dockerfile
@@ -131,19 +131,19 @@ job_announce_prod_image:
         expire_in: 1 week
         when: always
 
-..job_test_installation_cc7: 
+.job_test_installation_cc7: 
    before_script:
        - export BMKLIST=DB12
    <<: *template_test_installation
 
-..job_test_kv_run_cc7:
+.job_test_kv_run_cc7:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
        - export BMKLIST="DB12,kv"
    <<: *template_test_installation
 
-..job_test_hepscore_run_cc7:
+.job_test_hepscore_run_cc7:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
@@ -159,16 +159,16 @@ job_announce_prod_image:
        - export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml
    <<: *template_test_installation
 
-..job_test_hs06_run_cc7:
+.job_test_hs06_run_cc7:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
        - export BMKLIST="hs06_32"
        - rm -f /scratch/HEPSPEC/SPEC_CPU2006_v1.2/VERIFIED_INSTALLATION
    <<: *template_test_installation
-        
 
-..job_test_spec2017_run_cc7:
+
+.job_test_spec2017_run_cc7:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
@@ -205,7 +205,7 @@ bats_tests_qa:
       refs:
         - qa     
 
-..test_python_plugins:
+.test_python_plugins:
   stage: test-components
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
   script:
