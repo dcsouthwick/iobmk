@@ -52,7 +52,7 @@ job_build_base_image_cc7:
      changes:
        - docker-images/hep-benchmark-base-cc7/*
 
-.job_build_qa_image_cc7:
+job_build_qa_image_cc7:
    stage: build-qa-image
    before_script:
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-cc7/Dockerfile
