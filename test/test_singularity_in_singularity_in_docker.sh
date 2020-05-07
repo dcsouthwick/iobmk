@@ -24,6 +24,6 @@ su bmkuser -c "singularity exec \
               -B ${BMK_VOLUME}:${BMK_VOLUME} \
               -B ${SPEC_DIR}:${SPEC_DIR} \
               docker://$BMK_SUITE_IMAGE \
-              hep-benchmark-suite --benchmarks=\"$BMKLIST\" $AMQ_ARGUMENTS $HEPSCORE_CONF $HS06_ARGUMENTS $SPEC_ARGUMENTS --mp_num=2"
+              hep-benchmark-suite --benchmarks=\"$BMKLIST\" $AMQ_ARGUMENTS $HEPSCORE_CONF $HS06_ARGUMENTS $SPEC_ARGUMENTS --mp_num=2 --tags=\"$METADATA_ARGUMENTS\""
 
 $CI_PROJECT_DIR/test/check_result_entry.sh "$BMKLIST" $BMK_RUNDIR/hep-benchmark-suite.out
