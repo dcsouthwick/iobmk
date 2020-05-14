@@ -1,2 +1,4 @@
+setuptools
+pyyaml
 hepscore_version=v0.7
 stomppy_version=4.1.22

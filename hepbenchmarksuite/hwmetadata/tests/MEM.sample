@@ -1,0 +1,163 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 2.6 present.
+
+Handle 0x0040, DMI type 17, 28 bytes
+Memory Device
+	Array Handle: 0x003E
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 8192 MB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM_A1
+	Bank Locator: NODE 0 CHANNEL 0 DIMM 0
+	Type: DDR3
+	Type Detail: Synchronous
+	Speed: 1333 MT/s
+	Manufacturer: Nanya           
+	Serial Number: 6A0B0927  
+	Asset Tag: Unknown         
+	Part Number: NT8GC72C4NG0NL-CG 
+	Rank: 2
+
+Handle 0x0046, DMI type 17, 28 bytes
+Memory Device
+	Array Handle: 0x003E
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 8192 MB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM_B1
+	Bank Locator: NODE 0 CHANNEL 1 DIMM 0
+	Type: DDR3
+	Type Detail: Synchronous
+	Speed: 1333 MT/s
+	Manufacturer: Nanya           
+	Serial Number: 5301092A  
+	Asset Tag: Unknown         
+	Part Number: NT8GC72C4NG0NL-CG 
+	Rank: 2
+
+Handle 0x004C, DMI type 17, 28 bytes
+Memory Device
+	Array Handle: 0x003E
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 8192 MB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM_C1
+	Bank Locator: NODE 0 CHANNEL 2 DIMM 0
+	Type: DDR3
+	Type Detail: Synchronous
+	Speed: 1333 MT/s
+	Manufacturer: Nanya           
+	Serial Number: 2E050929  
+	Asset Tag: Unknown         
+	Part Number: NT8GC72C4NG0NL-CG 
+	Rank: 2
+
+Handle 0x0052, DMI type 17, 28 bytes
+Memory Device
+	Array Handle: 0x003E
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 8192 MB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM_D1
+	Bank Locator: NODE 0 CHANNEL 3 DIMM 0
+	Type: DDR3
+	Type Detail: Synchronous
+	Speed: 1333 MT/s
+	Manufacturer: Nanya           
+	Serial Number: 15030927  
+	Asset Tag: Unknown         
+	Part Number: NT8GC72C4NG0NL-CG 
+	Rank: 2
+
+Handle 0x005A, DMI type 17, 28 bytes
+Memory Device
+	Array Handle: 0x0058
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 8192 MB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM_E1
+	Bank Locator: NODE 1 CHANNEL 0 DIMM 0
+	Type: DDR3
+	Type Detail: Synchronous
+	Speed: 1333 MT/s
+	Manufacturer: Nanya           
+	Serial Number: 4F0B0927  
+	Asset Tag: Unknown         
+	Part Number: NT8GC72C4NG0NL-CG 
+	Rank: 2
+
+Handle 0x0060, DMI type 17, 28 bytes
+Memory Device
+	Array Handle: 0x0058
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 8192 MB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM_F1
+	Bank Locator: NODE 1 CHANNEL 1 DIMM 0
+	Type: DDR3
+	Type Detail: Synchronous
+	Speed: 1333 MT/s
+	Manufacturer: Nanya           
+	Serial Number: 24100929  
+	Asset Tag: Unknown         
+	Part Number: NT8GC72C4NG0NL-CG 
+	Rank: 2
+
+Handle 0x0066, DMI type 17, 28 bytes
+Memory Device
+	Array Handle: 0x0058
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 8192 MB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM_G1
+	Bank Locator: NODE 1 CHANNEL 2 DIMM 0
+	Type: DDR3
+	Type Detail: Synchronous
+	Speed: 1333 MT/s
+	Manufacturer: Nanya           
+	Serial Number: 4C050927  
+	Asset Tag: Unknown         
+	Part Number: NT8GC72C4NG0NL-CG 
+	Rank: 2
+
+Handle 0x006C, DMI type 17, 28 bytes
+Memory Device
+	Array Handle: 0x0058
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 8192 MB
+	Form Factor: DIMM
+	Set: None
+	Locator: DIMM_H1
+	Bank Locator: NODE 1 CHANNEL 3 DIMM 0
+	Type: DDR3
+	Type Detail: Synchronous
+	Speed: 1333 MT/s
+	Manufacturer: Nanya           
+	Serial Number: A50B0928  
+	Asset Tag: Unknown         
+	Part Number: NT8GC72C4NG0NL-CG 
+	Rank: 2
