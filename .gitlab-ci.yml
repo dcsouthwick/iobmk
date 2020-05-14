@@ -224,7 +224,7 @@ test_yaml_files:
   script:
       - yum install -y yamllint
       - cd $CI_PROJECT_DIR/
-      - yamllint benchmarks.yaml
+      - yamllint benchmarks.yml
   except:
       refs:
         - master
