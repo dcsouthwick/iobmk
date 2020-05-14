@@ -6,31 +6,27 @@ global:
   plugins:
     - metadata: true
 
-
 plugins:amq:
-    enabled: true
-    queue_host: xxxx
-    queue_port: xxxx
-    topic: xxxx
-    creds:
-      - username: xxx
-      - password: xxx
-
-
+  enabled: true
+  queue_host: xxxx
+  queue_port: xxxx
+  topic: xxxx
+  creds:
+    - username: xxx
+    - password: xxx
 
 hepspcore:
-   image: "gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hep-benchmark-suite-cc7:latest"
-   run_dir: "/tmp/"
-   env_vars:
+  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hepscore"
+  run_dir: "/tmp/"
+  env_vars:
     - aaa: "Some env variable"
-   flags:
-     - cpunum: "4"
+  flags:
+    - cpunum: "4"
 
 hepspec06:
-   image: "gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hepspec06"
-   run_dir: "/tmp/"
-   env_vars:
+  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hepspec06"
+  run_dir: "/tmp/"
+  env_vars:
     - bbb: "Some env variable"
-   flags:
-     - cpunum: "16"
-
+  flags:
+    - cpunum: "16"
