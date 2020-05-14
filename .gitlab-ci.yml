@@ -222,7 +222,7 @@ test_yaml_files:
   stage: test-components
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
   script:
-      - yum install -y yaml-lint
+      - yum install -y rubygem-yaml-lint
       - cd $CI_PROJECT_DIR/
       - yaml-lint benchmarks.yaml
   except:
