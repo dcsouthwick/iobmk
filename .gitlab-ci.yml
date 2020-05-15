@@ -26,7 +26,7 @@ stages:
     # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
     - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE $DESTINATIONS 
 
-job_build_announcement_image:
+..job_build_announcement_image:
    stage: build-base-image
    before_script:
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/announcement/Dockerfile
@@ -39,7 +39,7 @@ job_build_announcement_image:
      changes:
        - docker-images/announcement/*
 
-job_build_base_image_cc7:
+..job_build_base_image_cc7:
    stage: build-base-image
    before_script:
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7/Dockerfile
@@ -52,7 +52,7 @@ job_build_base_image_cc7:
      changes:
        - docker-images/hep-benchmark-base-cc7/*
 
-job_build_qa_image_cc7:
+..job_build_qa_image_cc7:
    stage: build-qa-image
    before_script:
        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-cc7/Dockerfile
@@ -68,7 +68,7 @@ job_build_qa_image_cc7:
 #####              PROMOTE PROD IMAGES                 #####
 ############################################################
 
-job_promote_prod_image_cc7:
+..job_promote_prod_image_cc7:
    stage: promote-image
    image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa
    tags:
@@ -89,7 +89,7 @@ job_promote_prod_image_cc7:
      variables:
        - $CI_COMMIT_TAG =~ /^v.*$/
 
-job_announce_prod_image:
+..job_announce_prod_image:
    stage: announce-promoted-image
    image: $CI_REGISTRY_IMAGE/announcement:latest
    only:
@@ -131,19 +131,19 @@ job_announce_prod_image:
         expire_in: 1 week
         when: always
 
-job_test_installation_cc7: 
+..job_test_installation_cc7: 
    before_script:
        - export BMKLIST=DB12
    <<: *template_test_installation
 
-job_test_kv_run_cc7:
+..job_test_kv_run_cc7:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
        - export BMKLIST="DB12,kv"
    <<: *template_test_installation
 
-job_test_hepscore_run_cc7:
+..job_test_hepscore_run_cc7:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
@@ -159,7 +159,7 @@ job_test_hepscore_run_cc7:
        - export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml
    <<: *template_test_installation
 
-job_test_hs06_run_cc7:
+..job_test_hs06_run_cc7:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
@@ -168,7 +168,7 @@ job_test_hs06_run_cc7:
    <<: *template_test_installation
 
 
-job_test_spec2017_run_cc7:
+..job_test_spec2017_run_cc7:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
@@ -263,7 +263,7 @@ test_yaml_files:
         expire_in: 1 week
         when: always
 
-job_test_sing_in_sing_hepscore:
+..job_test_sing_in_sing_hepscore:
     tags:
       -  hep-benchmark-suite-docker-runner
     before_script:
@@ -271,7 +271,7 @@ job_test_sing_in_sing_hepscore:
         - export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml
     <<: *template_test_qa_singularity
 
-job_test_sing_in_sing_hs06:
+..job_test_sing_in_sing_hs06:
     tags:
       -  hep-benchmark-suite-docker-runner
     before_script:
@@ -279,7 +279,7 @@ job_test_sing_in_sing_hs06:
       - rm -f /scratch/HEPSPEC/SPEC_CPU2006_v1.2/VERIFIED_INSTALLATION
     <<: *template_test_qa_singularity
 
-job_test_sing_in_sing_spec2017:
+..job_test_sing_in_sing_spec2017:
     tags:
       -  hep-benchmark-suite-docker-runner
     before_script:
