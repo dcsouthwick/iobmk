@@ -1,0 +1,4 @@
+setuptools
+pyyaml
+pytest
+flake8-docstrings

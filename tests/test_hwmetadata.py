@@ -1,10 +1,9 @@
+#!/usr/bin/python3
 ###############################################################################
 # Copyright 2019-2020 CERN. See the COPYRIGHT file at the top-level directory
 # of this distribution. For licensing information, see the COPYING file at
 # the top-level directory of this distribution.
 ###############################################################################
-
-#!/usr/bin/python3
 
 import unittest
 from hepbenchmarksuite.plugins.extractor import Extractor
@@ -12,14 +11,9 @@ from hepbenchmarksuite.plugins.extractor import Extractor
 class TestHWExtractor(unittest.TestCase):
     """********************************************************
                 *** HEP-BENCHMARK-SUITE ***
-    This class allows you to test the extract Hardware Metadata.
 
-    This tool is part of the CERN HEP-BENCHMARK-SUITE.
+    Testing the extraction of Hardware Metadata.
 
-    In case of issues, bugs, suggestions, etc. please contact:
-                hep-benchmarks-support@cern.ch
-
-    Author:  Miguel F. Medeiros
    *********************************************************"""
 
     def test_command_success(self):
