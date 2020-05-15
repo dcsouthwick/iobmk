@@ -1,3 +1,9 @@
+###############################################################################
+# Copyright 2019-2020 CERN. See the COPYRIGHT file at the top-level directory
+# of this distribution. For licensing information, see the COPYING file at
+# the top-level directory of this distribution.
+###############################################################################
+
 import subprocess
 import json
 import logging
@@ -17,12 +23,6 @@ class Extractor(object):
     their existence. For a complete data dump, it is recommend
     to run as priviledge user.
 
-    This tool is part of the CERN HEP-BENCHMARK-SUITE.
-
-    In case of issues, bugs, suggestions, etc. please contact:
-                hep-benchmarks-support@cern.ch
-
-    Author:  Miguel F. Medeiros
    *********************************************************"""
 
   def __init__(self):

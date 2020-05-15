@@ -1,9 +1,9 @@
-'''
-    Latest change: 30/05/2016
+###############################################################################
+# Copyright 2019-2020 CERN. See the COPYRIGHT file at the top-level directory
+# of this distribution. For licensing information, see the COPYING file at
+# the top-level directory of this distribution.
+###############################################################################
 
-    Changelog: add the possibility to run the bmk on an user defined number
-    of processes. If not specified, the number of processes will be CPU_NUM
-'''
 import os
 import random
 import multiprocessing
@@ -72,4 +72,4 @@ parser.add_argument('--cpu_num', action='store',
 
 cores = int(parser.parse_args().cpu_num)
 pool = multiprocessing.Pool(processes=cores)
-print float(sum(pool.map(getCPUNormalization, range(cores)))/cores)
+print (float(sum(pool.map(getCPUNormalization, range(cores)))/cores))

@@ -1,7 +1,13 @@
+###############################################################################
+# Copyright 2019-2020 CERN. See the COPYRIGHT file at the top-level directory
+# of this distribution. For licensing information, see the COPYING file at
+# the top-level directory of this distribution.
+###############################################################################
+
 #!/usr/bin/python3
 
 import unittest
-from extractor import Extractor
+from hepbenchmarksuite.plugins.extractor import Extractor
 
 class TestHWExtractor(unittest.TestCase):
     """********************************************************
@@ -41,7 +47,7 @@ class TestHWExtractor(unittest.TestCase):
 
         hw = Extractor()
 
-        with open('tests/BIOS.sample', 'r') as bios_file:
+        with open('tests/data/BIOS.sample', 'r') as bios_file:
             bios_text = bios_file.read()
 
         parser = hw.get_parser(bios_text)
@@ -57,7 +63,7 @@ class TestHWExtractor(unittest.TestCase):
 
         hw = Extractor()
 
-        with open('tests/CPU.sample', 'r') as cpu_file:
+        with open('tests/data/CPU.sample', 'r') as cpu_file:
             cpu_text = cpu_file.read()
 
 
@@ -92,7 +98,7 @@ class TestHWExtractor(unittest.TestCase):
 
         hw = Extractor()
 
-        with open('tests/MEM.sample', 'r') as mem_file:
+        with open('tests/data/MEM.sample', 'r') as mem_file:
             mem_text = mem_file.read()
 
         mem_output = hw.get_mem_parser(mem_text)
@@ -117,7 +123,7 @@ class TestHWExtractor(unittest.TestCase):
 
         hw = Extractor()
 
-        with open('tests/STORAGE.sample', 'r') as storage_file:
+        with open('tests/data/STORAGE.sample', 'r') as storage_file:
             storage_text = storage_file.read()
 
         storage_output = hw.get_storage_parser(storage_text)

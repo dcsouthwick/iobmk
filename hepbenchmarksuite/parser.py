@@ -1,8 +1,8 @@
-#
-#  Copyright (c) CERN 2016
-#
-
-__author__ = 'Luis Villazon Esteban'
+###############################################################################
+# Copyright 2019-2020 CERN. See the COPYRIGHT file at the top-level directory
+# of this distribution. For licensing information, see the COPYING file at
+# the top-level directory of this distribution.
+###############################################################################
 
 import json
 import time
