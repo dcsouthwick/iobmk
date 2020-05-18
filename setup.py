@@ -22,6 +22,6 @@ setup(
     long_description_content_type="text/markdown",
     url="https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite",
     license='GPLv3',
-    scripts=['bin/bmkrun'],
+    scripts=['bin/bmkrun', 'bin/show_metadata'],
     packages=['hepbenchmarksuite']
 )
