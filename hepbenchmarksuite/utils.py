@@ -8,18 +8,15 @@ import json
 import time
 import sys
 import os
-import commands
 from os import listdir
 import xml.etree.ElementTree as ET
 import argparse
 import re
 import multiprocessing
 import logging
-from hwmetadata.extractor import Extractor
+from hepbenchmarksuite.plugins.extractor import Extractor
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-logger = logging.getLogger('[RESULT PARSER]')
-
+logger = logging.getLogger(__name__)
 
 def extract_values(line):
     """Extract the values from the line and return a dictionary with the value, error, and unit"""
@@ -116,48 +113,12 @@ def parse_whetstone(rundir):
 
     return results
 
-
-def parse_hyper_benchmark():
-    min_loads = []
-
-    results = {"hyperbenchmark": {}}
-    if os.environ.has_key('HYPER_1minLoad_1'):
-        results["hyperbenchmark"]["1minLoad_1"] = float(os.environ['HYPER_1minLoad_1'])
-        min_loads.append(float(os.environ['HYPER_1minLoad_1']))
-
-    if os.environ.has_key('HYPER_1minLoad_2'):
-        results["hyperbenchmark"]["1minLoad_2"] = float(os.environ['HYPER_1minLoad_2'])
-        min_loads.append(float(os.environ['HYPER_1minLoad_2']))
-
-    if os.environ.has_key('HYPER_1minLoad_3'):
-        results["hyperbenchmark"]["1minLoad_3"] = float(os.environ['HYPER_1minLoad_3'])
-        min_loads.append(float(os.environ['HYPER_1minLoad_3']))
-
-    if os.environ.has_key('HYPER_MACHINEFEATURES_HS06'):
-        results["hyperbenchmark"]["machinefeatures_hs06"] = os.environ['HYPER_MACHINEFEATURES_HS06']
-
-    if os.environ.has_key('HYPER_JOBFEATURES_HS06'):
-        results["hyperbenchmark"]["jobfeatures_hs06_job"] = os.environ['HYPER_JOBFEATURES_HS06']
-
-    if os.environ.has_key('HYPER_JOBFEATURES_ALLOCATED_CPU'):
-        results["hyperbenchmark"]["jobfeatures_allocated_cpu"] = os.environ['HYPER_JOBFEATURES_ALLOCATED_CPU']
-
-    if os.environ.has_key('HYPER_DB12'):
-        results["hyperbenchmark"]["DB12"] = float(os.environ['HYPER_DB12'])
-
-    if os.environ.has_key('HYPER_WHETS'):
-        results["hyperbenchmark"]["whetstone"] = float(os.environ['HYPER_WHETS'])
-
-    results["hyperbenchmark"]["one_min_loads"] = min_loads
-
-    return results
-
 def parse_kv(rundir):
     # This code should be reviewed
     # NOTE: this will fail if KV did not run
     result = {'kv': {'start': int(os.environ['init_kv_test']),
                      'end': int(os.environ['end_kv_test']),
-                     }}
+              }}
 
     file_name = rundir+"/KV/atlas-kv_summary.json"
     file = open(file_name, "r")
@@ -166,49 +127,16 @@ def parse_kv(rundir):
 
 def parse_hepscore(rundir):
     result = {}
-
     file_name = rundir+"/HEPSCORE/hepscore_result.json"
     file = open(file_name, "r")
     result['hep-score'] = json.loads(file.read())
     return result
 
-    
-def parse_phoronix():
-    path = '/home/phoronix/.phoronix-test-suite/test-results'
-    result = {'phoronix':{}}
-    for f in listdir(path):
-        if f.find('pts-results-viewer') < 0 and f[0] is not '.':
-            try:
-                tree = ET.parse("%s/%s/%s" % (path, f, "test-1.xml"))
-                root = tree.getroot()
-                metric = root.find('Result').find('Scale').text
-                title = root.find('Result').find('Title').text
-                value = float(root.find('Result').find('Data').find('Entry').find('Value').text)
-                obj = {title: {'value':float(value), 'unit': metric}}
-
-                if title.find('Zip') >= 0:
-                    obj['start'] = os.environ['init_7zip']
-                    obj['end'] = os.environ['end_7zip']
-                elif title.find('LAME') >= 0:
-                    obj['start'] = os.environ['init_mp3']
-                    obj['end'] = os.environ['end_mp3']
-                elif title.find('x264') >= 0:
-                    obj['start'] = os.environ['init_x264']
-                    obj['end'] = os.environ['end_x264']
-                elif title.find('Kernel') >= 0:
-                    obj['start'] = os.environ['init_build_linux_kernel']
-                    obj['end'] = os.environ['end_build_linux_kernel']
-
-                result['phoronix'].update(obj)
-            except Exception:
-                pass
-    return result
-
-
-def parse_metadata(args): 
-    start_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['init_tests'])))
-    end_time   = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['end_tests'])))
-
+def parse_metadata(args):
+#    start_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['init_tests'])))
+#    end_time   = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(os.environ['end_tests'])))
+    start_time = 2
+    end_time   = 4
     # Convert user tags to json format
     def convertTagsToJson(tag_str):
         logger.info("User specified tags: %s " % args.tags)
@@ -225,7 +153,7 @@ def parse_metadata(args):
                 "freetext": "not_defined",
                 "cloud":    "not_defined",
                 "VO":       "not_defined"
-           }
+            }
         return tags
 
     # Hep-benchmark-suite flags
@@ -245,7 +173,7 @@ def parse_metadata(args):
         '_timestamp'     : start_time,
         '_timestamp_end' : end_time,
         'json_version'   : _json_version
-        })
+    })
 
     result['host'].update({
         'ip'             : args.ip,
@@ -253,7 +181,7 @@ def parse_metadata(args):
         'UID'            : args.id,
         'FLAGS'          : FLAGS,
         'TAGS'           : convertTagsToJson(args.tags),
-        })
+    })
 
     # Collect Software and Hardware metadata from hwmetadata plugin
     hw=Extractor()
@@ -261,7 +189,7 @@ def parse_metadata(args):
     result['host'].update({
         'SW': hw.collect_SW(),
         'HW': hw.collect_HW(),
-        })
+    })
 
     return result
 
@@ -270,39 +198,19 @@ def insert_print_action(alist,akey,astring,adic):
     alist["key"].append(akey)
     return alist
 
-def print_hyperbenchmark(hyperb):
-        totstring = "Hyper-Benchmark results:" 
-        
-        print_action = {"lambda":[],"key":[]}
-        insert_print_action(print_action,'DB12',"\n\tDIRAC Benchmark = %s (est. HS06)",hyperb)
-        insert_print_action(print_action,'whetstone',"\n\tWhetstone Benchmark = %s (MWIPS)",hyperb)
-        insert_print_action(print_action,'1minLoad_1',"\n\t1-min Load measurements =%s",hyperb)
-        insert_print_action(print_action,'1minLoad_2',"\n\t1-min Load measurements =%s",hyperb)
-        insert_print_action(print_action,'1minLoad_3',"\n\t1-min Load measurements =%s",hyperb)
-        insert_print_action(print_action,'machinefeatures_hs06',"\n\tmachinefeatures-HS06 = %s",hyperb)
-        insert_print_action(print_action,'jobfeatures_hs06_job',"\n\tjobfeatures-HS06_job = %s",hyperb)
-        insert_print_action(print_action,'jobfeatures-allocated_cpu',"\n\tjobfeatures-allocated_cpu = %s",hyperb)
-
-        for i,akey in enumerate(print_action["key"]):
-            try:
-                totstring="%s %s" %(totstring,print_action["lambda"][i](akey))
-            except:
-                pass
-        return totstring
-
 
 def print_results_kv(r):
     return 'KV cpu performance [evt/sec]: score %.2f over %d copies. Min Value %.2f Max Value %.2f'%(r['wl-scores']['sim'],r['copies'],r['wl-stats']['min'],r['wl-stats']['max'])
-    
+
 
 def print_results(results):
-    
-    print "\n\n========================================================="
-    print "RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD %s" % results['host']['TAGS']['cloud']
-    print "========================================================="
-    print "Suite start %s " % results['_timestamp']
-    print "Suite end   %s" % results['_timestamp_end']
-    print "Machine CPU Model: %s" %  results['host']['HW']['CPU']['CPU_Model']
+
+    print ("\n\n=========================================================")
+    print ("RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD %s" % results['host']['TAGS']['cloud'])
+    print ("=========================================================")
+    print ("Suite start %s " % results['_timestamp'])
+    print ("Suite end   %s" % results['_timestamp_end'])
+    print ("Machine CPU Model: %s" %  results['host']['HW']['CPU']['CPU_Model'])
 
     p = results['profiles']
     bmk_print_action = {
@@ -315,15 +223,14 @@ def print_results(results):
         "hepscore": lambda x: "HEPSCORE Benchmark = %s over benchmarks %s" % (round(p[x]['score'],2), p[x]['benchmarks'].keys())  ,
         "hyperbenchmark": lambda x:print_hyperbenchmark(p[x])
     }
-    
+
     for bmk in sorted(results['profiles']):
         #this try covers two cases: that the expected printout fails or that the item is not know in the print_action
         try:
-            print bmk_print_action[bmk](bmk)
+            print (bmk_print_action[bmk](bmk))
         except:
-            print "%s : %s" %(bmk,results['profiles'][bmk])
-            
-    
+            print ("%s : %s" %(bmk,results['profiles'][bmk]))
+
 def print_results_from_file(afile):
     print_results(json.loads(open(afile, 'r').read()))
 
@@ -346,7 +253,7 @@ if __name__ == '__main__':
     except Exception as e:
         logger.warning('Skipping phoronix because of %s'%e)
     try:
-        result['profiles'].update(parse_kv(args.rundir)) 
+        result['profiles'].update(parse_kv(args.rundir))
     except Exception as e:
         logger.warning('Skipping KV because of %s'%e)
         pass
@@ -386,5 +293,5 @@ if __name__ == '__main__':
     open(args.file, 'w').write(json.dumps(result))
 
     print_results_from_file(args.file)
-    
+
     print("\nResults are stored in file %s" % args.file)
