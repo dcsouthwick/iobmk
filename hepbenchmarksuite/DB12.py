@@ -5,12 +5,15 @@
 ###############################################################################
 
 import os
+import json
+import logging
 import random
 import multiprocessing
 import argparse
 
 UNITS = {'HS06': 1., 'SI00': 1. / 344.}
 
+_log = logging.getLogger(__name__)
 
 def getCPUNormalization(i, reference='HS06', iterations=1):
     """
@@ -23,18 +26,18 @@ def getCPUNormalization(i, reference='HS06', iterations=1):
     """
     try:
         iter = max(min(int(iterations), 10), 1)
-    except (TypeError, ValueError), x:
+    except (TypeError, ValueError) as x:
         print(x)
     """
         return S_ERROR( x )
     """
 
     # This number of iterations corresponds to 360 HS06 seconds
-    n = int(1000 * 1000 * 12.5)
+    n     = int(1000 * 1000 * 12.5)
     calib = 360.0 / UNITS[reference]
 
-    m = 0L
-    m2 = 0L
+    m = 0
+    m2 = 0
     p = 0
     p2 = 0
     # Do one iteration extra to allow CPUs with variable speed
@@ -49,7 +52,7 @@ def getCPUNormalization(i, reference='HS06', iterations=1):
             p += t
             p2 += t * t
 
-    end = os.times()
+    end  = os.times()
     cput = sum( end[:4] ) - sum( start[:4] )
     wall = end[4] - start[4]
 
@@ -64,12 +67,19 @@ def getCPUNormalization(i, reference='HS06', iterations=1):
     return S_OK( {'CPU': cput, 'WALL':wall, 'NORM': calib * iterations / cput, 'UNIT': reference } )
     """
 
-parser = argparse.ArgumentParser(description='LHCb DIRAC Benchmark')
-parser.add_argument('--cpu_num', action='store',
-                        default=multiprocessing.cpu_count(), dest='cpu_num', \
-                        help='Number of processes to run. If not specified, \
-                                it will use %(default)s.')
 
-cores = int(parser.parse_args().cpu_num)
-pool = multiprocessing.Pool(processes=cores)
-print (float(sum(pool.map(getCPUNormalization, range(cores)))/cores))
+def run_DB12(rundir=".", cpu_num=multiprocessing.cpu_count()):
+  _log.debug("Running DB12 with rundir={} cpu_num={}".format(rundir,cpu_num))
+
+  cores  = int(cpu_num)
+  pool   = multiprocessing.Pool(processes=cores)
+  result = {}
+  result['DB12'] =  (float(sum(pool.map(getCPUNormalization, range(cores)))/cores))
+
+  # Save result to json
+  with open(os.path.join(rundir, 'db12_result.json'), 'w') as fout:
+    json.dump(result, fout)
+
+  _log.debug("Result from DB12: {} ".format(result))
+
+  return result

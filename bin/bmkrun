@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+#!/usr/bin/python3:wq
+
 ###############################################################################
 ## Copyright 2019-2020 CERN. See the COPYRIGHT file at the top-level directory
 ## of this distribution. For licensing information, see the COPYING file at
@@ -6,21 +7,39 @@
 ################################################################################
 
 import argparse
+import logging
+import sys
 from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--id",     nargs='?', help="UID")
-    parser.add_argument("-n", "--name",   nargs='?', help="hostname")
-    parser.add_argument("-p", "--ip",     nargs='?', help="ip address")
-    parser.add_argument("-f", "--file",   nargs='?', help="File to store the results", default="result_profile.json")
-    parser.add_argument("-d", "--rundir", nargs='?', help="Directory where bmks ran")
-    parser.add_argument("-m", "--mp_num", nargs='?', help="Number of cpus to run the benchmarks.")
-    parser.add_argument("-t", "--tags",   nargs='?', help="Custom user tags.")
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                description="-"*70+"\n bmkrun cli allows you to run several benchmarks\n"+"-"*70+"\nAuthor: Benchmarking Working Group\nContact: @cern.ch", epilog="-"*70)
+
+    group_mandatory  = parser.add_argument_group('mandatory arguments')
+    group_optional   = parser.add_argument_group('optional arguments')
+
+    # Optional arguments
+    parser.add_argument("-i", "--id",     nargs='?',   help="UID")
+    parser.add_argument("-n", "--name",   nargs='?',   help="hostname")
+    parser.add_argument("-p", "--ip",     nargs='?',   help="ip address")
+    parser.add_argument("-f", "--file",   nargs='?',   help="File to store the results", default="result_profile.json")
+    parser.add_argument("-d", "--rundir", nargs='?',   help="Directory where bmks ran",  default="/tmp")
+    parser.add_argument("-m", "--mp_num", nargs='?',   help="Number of cpus to run the benchmarks.")
+    parser.add_argument("-t", "--tags",   nargs='?',   help="Custom user tags.")
+
+    # Mandatory arguments
+    group_mandatory.add_argument("-b", "--benchmarks",     nargs='+', required=True, help="Benchmarks")
     args = parser.parse_args()
 
-    suite = HepBenchmarkSuite()
-    suite.test()
+    # Enable logging
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
+    print (args)
+
+    suite = HepBenchmarkSuite(items=args.benchmarks, args=args)
+    suite.start()
+
+    print ("Completed!")
 
 if __name__ == "__main__":
     main()
