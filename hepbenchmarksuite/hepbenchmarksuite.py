@@ -7,8 +7,10 @@
 import os
 import json
 import logging
-from hepbenchmarksuite import DB12
-from hepbenchmarksuite.utils import parse_metadata
+import time
+
+from  hepbenchmarksuite import db12
+from  hepbenchmarksuite import utils
 
 _log = logging.getLogger(__name__)
 
@@ -26,15 +28,18 @@ class HepBenchmarkSuite(object):
       'db12'     : 'db12_result.json',
   }
 
-
   def __init__(self, items=None, args=None):
     """Initialize setup"""
     self._bench_queue        = items
     self.selected_benchmarks = items.copy()
-    self.args                = args
+    self._cli_inputs         = args
+    self._extra              = {}
 
   def start(self):
     _log.info ("Starting benchmark suite")
+
+    self._extra['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+
     if self.preflight() == 0:
       self.run()
 
@@ -43,16 +48,19 @@ class HepBenchmarkSuite(object):
     return 0
 
   def run(self):
-    if len(self._bench_queue) == 0:
-      self.cleanup()
-    else:
 
+    # Check if there are still benchmarks to run
+    if len(self._bench_queue) == 0:
+      self._extra['end_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+      self.cleanup()
+
+    else:
       bench2run = self.dequeue()
       print ("Running benchmark: ", bench2run)
       print ("Benchmarks left:", self._bench_queue)
 
       if bench2run == 'db12':
-        DB12.run_DB12(rundir=".", cpu_num=2)
+        db12.run_db12(rundir=".", cpu_num=2)
 
       self.check_lock()
 
@@ -68,19 +76,21 @@ class HepBenchmarkSuite(object):
   def cleanup(self):
     # Check logs
     # compile metadata
-    result = parse_metadata(self.args)
-    result.update({'profiles': {}})
+    self._result = utils.parse_metadata(self._cli_inputs, self._extra)
+    self._result.update({'profiles': {}})
 
-    # Get results from benchmarks
+    # Get results from each benchmark
     for bench in self.selected_benchmarks:
       try:
           with open(self.RESULT_FILES[bench], "r") as result_file:
-            result['profiles'].update(json.loads(result_file.read()))
+            self._result['profiles'].update(json.loads(result_file.read()))
 
       except Exception as e:
         _log.warning('Skipping {} because of {}'.format(bench,e))
 
-    with open("output.json", 'w') as fo:
-      fo.write(json.dumps(result))
+    with open(os.path.join(self._cli_inputs.rundir, self._cli_inputs.file), 'w') as fo:
+      fo.write(json.dumps(self._result))
 
-    print (result)
+
+  def results(self):
+    return self._result

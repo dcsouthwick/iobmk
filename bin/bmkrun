@@ -9,7 +9,10 @@
 import argparse
 import logging
 import sys
+import os
+
 from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
+from hepbenchmarksuite import utils
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -23,7 +26,7 @@ def main():
     parser.add_argument("-n", "--name",   nargs='?',   help="hostname")
     parser.add_argument("-p", "--ip",     nargs='?',   help="ip address")
     parser.add_argument("-f", "--file",   nargs='?',   help="File to store the results", default="result_profile.json")
-    parser.add_argument("-d", "--rundir", nargs='?',   help="Directory where bmks ran",  default="/tmp")
+    parser.add_argument("-d", "--rundir", nargs='?',   help="Directory where bmks ran",  default=".")
     parser.add_argument("-m", "--mp_num", nargs='?',   help="Number of cpus to run the benchmarks.")
     parser.add_argument("-t", "--tags",   nargs='?',   help="Custom user tags.")
 
@@ -34,12 +37,19 @@ def main():
     # Enable logging
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
-    print (args)
+    # WIP: Currently only for debugging
+    print(args)
 
     suite = HepBenchmarkSuite(items=args.benchmarks, args=args)
     suite.start()
 
-    print ("Completed!")
+    print("Completed!")
+
+    # Display results
+    FULL_PATH=os.path.join(args.rundir, args.file)
+    utils.print_results_from_file(FULL_PATH)
+
+    print("\nFull results can be found in {}".format(FULL_PATH))
 
 if __name__ == "__main__":
     main()
