@@ -15,7 +15,7 @@ UNITS = {'HS06': 1., 'SI00': 1. / 344.}
 
 _log = logging.getLogger(__name__)
 
-def getCPUNormalization(i, reference='HS06', iterations=1):
+def get_cpu_normalization(i, reference='HS06', iterations=1):
     """
     Get Normalized Power of the current CPU in [reference] units
     """
@@ -68,13 +68,24 @@ def getCPUNormalization(i, reference='HS06', iterations=1):
     """
 
 
-def run_DB12(rundir=".", cpu_num=multiprocessing.cpu_count()):
+def run_db12(rundir=".", cpu_num=multiprocessing.cpu_count()):
+  """
+  Runs DB12 Benchmark and outputs result.
+
+  Args:
+    rundir:  The running directory of benchmark
+    cpu_num: The number of CPUs allowed for benchmark
+
+  Returns:
+    A dict containing DB12 result { 'DB12' : value }
+  """
+
   _log.debug("Running DB12 with rundir={} cpu_num={}".format(rundir,cpu_num))
 
   cores  = int(cpu_num)
   pool   = multiprocessing.Pool(processes=cores)
   result = {}
-  result['DB12'] =  (float(sum(pool.map(getCPUNormalization, range(cores)))/cores))
+  result['DB12'] =  (float(sum(pool.map(get_cpu_normalization, range(cores)))/cores))
 
   # Save result to json
   with open(os.path.join(rundir, 'db12_result.json'), 'w') as fout:
