@@ -28,11 +28,11 @@ class HepBenchmarkSuite(object):
       'db12'     : 'db12_result.json',
   }
 
-  def __init__(self, items=None, args=None):
+  def __init__(self,  config=None):
     """Initialize setup"""
-    self._bench_queue        = items
-    self.selected_benchmarks = items.copy()
-    self._cli_inputs         = args
+    self._bench_queue        = config['benchmarks']
+    self.selected_benchmarks = config['benchmarks'].copy()
+    self._config             = config
     self._extra              = {}
 
   def start(self):
@@ -76,19 +76,21 @@ class HepBenchmarkSuite(object):
   def cleanup(self):
     # Check logs
     # compile metadata
-    self._result = utils.parse_metadata(self._cli_inputs, self._extra)
+    self._result = utils.prepare_metadata(self._config, self._extra)
     self._result.update({'profiles': {}})
 
     # Get results from each benchmark
     for bench in self.selected_benchmarks:
       try:
           with open(self.RESULT_FILES[bench], "r") as result_file:
-            self._result['profiles'].update(json.loads(result_file.read()))
+            self._result['profiles'].update({
+               bench : json.loads(result_file.read())
+            })
 
       except Exception as e:
         _log.warning('Skipping {} because of {}'.format(bench,e))
 
-    with open(os.path.join(self._cli_inputs.rundir, self._cli_inputs.file), 'w') as fo:
+    with open(os.path.join(self._config['rundir'] , self._config['file']), 'w') as fo:
       fo.write(json.dumps(self._result))
 
 

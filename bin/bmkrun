@@ -10,43 +10,71 @@ import argparse
 import logging
 import sys
 import os
+import yaml
 
 from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
 from hepbenchmarksuite import utils
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                description="-"*70+"\n bmkrun cli allows you to run several benchmarks\n"+"-"*70+"\nAuthor: Benchmarking Working Group\nContact: @cern.ch", epilog="-"*70)
+                                description="-"*70+"\n bmkrun cli allows you to run several benchmarks\n"+"-"*70+"\nAuthor: Benchmarking Working Group\nContact: benchmark-suite-wg-devel@cern.ch", epilog="-"*70)
 
     group_mandatory  = parser.add_argument_group('mandatory arguments')
     group_optional   = parser.add_argument_group('optional arguments')
 
     # Optional arguments
-    parser.add_argument("-i", "--id",     nargs='?',   help="UID")
+    parser.add_argument("-u", "--uid",    nargs='?',   help="UID")
     parser.add_argument("-n", "--name",   nargs='?',   help="hostname")
     parser.add_argument("-p", "--ip",     nargs='?',   help="ip address")
     parser.add_argument("-f", "--file",   nargs='?',   help="File to store the results", default="result_profile.json")
+    parser.add_argument("-c", "--config", nargs='?',   help="Configuration file to use in yaml format (will ignore all cli args).")
     parser.add_argument("-d", "--rundir", nargs='?',   help="Directory where bmks ran",  default=".")
-    parser.add_argument("-m", "--mp_num", nargs='?',   help="Number of cpus to run the benchmarks.")
+    parser.add_argument("-m", "--mp_num", nargs='?', type=int,    help="Number of cpus to run the benchmarks.")
     parser.add_argument("-t", "--tags",   nargs='?',   help="Custom user tags.")
 
     # Mandatory arguments
-    group_mandatory.add_argument("-b", "--benchmarks",     nargs='+', required=True, help="Benchmarks")
-    args = parser.parse_args()
+    group_mandatory.add_argument("-b", "--benchmarks", nargs='+', required=False, help="Benchmarks")
+
+    try:
+      args = parser.parse_args()
+    except:
+      parser.print_help()
+      sys.exit(0)
 
     # Enable logging
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
-    # WIP: Currently only for debugging
-    print(args)
+    # Select config file or cli arguments
+    if args.config != None:
+      with open(args.config, 'r') as yam:
+        conf_data = yaml.load(yam)
 
-    suite = HepBenchmarkSuite(items=args.benchmarks, args=args)
+      print(conf_data)
+      active_config = conf_data['global']
+    else:
+      print(">>>",vars(args))
+      # Convert to dict using vars
+      active_config = vars(args)
+
+      # Update tags with json format
+      active_config['tags'] = utils.convertTagsToJson(args.tags)
+
+    # Check if user provided valid benchmark
+    if active_config['benchmarks'] == None:
+      parser.print_help()
+      sys.exit("No benchmarks were provided.")
+
+    AVAILABLE_BENCHMARKS  = ["db12" , "hepscore", "spec2017", "hs06_32", "hs06_64", "aa"]
+    for bench in active_config['benchmarks']:
+      if bench not in AVAILABLE_BENCHMARKS:
+        sys.exit('Benchmark "{}" is not a valid benchmark. Please select one of the following benchmarks:\n- {} '.format(bench,'\n- '.join(AVAILABLE_BENCHMARKS)))
+
+    # Configure hep-benchmark-suite
+    suite = HepBenchmarkSuite(config=active_config)
     suite.start()
 
-    print("Completed!")
-
     # Display results
-    FULL_PATH=os.path.join(args.rundir, args.file)
+    FULL_PATH  = os.path.join(active_config['rundir'], active_config['file'])
     utils.print_results_from_file(FULL_PATH)
 
     print("\nFull results can be found in {}".format(FULL_PATH))

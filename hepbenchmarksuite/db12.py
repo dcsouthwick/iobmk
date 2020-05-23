@@ -68,7 +68,7 @@ def get_cpu_normalization(i, reference='HS06', iterations=1):
     """
 
 
-def run_db12(rundir=".", cpu_num=multiprocessing.cpu_count()):
+def run_db12(rundir=".", cpu_num=multiprocessing.cpu_count(), reference='HS06'):
   """
   Runs DB12 Benchmark and outputs result.
 
@@ -84,8 +84,10 @@ def run_db12(rundir=".", cpu_num=multiprocessing.cpu_count()):
 
   cores  = int(cpu_num)
   pool   = multiprocessing.Pool(processes=cores)
-  result = {}
-  result['DB12'] =  (float(sum(pool.map(get_cpu_normalization, range(cores)))/cores))
+  result = {
+     'value': (float(sum(pool.map(get_cpu_normalization, range(cores)))/cores)),
+     'unit' : "est. {}".format(reference)
+  }
 
   # Save result to json
   with open(os.path.join(rundir, 'db12_result.json'), 'w') as fout:

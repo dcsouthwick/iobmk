@@ -8,47 +8,14 @@ import json
 import time
 import sys
 import os
-import xml.etree.ElementTree as ET
-import argparse
-import re
-import multiprocessing
 import logging
+import subprocess
 
 from datetime import datetime
 
 from hepbenchmarksuite.plugins.extractor import Extractor
 
-
-logger = logging.getLogger(__name__)
-
-def extract_values(line):
-    """Extract the values from the line and return a dictionary with the value, error, and unit"""
-
-    values = line[line.find("(")+1:line.find(")")]
-    value = values[:values.find("+")].strip()
-    deviation = values[values.find("+/-")+3:].strip()
-    unit = line[line.find(")")+1:].strip()
-    if unit == 'ms':
-            value = '%.5f' % (float(value)/1000)
-            deviation = '%.5f' % (float(deviation)/1000)
-            unit = 's'
-    if float(deviation) == 0:
-        return {'value': float(value), 'unit':unit}
-    else:
-        return {'value': float(value), 'error': float(deviation), 'unit':unit}
-
-
-def parse_kv(rundir):
-    # This code should be reviewed
-    # NOTE: this will fail if KV did not run
-    result = {'kv': {'start': int(os.environ['init_kv_test']),
-                     'end': int(os.environ['end_kv_test']),
-              }}
-
-    file_name = rundir+"/KV/atlas-kv_summary.json"
-    file = open(file_name, "r")
-    result['kv'].update(json.loads(file.read()))
-    return result
+_log = logging.getLogger(__name__)
 
 def parse_hepscore(rundir):
     result = {}
@@ -57,18 +24,72 @@ def parse_hepscore(rundir):
     result['hep-score'] = json.loads(file.read())
     return result
 
-def insert_print_action(alist,akey,astring,adic):
-    alist["lambda"].append(lambda x: astring%adic[x])
-    alist["key"].append(akey)
-    return alist
+#-----------
+
+def exec_cmd(cmd_str):
+    """ Accepts command string and returns output. """
+
+    _log.debug("Excuting command: {}".format(cmd_str))
+
+    cmd = subprocess.Popen(cmd_str, shell=True, executable='/bin/bash',  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd_reply, cmd_error = cmd.communicate()
+
+    # Check for errors
+    if cmd.returncode != 0:
+      _log.error(cmd_error)
+      cmd_reply = cmd_error
+
+    else:
+      # Convert bytes to text and remove \n
+      try:
+        cmd_reply = cmd_reply.decode('utf-8').rstrip()
+      except UnicodeDecodeError:
+        _log.error("Failed to decode to utf-8.")
+
+    return cmd_reply
 
 
-def print_results_kv(r):
-    return 'KV cpu performance [evt/sec]: score %.2f over %d copies. Min Value %.2f Max Value %.2f'%(r['wl-scores']['sim'],r['copies'],r['wl-stats']['min'],r['wl-stats']['max'])
 
 #-----------------------------------------
+def convertTagsToJson(tag_str):
+    """
+    Convert tags string to json
 
-def parse_metadata(cli_inputs, extra):
+    Args:
+      tag_str: String to be converted to json.
+
+    Returns:
+      A dict containing the tags.
+    """
+
+    _log.info("User specified tags: {}".format(tag_str))
+
+    # Check if user provided a valid tag string to be converted to json
+    try:
+      tags = json.loads(tag_str)
+
+    except:
+      # User provided wrong format. Default tags are provided.
+      _log.warning("Not a valid tag json format specified: {}".format(tag_str))
+      tags = {
+              "pnode":    "not_defined",
+              "freetext": "not_defined",
+              "cloud":    "not_defined",
+              "VO":       "not_defined"
+       }
+    return tags
+
+
+def get_version():
+    # WIP
+    # Get json metadata version from install folder
+    install_dir, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(install_dir,'VERSION')) as version_file:
+        _json_version = version_file.readline()
+
+    return "2.0-dev"
+
+def prepare_metadata(params, extra):
     """
     Constructs a json with cli inputs and extra fields
 
@@ -80,50 +101,28 @@ def parse_metadata(cli_inputs, extra):
       A dict containing hardware metadata, tags, flags & extra fields
     """
 
-    # Convert user tags to json format
-    def convertTagsToJson(tag_str):
-      logger.info("User specified tags: {}".format(cli_inputs.tags))
-
-      # Check if user provided a valid tag string to be converted to json
-      try:
-        tags = json.loads(tag_str)
-
-      except:
-        # User provided wrong format. Default tags are provided.
-        logger.warning("Not a valid tag json format specified: {}".format(tag_str))
-        tags = {
-                "pnode":    "not_defined",
-                "freetext": "not_defined",
-                "cloud":    "not_defined",
-                "VO":       "not_defined"
-         }
-      return tags
-
-    # Hep-benchmark-suite flags
-    FLAGS = {
-        'mp_num' : cli_inputs.mp_num,
-    }
-
-    # Get json metadata version from install folder
-    install_dir, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
-    with open(os.path.join(install_dir,'VERSION')) as version_file:
-        _json_version = version_file.readline()
-
     # Create output metadata
     result = {'host':{}}
     result.update({
-        '_id'            : "{}_{}".format(cli_inputs.id, extra['start_time']),
+        '_id'            : "{}_{}".format(params['uid'], extra['start_time']),
         '_timestamp'     : extra['start_time'],
         '_timestamp_end' : extra['end_time'],
-        'json_version'   : "2.0"
+        'json_version'   : get_version()
     })
 
+    for i in ['ip', 'hostname', 'UID', 'tags']:
+      try:
+        result['host'].update({"{}".format(i) : params[i]})
+      except:
+        result['host'].update({"{}".format(i): "not_defined"})
+
+    # Hep-benchmark-suite flags
+    FLAGS = {
+        'mp_num' : params['mp_num'],
+    }
+
     result['host'].update({
-        'ip'             : cli_inputs.ip,
-        'hostname'       : cli_inputs.name,
-        'UID'            : cli_inputs.id,
-        'FLAGS'          : FLAGS,
-        'TAGS'           : convertTagsToJson(cli_inputs.tags),
+        'FLAGS'  : FLAGS,
     })
 
     # Collect Software and Hardware metadata from hwmetadata plugin
@@ -147,7 +146,7 @@ def print_results(results):
     """
 
     print("\n\n=========================================================")
-    print("RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD {}".format(results['host']['TAGS']['cloud']))
+    print("RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD {}".format(results['host']['tags']['cloud']))
     print("=========================================================")
     print("Suite start {}".format(results['_timestamp']))
     print("Suite end   {}".format(results['_timestamp_end']))
@@ -155,8 +154,6 @@ def print_results(results):
 
     p = results['profiles']
     bmk_print_action = {
-        "whetstone": lambda x: "Whetstone Benchmark = %s (MWIPS)" %p[x]['score'],
-        "kv":        lambda x: print_results_kv(p[x]),
         "db12":      lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(p[x]['value']),p[x]['unit']),
         "hs06_32":   lambda x: "HS06 32 bit Benchmark = %s" %p[x]['score'],
         "hs06_64":   lambda x: "HS06 64 bit Benchmark = %s" %p[x]['score'],
