@@ -17,37 +17,61 @@ from hepbenchmarksuite.plugins.extractor import Extractor
 
 _log = logging.getLogger(__name__)
 
-def parse_hepscore(rundir):
-    result = {}
-    file_name = rundir+"/HEPSCORE/hepscore_result.json"
-    file = open(file_name, "r")
-    result['hep-score'] = json.loads(file.read())
-    return result
+def run_hepspec(conf):
+    """
+    Run HEPSpec benchmark.
 
-#-----------
+    Args:
+      conf: A dict containing configuration
 
-def exec_cmd(cmd_str):
-    """ Accepts command string and returns output. """
+    """
+
+    _log.debug("Configuration in use: {}".format(conf))
+
+    # Config section to use
+    hs06 = conf['hepspec06']
+
+    # Select run mode: docker, singularity, podman, etc
+    run_mode = conf['global']['mode']
+
+    _run_args = "-v {0}:{0} -v {1}:{1} {2} -b hs06_32 -w {0} -p {1} -u {3}".format(hs06['bind_volume'], hs06['hepspec_volume'], hs06['image'], hs06['url_tarball'])
+
+    cmd = {
+        'docker' : "docker run --network=host {}".format(_run_args)
+    }
+
+    # Start benchmark
+    exec_wait_cmd(cmd[run_mode])
+
+def exec_wait_cmd(cmd_str):
+    """
+    Accepts command string to execute and waits for process to finish
+
+    Args:
+      cmd_str: Command to execute.
+
+    Returns:
+      An integer with the error code
+    """
 
     _log.debug("Excuting command: {}".format(cmd_str))
 
-    cmd = subprocess.Popen(cmd_str, shell=True, executable='/bin/bash',  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    cmd_reply, cmd_error = cmd.communicate()
+    cmd = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    # Output stdout from child process
+    line = cmd.stdout.readline()
+    while line:
+       sys.stdout.write(line.decode('utf-8'))
+       line = cmd.stdout.readline()
+
+    # Wait until process is complete
+    cmd.wait()
 
     # Check for errors
     if cmd.returncode != 0:
-      _log.error(cmd_error)
-      cmd_reply = cmd_error
+      _log.error("Exec failed")
 
-    else:
-      # Convert bytes to text and remove \n
-      try:
-        cmd_reply = cmd_reply.decode('utf-8').rstrip()
-      except UnicodeDecodeError:
-        _log.error("Failed to decode to utf-8.")
-
-    return cmd_reply
-
+    return cmd.returncode
 
 
 #-----------------------------------------

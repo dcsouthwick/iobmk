@@ -1,21 +1,22 @@
 ---
 global:
+  mode: "docker"
   file: "out.json"
-  rundir: "/tmp"
+  rundir: "/tmp/hep-spec_wd/"
   mp_num: "4"
   benchmarks:
-    - "db12"
+#    - "db12"
     - "test"
+    - "hs06_32"
   tags:
     cloud: "Suite CI"
     vo:  "Some VM"
     other_tag:  "Some text"
   uid: "machineX"
 
-
 hepspec06:
-  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:latest"
-  url_tarball: "https://example.com"
+  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
+  url_tarball: "https://example.com/"
   bind_volume: "/tmp/hep-spec_wd"
   hepspec_volume: "/var/SPEC"
 

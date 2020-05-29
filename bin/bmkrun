@@ -50,31 +50,33 @@ def main():
         conf_data = yaml.load(yam)
 
       print(conf_data)
-      active_config = conf_data['global']
+      active_config = conf_data
     else:
       print(">>>",vars(args))
       # Convert to dict using vars
-      active_config = vars(args)
+      active_config = {}
+      active_config['global']  = vars(args)
 
       # Update tags with json format
-      active_config['tags'] = utils.convertTagsToJson(args.tags)
+      active_config['global']['tags'] = utils.convertTagsToJson(args.tags)
 
     # Check if user provided valid benchmark
-    if active_config['benchmarks'] == None:
+    if active_config['global']['benchmarks'] == None:
       parser.print_help()
       sys.exit("No benchmarks were provided.")
 
-    AVAILABLE_BENCHMARKS  = ["db12" , "hepscore", "spec2017", "hs06_32", "hs06_64", "aa"]
-    for bench in active_config['benchmarks']:
+    AVAILABLE_BENCHMARKS  = ["db12" , "hepscore", "spec2017", "hs06_32", "hs06_64", "test"]
+    for bench in active_config['global']['benchmarks']:
       if bench not in AVAILABLE_BENCHMARKS:
         sys.exit('Benchmark "{}" is not a valid benchmark. Please select one of the following benchmarks:\n- {} '.format(bench,'\n- '.join(AVAILABLE_BENCHMARKS)))
 
     # Configure hep-benchmark-suite
+    print(active_config)
     suite = HepBenchmarkSuite(config=active_config)
     suite.start()
 
     # Display results
-    FULL_PATH  = os.path.join(active_config['rundir'], active_config['file'])
+    FULL_PATH  = os.path.join(active_config['global']['rundir'], active_config['global']['file'])
     utils.print_results_from_file(FULL_PATH)
 
     print("\nFull results can be found in {}".format(FULL_PATH))
