@@ -96,9 +96,7 @@ class HepBenchmarkSuite(object):
           with open(result_path, "r") as result_file:
             _log.info("Reading result file: {}".format(result_path))
 
-            self._result['profiles'].update({
-               bench : json.loads(result_file.read())
-            })
+            self._result['profiles'].update(json.loads(result_file.read()))
 
       except Exception as e:
         _log.warning('Skipping {} because of {}'.format(bench,e))

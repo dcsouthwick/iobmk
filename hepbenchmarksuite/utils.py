@@ -10,6 +10,7 @@ import sys
 import os
 import logging
 import subprocess
+import socket
 
 from datetime import datetime
 
@@ -34,7 +35,7 @@ def run_hepspec(conf):
     # Select run mode: docker, singularity, podman, etc
     run_mode = conf['global']['mode']
 
-    _run_args = "-v {0}:{0} -v {1}:{1} {2} -b hs06_32 -w {0} -p {1} -u {3}".format(hs06['bind_volume'], hs06['hepspec_volume'], hs06['image'], hs06['url_tarball'])
+    _run_args = "-v {0}:{0} -v {1}:{1} {2} -b hs06_32 -w {0} -p {1} -n {3} -u {4}".format(conf['global']['rundir'], hs06['hepspec_volume'], hs06['image'], conf['global']['mp_num'], hs06['url_tarball'])
 
     cmd = {
         'docker' : "docker run --network=host {}".format(_run_args)
@@ -74,7 +75,6 @@ def exec_wait_cmd(cmd_str):
     return cmd.returncode
 
 
-#-----------------------------------------
 def convertTagsToJson(tag_str):
     """
     Convert tags string to json
@@ -95,23 +95,24 @@ def convertTagsToJson(tag_str):
     except:
       # User provided wrong format. Default tags are provided.
       _log.warning("Not a valid tag json format specified: {}".format(tag_str))
-      tags = {
-              "pnode":    "not_defined",
-              "freetext": "not_defined",
-              "cloud":    "not_defined",
-              "VO":       "not_defined"
-       }
+      tags = {}
+
     return tags
 
 
 def get_version():
-    # WIP
-    # Get json metadata version from install folder
+    # TODO
+    # Get version from package
     install_dir, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
     with open(os.path.join(install_dir,'VERSION')) as version_file:
         _json_version = version_file.readline()
 
     return "2.0-dev"
+
+def get_host_ips():
+    # TODO
+    # get IP per interface
+    return '127.0.0.1'
 
 def prepare_metadata(params, extra):
     """
@@ -134,7 +135,12 @@ def prepare_metadata(params, extra):
         'json_version'   : get_version()
     })
 
-    for i in ['ip', 'hostname', 'UID', 'tags']:
+    result['host'].update({
+        'hostname': socket.gethostname(),
+        'ip'      : get_host_ips(),
+    })
+
+    for i in ['UID', 'tags']:
       try:
         result['host'].update({"{}".format(i) : params[i]})
       except:
@@ -170,10 +176,10 @@ def print_results(results):
     """
 
     print("\n\n=========================================================")
-    print("RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD {}".format(results['host']['tags']['cloud']))
+    print("BENCHMARK RESULTS FOR {}".format(results['host']['hostname']))
     print("=========================================================")
-    print("Suite start {}".format(results['_timestamp']))
-    print("Suite end   {}".format(results['_timestamp_end']))
+    print("Suite start: {}".format(results['_timestamp']))
+    print("Suite end:   {}".format(results['_timestamp_end']))
     print("Machine CPU Model: {}".format(results['host']['HW']['CPU']['CPU_Model']))
 
     p = results['profiles']

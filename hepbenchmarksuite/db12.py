@@ -84,7 +84,8 @@ def run_db12(rundir=".", cpu_num=multiprocessing.cpu_count(), reference='HS06'):
 
   cores  = int(cpu_num)
   pool   = multiprocessing.Pool(processes=cores)
-  result = {
+  result = {}
+  result['DB12'] = {
      'value': (float(sum(pool.map(get_cpu_normalization, range(cores)))/cores)),
      'unit' : "est. {}".format(reference)
   }

@@ -1,9 +1,9 @@
 ---
 global:
   mode: "docker"
-  file: "out.json"
-  rundir: "/tmp/hep-spec_wd/"
-  mp_num: "4"
+  file: "result_profile.json"
+  rundir: "/tmp/hep-spec_wd2"
+  mp_num: "48"
   benchmarks:
     - "db12"
     - "test"
@@ -16,6 +16,5 @@ global:
 
 hepspec06:
   image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
-  url_tarball: "https://example.com/"
-  bind_volume: "/tmp/hep-spec_wd"
+  url_tarball: "https://example.com"
   hepspec_volume: "/var/SPEC"
