@@ -17,7 +17,7 @@ setup(
     version='2.0.0',
     description="Benchmark Orchestrator Tool to run several benchmarks.",
     author="Benchmarking Working Group",
-    author_email="@cern.ch",
+    author_email="benchmark-suite-wg-devel@cern.ch",
     long_description=LONG_DESC,
     long_description_content_type="text/markdown",
     url="https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite",

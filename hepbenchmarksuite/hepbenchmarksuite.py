@@ -21,18 +21,19 @@ class HepBenchmarkSuite(object):
 
 
   RESULT_FILES = {
-      'hs06_32'  : '/HS06/hs06_32_result.json',
-      'hs06_64'  : '/HS06/hs06_64_result.json',
-      'spec2017' : '/SPEC2017/spec2017_result.json',
-      'hepscore' : '/HEPSCORE/hepscore_result.json',
+      'hs06_32'  : 'HS06/hs06_32_result.json',
+      'hs06_64'  : 'HS06/hs06_64_result.json',
+      'spec2017' : 'SPEC2017/spec2017_result.json',
+      'hepscore' : 'HEPSCORE/hepscore_result.json',
       'db12'     : 'db12_result.json',
   }
 
-  def __init__(self, items=None, args=None):
+  def __init__(self,  config=None):
     """Initialize setup"""
-    self._bench_queue        = items
-    self.selected_benchmarks = items.copy()
-    self._cli_inputs         = args
+    self._bench_queue        = config['global']['benchmarks']
+    self.selected_benchmarks = config['global']['benchmarks'].copy()
+    self._config             = config['global']
+    self._config_full        = config
     self._extra              = {}
 
   def start(self):
@@ -40,11 +41,14 @@ class HepBenchmarkSuite(object):
 
     self._extra['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
 
-    if self.preflight() == 0:
+    if self._preflight() == 0:
       self.run()
 
-  def preflight(self):
+  def _preflight(self):
     _log.info ("Running pre-flight checks")
+    # TODO: Check config before running
+    # OK returns 0
+    # NOK retuns 1
     return 0
 
   def run(self):
@@ -56,11 +60,14 @@ class HepBenchmarkSuite(object):
 
     else:
       bench2run = self.dequeue()
-      print ("Running benchmark: ", bench2run)
-      print ("Benchmarks left:", self._bench_queue)
+      _log.info("Running benchmark: {}".format(bench2run))
+      _log.info("Benchmarks left to run: {}".format(self._bench_queue))
 
       if bench2run == 'db12':
-        db12.run_db12(rundir=".", cpu_num=2)
+        db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
+
+      elif bench2run == 'hs06_32':
+        utils.run_hepspec(conf=self._config_full)
 
       self.check_lock()
 
@@ -68,27 +75,34 @@ class HepBenchmarkSuite(object):
       return self._bench_queue.pop(0)
 
   def check_lock(self):
+    # TODO: Check lock files
     # loop until lock is released from benchmark
     # print(os.path.exists("bench.lock"))
-    # resume
+    # Release lock and resume benchmarks
     self.run()
 
   def cleanup(self):
-    # Check logs
+    #
+    # TODO: Check logs
+
     # compile metadata
-    self._result = utils.parse_metadata(self._cli_inputs, self._extra)
+    self._result = utils.prepare_metadata(self._config, self._extra)
     self._result.update({'profiles': {}})
 
     # Get results from each benchmark
     for bench in self.selected_benchmarks:
       try:
-          with open(self.RESULT_FILES[bench], "r") as result_file:
+          result_path = os.path.join(self._config['rundir'], self.RESULT_FILES[bench])
+          with open(result_path, "r") as result_file:
+            _log.info("Reading result file: {}".format(result_path))
+
             self._result['profiles'].update(json.loads(result_file.read()))
 
       except Exception as e:
         _log.warning('Skipping {} because of {}'.format(bench,e))
 
-    with open(os.path.join(self._cli_inputs.rundir, self._cli_inputs.file), 'w') as fo:
+    # Save complete json report
+    with open(os.path.join(self._config['rundir'] , self._config['file']), 'w') as fo:
       fo.write(json.dumps(self._result))
 
 

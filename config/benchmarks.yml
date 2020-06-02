@@ -1,32 +1,20 @@
 ---
 global:
-  run_dir: "/tmp"
-  mounts:
-    - /var/run/docker.sock
-  plugins:
-    - metadata: true
-
-plugins:amq:
-  enabled: true
-  queue_host: xxxx
-  queue_port: xxxx
-  topic: xxxx
-  creds:
-    - username: xxx
-    - password: xxx
-
-hepspcore:
-  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hepscore"
-  run_dir: "/tmp/"
-  env_vars:
-    - aaa: "Some env variable"
-  flags:
-    - cpunum: "4"
+  mode: "docker"
+  file: "result_profile.json"
+  rundir: "/tmp/hep-spec_wd2"
+  mp_num: "48"
+  benchmarks:
+    - "db12"
+    - "test"
+    - "hs06_32"
+  tags:
+    cloud: "Suite CI"
+    vo: "Some VM"
+    other_tag: "Some text"
+  uid: "machineX"
 
 hepspec06:
-  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/hepspec06"
-  run_dir: "/tmp/"
-  env_vars:
-    - bbb: "Some env variable"
-  flags:
-    - cpunum: "16"
+  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
+  url_tarball: "https://example.com"
+  hepspec_volume: "/var/SPEC"

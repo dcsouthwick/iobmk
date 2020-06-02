@@ -8,67 +8,113 @@ import json
 import time
 import sys
 import os
-import xml.etree.ElementTree as ET
-import argparse
-import re
-import multiprocessing
 import logging
+import subprocess
+import socket
 
 from datetime import datetime
 
 from hepbenchmarksuite.plugins.extractor import Extractor
 
+_log = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
+def run_hepspec(conf):
+    """
+    Run HEPSpec benchmark.
 
-def extract_values(line):
-    """Extract the values from the line and return a dictionary with the value, error, and unit"""
+    Args:
+      conf: A dict containing configuration
 
-    values = line[line.find("(")+1:line.find(")")]
-    value = values[:values.find("+")].strip()
-    deviation = values[values.find("+/-")+3:].strip()
-    unit = line[line.find(")")+1:].strip()
-    if unit == 'ms':
-            value = '%.5f' % (float(value)/1000)
-            deviation = '%.5f' % (float(deviation)/1000)
-            unit = 's'
-    if float(deviation) == 0:
-        return {'value': float(value), 'unit':unit}
-    else:
-        return {'value': float(value), 'error': float(deviation), 'unit':unit}
+    """
+
+    _log.debug("Configuration in use: {}".format(conf))
+
+    # Config section to use
+    hs06 = conf['hepspec06']
+
+    # Select run mode: docker, singularity, podman, etc
+    run_mode = conf['global']['mode']
+
+    _run_args = "-v {0}:{0} -v {1}:{1} {2} -b hs06_32 -w {0} -p {1} -n {3} -u {4}".format(conf['global']['rundir'], hs06['hepspec_volume'], hs06['image'], conf['global']['mp_num'], hs06['url_tarball'])
+
+    cmd = {
+        'docker' : "docker run --network=host {}".format(_run_args)
+    }
+
+    # Start benchmark
+    exec_wait_cmd(cmd[run_mode])
+
+def exec_wait_cmd(cmd_str):
+    """
+    Accepts command string to execute and waits for process to finish
+
+    Args:
+      cmd_str: Command to execute.
+
+    Returns:
+      An integer with the error code
+    """
+
+    _log.debug("Excuting command: {}".format(cmd_str))
+
+    cmd = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    # Output stdout from child process
+    line = cmd.stdout.readline()
+    while line:
+       sys.stdout.write(line.decode('utf-8'))
+       line = cmd.stdout.readline()
+
+    # Wait until process is complete
+    cmd.wait()
+
+    # Check for errors
+    if cmd.returncode != 0:
+      _log.error("Exec failed")
+
+    return cmd.returncode
 
 
-def parse_kv(rundir):
-    # This code should be reviewed
-    # NOTE: this will fail if KV did not run
-    result = {'kv': {'start': int(os.environ['init_kv_test']),
-                     'end': int(os.environ['end_kv_test']),
-              }}
+def convertTagsToJson(tag_str):
+    """
+    Convert tags string to json
 
-    file_name = rundir+"/KV/atlas-kv_summary.json"
-    file = open(file_name, "r")
-    result['kv'].update(json.loads(file.read()))
-    return result
+    Args:
+      tag_str: String to be converted to json.
 
-def parse_hepscore(rundir):
-    result = {}
-    file_name = rundir+"/HEPSCORE/hepscore_result.json"
-    file = open(file_name, "r")
-    result['hep-score'] = json.loads(file.read())
-    return result
+    Returns:
+      A dict containing the tags.
+    """
 
-def insert_print_action(alist,akey,astring,adic):
-    alist["lambda"].append(lambda x: astring%adic[x])
-    alist["key"].append(akey)
-    return alist
+    _log.info("User specified tags: {}".format(tag_str))
+
+    # Check if user provided a valid tag string to be converted to json
+    try:
+      tags = json.loads(tag_str)
+
+    except:
+      # User provided wrong format. Default tags are provided.
+      _log.warning("Not a valid tag json format specified: {}".format(tag_str))
+      tags = {}
+
+    return tags
 
 
-def print_results_kv(r):
-    return 'KV cpu performance [evt/sec]: score %.2f over %d copies. Min Value %.2f Max Value %.2f'%(r['wl-scores']['sim'],r['copies'],r['wl-stats']['min'],r['wl-stats']['max'])
+def get_version():
+    # TODO
+    # Get version from package
+    install_dir, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
+    with open(os.path.join(install_dir,'VERSION')) as version_file:
+        _json_version = version_file.readline()
 
-#-----------------------------------------
+    return "2.0-dev"
 
-def parse_metadata(cli_inputs, extra):
+def get_host_ips():
+    # TODO
+    # get IP per interface
+    return '127.0.0.1'
+
+def prepare_metadata(params, extra):
     """
     Constructs a json with cli inputs and extra fields
 
@@ -80,50 +126,33 @@ def parse_metadata(cli_inputs, extra):
       A dict containing hardware metadata, tags, flags & extra fields
     """
 
-    # Convert user tags to json format
-    def convertTagsToJson(tag_str):
-      logger.info("User specified tags: {}".format(cli_inputs.tags))
-
-      # Check if user provided a valid tag string to be converted to json
-      try:
-        tags = json.loads(tag_str)
-
-      except:
-        # User provided wrong format. Default tags are provided.
-        logger.warning("Not a valid tag json format specified: {}".format(tag_str))
-        tags = {
-                "pnode":    "not_defined",
-                "freetext": "not_defined",
-                "cloud":    "not_defined",
-                "VO":       "not_defined"
-         }
-      return tags
-
-    # Hep-benchmark-suite flags
-    FLAGS = {
-        'mp_num' : cli_inputs.mp_num,
-    }
-
-    # Get json metadata version from install folder
-    install_dir, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
-    with open(os.path.join(install_dir,'VERSION')) as version_file:
-        _json_version = version_file.readline()
-
     # Create output metadata
     result = {'host':{}}
     result.update({
-        '_id'            : "{}_{}".format(cli_inputs.id, extra['start_time']),
+        '_id'            : "{}_{}".format(params['uid'], extra['start_time']),
         '_timestamp'     : extra['start_time'],
         '_timestamp_end' : extra['end_time'],
-        'json_version'   : "2.0"
+        'json_version'   : get_version()
     })
 
     result['host'].update({
-        'ip'             : cli_inputs.ip,
-        'hostname'       : cli_inputs.name,
-        'UID'            : cli_inputs.id,
-        'FLAGS'          : FLAGS,
-        'TAGS'           : convertTagsToJson(cli_inputs.tags),
+        'hostname': socket.gethostname(),
+        'ip'      : get_host_ips(),
+    })
+
+    for i in ['UID', 'tags']:
+      try:
+        result['host'].update({"{}".format(i) : params[i]})
+      except:
+        result['host'].update({"{}".format(i): "not_defined"})
+
+    # Hep-benchmark-suite flags
+    FLAGS = {
+        'mp_num' : params['mp_num'],
+    }
+
+    result['host'].update({
+        'FLAGS'  : FLAGS,
     })
 
     # Collect Software and Hardware metadata from hwmetadata plugin
@@ -147,16 +176,14 @@ def print_results(results):
     """
 
     print("\n\n=========================================================")
-    print("RESULTS OF THE OFFLINE BENCHMARK FOR CLOUD {}".format(results['host']['TAGS']['cloud']))
+    print("BENCHMARK RESULTS FOR {}".format(results['host']['hostname']))
     print("=========================================================")
-    print("Suite start {}".format(results['_timestamp']))
-    print("Suite end   {}".format(results['_timestamp_end']))
+    print("Suite start: {}".format(results['_timestamp']))
+    print("Suite end:   {}".format(results['_timestamp_end']))
     print("Machine CPU Model: {}".format(results['host']['HW']['CPU']['CPU_Model']))
 
     p = results['profiles']
     bmk_print_action = {
-        "whetstone": lambda x: "Whetstone Benchmark = %s (MWIPS)" %p[x]['score'],
-        "kv":        lambda x: print_results_kv(p[x]),
         "db12":      lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(p[x]['value']),p[x]['unit']),
         "hs06_32":   lambda x: "HS06 32 bit Benchmark = %s" %p[x]['score'],
         "hs06_64":   lambda x: "HS06 64 bit Benchmark = %s" %p[x]['score'],
