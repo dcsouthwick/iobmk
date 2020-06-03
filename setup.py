@@ -23,5 +23,7 @@ setup(
     url="https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite",
     license='GPLv3',
     scripts=['bin/bmkrun', 'bin/show_metadata'],
-    packages=['hepbenchmarksuite', 'hepbenchmarksuite.plugins']
+    packages=['hepbenchmarksuite', 'hepbenchmarksuite.plugins'],
+    data_files=[('config',['config/benchmarks.yml'])],
+    install_requires=['pyyaml']
 )

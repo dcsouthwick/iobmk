@@ -35,10 +35,12 @@ def run_hepspec(conf):
     # Select run mode: docker, singularity, podman, etc
     run_mode = conf['global']['mode']
 
-    _run_args = "-v {0}:{0} -v {1}:{1} {2} -b hs06_32 -w {0} -p {1} -n {3} -u {4}".format(conf['global']['rundir'], hs06['hepspec_volume'], hs06['image'], conf['global']['mp_num'], hs06['url_tarball'])
+    #TODO: hardcoded benchmark here to be updated with yaml key
+    _run_args = "{0} -b hs06_32 -w {1} -p {2} -n {3} -u {4}".format(hs06['image'], conf['global']['rundir'], hs06['hepspec_volume'], conf['global']['mp_num'], hs06['url_tarball'])
 
     cmd = {
-        'docker' : "docker run --network=host {}".format(_run_args)
+        'docker' : "docker run --network=host -v {0}:{0} -v {1}:{1} {2}".format(conf['global']['rundir'], hs06['hepspec_volume'], _run_args),
+        'singularity' : "singularity run -B {0}:{0} -B {1}:{1} docker://{2}".format(conf['global']['rundir'], hs06['hepspec_volume'], _run_args)
     }
 
     # Start benchmark
@@ -110,9 +112,9 @@ def get_version():
     return "2.0-dev"
 
 def get_host_ips():
-    # TODO
-    # get IP per interface
-    return '127.0.0.1'
+    # Get external facing system IP from default route, do not rely on hostname
+    ip_address = os.system("ip route get 1 | awk '{print $NF;exit}'")
+    return ip_address
 
 def prepare_metadata(params, extra):
     """
