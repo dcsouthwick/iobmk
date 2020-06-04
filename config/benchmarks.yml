@@ -1,13 +1,13 @@
 ---
 global:
-  mode: "docker"
+  mode: "singularity"
   file: "result_profile.json"
-  rundir: "/tmp/hep-spec_wd2"
-  mp_num: "48"
+  rundir: "/tmp/hep-spec_wd3"
+  # mp_num: "48"
   benchmarks:
     - "db12"
-    - "test"
     - "hs06_32"
+    - "hs06_64"
   tags:
     cloud: "Suite CI"
     vo: "Some VM"
@@ -19,4 +19,3 @@ hepspec06:
   url_tarball: "https://example.com"
   # Define writeable directory for SPEC install in unpriveliged containers
   hepspec_volume: "/tmp/SPEC"
-  #hepspec_volume: "/var/SPEC"

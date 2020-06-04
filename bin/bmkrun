@@ -61,7 +61,7 @@ def main():
     for i in non_empty.keys():
       if i == 'tags':
         # Update tags with json format
-        active_config['global']['tags'] = utils.convertTagsToJson(args.tags)
+        active_config['global']['tags'] = utils.convert_tags_to_json(args.tags)
       else:
         active_config['global'][i] = non_empty[i]
 
