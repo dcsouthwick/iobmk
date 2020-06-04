@@ -66,8 +66,8 @@ class HepBenchmarkSuite(object):
       if bench2run == 'db12':
         db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
 
-      elif bench2run == 'hs06_32':
-        utils.run_hepspec(conf=self._config_full)
+      elif bench2run == 'hs06_32' or bench2run == 'hs06_64':
+        utils.run_hepspec(conf=self._config_full, bench=bench2run)
 
       self.check_lock()
 
