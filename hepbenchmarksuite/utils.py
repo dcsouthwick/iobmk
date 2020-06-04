@@ -18,16 +18,17 @@ from hepbenchmarksuite.plugins.extractor import Extractor
 
 _log = logging.getLogger(__name__)
 
-def run_hepspec(conf):
+def run_hepspec(conf, bench):
     """
     Run HEPSpec benchmark.
 
     Args:
-      conf: A dict containing configuration
+      conf:  A dict containing configuration.
+      bench: A string with the benchmark to run.
 
     """
 
-    _log.debug("Configuration in use: {}".format(conf))
+    _log.debug("Configuration in use for benchmark {}: {}".format(bench, conf))
 
     # Config section to use
     hs06 = conf['hepspec06']
@@ -35,15 +36,26 @@ def run_hepspec(conf):
     # Select run mode: docker, singularity, podman, etc
     run_mode = conf['global']['mode']
 
-    #TODO: hardcoded benchmark here to be updated with yaml key
-    _run_args = "{0} -b hs06_32 -w {1} -p {2} -n {3} -u {4}".format(hs06['image'], conf['global']['rundir'], hs06['hepspec_volume'], conf['global']['mp_num'], hs06['url_tarball'])
+    # HEPspec run arguments
+    _run_args = "-b {0} -w {1} -p {2} -n {3} -u {4}".format(bench,
+                                                           conf['global']['rundir'],
+                                                           hs06['hepspec_volume'],
+                                                           conf['global']['mp_num'],
+                                                           hs06['url_tarball'])
 
     cmd = {
-        'docker' : "docker run --network=host -v {0}:{0} -v {1}:{1} {2}".format(conf['global']['rundir'], hs06['hepspec_volume'], _run_args),
-        'singularity' : "singularity run -B {0}:{0} -B {1}:{1} docker://{2}".format(conf['global']['rundir'], hs06['hepspec_volume'], _run_args)
+          'docker'      : "docker run --network=host -v {0}:{0} -v {1}:{1} {2} {3}".format(conf['global']['rundir'],
+                                                                                           hs06['hepspec_volume'],
+                                                                                           hs06['image'],
+                                                                                           _run_args),
+          'singularity' : "SINGULARITY_CACHEDIR={0}/singularity_cachedir singularity run -B {0}:{0} -B {1}:{1} docker://{2} {3}".format(conf['global']['rundir'],
+                                                                                                                                        hs06['hepspec_volume'],
+                                                                                                                                        hs06['image'],
+                                                                                                                                        _run_args)
     }
 
     # Start benchmark
+    _log.debug(cmd[run_mode])
     exec_wait_cmd(cmd[run_mode])
 
 def exec_wait_cmd(cmd_str):
@@ -77,7 +89,7 @@ def exec_wait_cmd(cmd_str):
     return cmd.returncode
 
 
-def convertTagsToJson(tag_str):
+def convert_tags_to_json(tag_str):
     """
     Convert tags string to json
 
@@ -104,11 +116,7 @@ def convertTagsToJson(tag_str):
 
 def get_version():
     # TODO
-    # Get version from package
-    install_dir, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
-    with open(os.path.join(install_dir,'VERSION')) as version_file:
-        _json_version = version_file.readline()
-
+    # Version of metadata to be used in ElasticSearch tagging
     return "2.0-dev"
 
 def get_host_ips():
