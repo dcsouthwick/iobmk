@@ -19,20 +19,16 @@ from hepbenchmarksuite import utils
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                 description="-"*70+"\n bmkrun cli allows you to run several benchmarks\n"+"-"*70+"\nAuthor: Benchmarking Working Group\nContact: benchmark-suite-wg-devel@cern.ch", epilog="-"*70)
-
-    group_mandatory  = parser.add_argument_group('mandatory arguments')
-    group_optional   = parser.add_argument_group('optional arguments')
-
+    
     # Optional arguments
     parser.add_argument("-u", "--uid",        nargs='?', help="UID", default=None)
     parser.add_argument("-f", "--file",       nargs='?', help="File to store the results", default=None)
     parser.add_argument("-d", "--rundir",     nargs='?', help="Directory where bmks ran",  default=None)
-    parser.add_argument("-m", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks.", default=None)
+    parser.add_argument("-n", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks.", default=None)
     parser.add_argument("-t", "--tags",       nargs='?', help="Custom user tags.", default=None)
     parser.add_argument("-b", "--benchmarks", nargs='+', help="Benchmarks", default=None)
-
-    # Mandatory arguments
-    group_mandatory.add_argument("-c", "--config", nargs='?', type=str, help="Configuration file to use in yaml format.", default=None)
+    parser.add_argument("-m", "--mode",       nargs='?', help="Run benchmarks in singularity or docker containers", default=None)
+    parser.add_argument("-c", "--config",     nargs='?', type=str, help="Configuration file to use in yaml format.", default='~/.local/config/benchmarks.yml')
 
     try:
       args = parser.parse_args()

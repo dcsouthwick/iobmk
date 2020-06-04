@@ -3,7 +3,7 @@ global:
   mode: "singularity"
   file: "result_profile.json"
   rundir: "/tmp/hep-spec_wd3"
-#  mp_num: "48"
+  # mp_num: "48"
   benchmarks:
     - "db12"
     - "hs06_32"
@@ -17,4 +17,5 @@ global:
 hepspec06:
   image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
   url_tarball: "https://example.com"
+  # Define writeable directory for SPEC install in unpriveliged containers
   hepspec_volume: "/tmp/SPEC"

@@ -120,9 +120,9 @@ def get_version():
     return "2.0-dev"
 
 def get_host_ips():
-    # TODO
-    # get IP per interface
-    return '127.0.0.1'
+    # Get external facing system IP from default route, do not rely on hostname
+    ip_address = os.system("ip route get 1 | awk '{print $NF;exit}'")
+    return ip_address
 
 def prepare_metadata(params, extra):
     """
