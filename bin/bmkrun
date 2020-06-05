@@ -91,10 +91,12 @@ def main():
 
     # All config checks passed
     # Dump running config
-    configYaml = os.path.join(active_config['global']['rundir'], 'run_config.yaml')
-    os.makedirs(os.path.dirname(configYaml), exist_ok=True)
-    
-    with open(configYaml, 'w') as conf_file:
+    try:
+      os.makedirs(active_config['global']['rundir'])
+    except OSError as e:
+      logging.info("Skiping directory creation: {}".format(e))
+
+    with open(os.path.join(active_config['global']['rundir'], 'run_config.yaml'), 'w') as conf_file:
       yaml.dump(active_config, conf_file)
 
     # Configure hep-benchmark-suite
