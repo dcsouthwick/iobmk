@@ -2,6 +2,7 @@ stages:
   - build-base-image
   - test-components
   - test-integration
+  - export-package
   - build-qa-image
   - test-qa-image
   - promote-image
@@ -213,6 +214,25 @@ job_test_db12_benchmark:
       refs:
         - master
         - qa
+
+job_build_wheels:
+  stage: export-package
+  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
+  script:
+      - yum install -y python3 python3-pip
+      - cd $CI_PROJECT_DIR/
+      - pip3 wheel -r requirements.txt --wheel-dir=whl .
+      - tar -cvf package_wheels.tar whl/
+  artifacts:
+        paths:
+           - package_wheels.tar
+        expire_in: 1 week
+        when: always
+  except:
+      refs:
+        - master
+        - qa
+
 
 ############################################################
 #####              TEST SINGULARITY                    #####
