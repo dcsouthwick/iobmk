@@ -238,6 +238,7 @@ test_suite_benchmarks:
       - cd $CI_PROJECT_DIR/
       - pip3 install -r requirements.txt --user
       - python3 setup.py install --user
+      - export PATH=/root/.local/bin:$PATH
       - bmkrun -c config/benchmarks.yml -b db12
   except:
       refs:
