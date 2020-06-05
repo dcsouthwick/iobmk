@@ -19,3 +19,4 @@ hepspec06:
   url_tarball: "https://example.com"
   # Define writeable directory for SPEC install in unpriveliged containers
   hepspec_volume: "/tmp/SPEC"
+  iterations: 1

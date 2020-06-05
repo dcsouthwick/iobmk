@@ -37,11 +37,12 @@ def run_hepspec(conf, bench):
     run_mode = conf['global']['mode']
 
     # HEPspec run arguments
-    _run_args = "-b {0} -w {1} -p {2} -n {3} -u {4}".format(bench,
-                                                           conf['global']['rundir'],
-                                                           hs06['hepspec_volume'],
-                                                           conf['global']['mp_num'],
-                                                           hs06['url_tarball'])
+    _run_args = "-b {0} -w {1} -i {2} -p {3} -n {4} -u {5}".format(bench,
+                                                                   conf['global']['rundir'],
+                                                                   hs06['iterations'],
+                                                                   hs06['hepspec_volume'],
+                                                                   conf['global']['mp_num'],
+                                                                   hs06['url_tarball'])
 
     cmd = {
           'docker'      : "docker run --network=host -v {0}:{0} -v {1}:{1} {2} {3}".format(conf['global']['rundir'],
