@@ -202,11 +202,11 @@ job_test_db12_benchmark:
       - pip3 install -r requirements.txt --user
       - pip3 install --user .
       - export PATH=/root/.local/bin:$PATH
-      - bmkrun -c config/benchmarks.yml -d /tmp/suite_run -b db12
+      - bmkrun -c config/benchmarks.yml -d . -b db12
   artifacts:
         paths:
-           - /tmp/suite_run/result_profile.json
-           - /tmp/suite_run/run_config.yaml
+           - result_profile.json
+           - run_config.yaml
         expire_in: 1 week
         when: always
   except:
