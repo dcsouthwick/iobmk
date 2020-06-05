@@ -1,12 +1,12 @@
 stages:
   - build-base-image
   - test-components
-  - test-installation
+  - test-integration
   - build-qa-image
   - test-qa-image
   - promote-image
   - announce-promoted-image
- 
+
 
 
 ############################################################
@@ -24,7 +24,7 @@ stages:
     # Build and push the image from the Dockerfile at the root of the project.
     # To push to a specific docker tag, amend the --destination parameter, e.g. --destination $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
     # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
-    - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE $DESTINATIONS 
+    - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE $DESTINATIONS
 
 ..job_build_announcement_image:
    stage: build-base-image
@@ -131,18 +131,6 @@ stages:
         expire_in: 1 week
         when: always
 
-..job_test_installation_cc7: 
-   before_script:
-       - export BMKLIST=DB12
-   <<: *template_test_installation
-
-..job_test_kv_run_cc7:
-   tags:
-     -  hep-benchmark-suite-docker-runner 
-   before_script:
-       - export BMKLIST="DB12,kv"
-   <<: *template_test_installation
-
 ..job_test_hepscore_run_cc7:
    tags:
      -  hep-benchmark-suite-docker-runner 
@@ -180,31 +168,6 @@ stages:
 #####              TEST COMPONENTS                     #####
 ############################################################
 
-.definition_bats_tests: &template_bats_tests
-   stage: test-components
-   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
-   script:
-       - yum install -y skopeo
-       - $CI_PROJECT_DIR/test/run_bats_tests.sh
-   except:
-      refs: 
-        - master
-        - qa
-
-.bats_tests_any_branch:
-   <<: *template_bats_tests
-
-.bats_tests_qa:
-   <<: *template_bats_tests
-   script:
-       - bats $CI_PROJECT_DIR/test/qa_send_queue.bat
-   except:
-      refs: 
-        - master
-   only:
-      refs:
-        - qa     
-
 test_python_plugins:
   stage: test-components
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
@@ -230,8 +193,8 @@ test_yaml_files:
         - master
         - qa
 
-test_suite_benchmarks:
-  stage: test-components
+job_test_db12_benchmark:
+  stage: test-integration
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
   script:
       - yum install -y python3 python3-pip
