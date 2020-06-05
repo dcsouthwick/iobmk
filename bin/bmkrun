@@ -93,14 +93,10 @@ def main():
 
     # All config checks passed
     # Dump running config
-    if not os.path.exists(os.path.dirname(active_config['global']['rundir'])):
-      try:
-        os.makedirs(os.path.dirname(active_config['global']['rundir']))
-      except OSError as exc: # Guard against race condition
-        if exc.errno != errno.EEXIST:
-          raise
+    configYaml = os.path.join(active_config['global']['rundir'], 'run_config.yaml')
+    os.makedirs(os.path.dirname(configYaml), exist_ok=True)
     
-    with open(os.path.join(active_config['global']['rundir'], 'run_config.yaml'), 'w') as conf_file:
+    with open(configYaml, 'w') as conf_file:
       yaml.dump(active_config, conf_file)
 
     # Configure hep-benchmark-suite
