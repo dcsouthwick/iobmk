@@ -56,9 +56,9 @@ def run_hepspec(conf, bench):
 
     # Start benchmark
     _log.debug(cmd[run_mode])
-    exec_wait_cmd(cmd[run_mode])
+    exec_wait_benchmark(cmd[run_mode])
 
-def exec_wait_cmd(cmd_str):
+def exec_wait_benchmark(cmd_str):
     """
     Accepts command string to execute and waits for process to finish
 
@@ -84,7 +84,7 @@ def exec_wait_cmd(cmd_str):
 
     # Check for errors
     if cmd.returncode != 0:
-      _log.error("Exec failed")
+      _log.error("Benchmark execution failed; returncode = {}.".format(cmd.returncode))
 
     return cmd.returncode
 
@@ -114,14 +114,51 @@ def convert_tags_to_json(tag_str):
     return tags
 
 
+def exec_cmd(cmd_str):
+   """
+   Executes a command string and returns its output
+
+   Args:
+     cmd_str: A string with the command to execute.
+
+   Returns:
+     A string with the output.
+   """
+
+   _log.debug("Excuting command: {}".format(cmd_str))
+
+   cmd = subprocess.Popen(cmd_str, shell=True, executable='/bin/bash',  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   cmd_reply, cmd_error = cmd.communicate()
+
+   # Check for errors
+   if cmd.returncode != 0:
+     cmd_reply = "not_available"
+     _log.error(cmd_error)
+
+   else:
+     # Convert bytes to text and remove \n
+     try:
+       cmd_reply = cmd_reply.decode('utf-8').rstrip()
+     except UnicodeDecodeError:
+       _log.error("Failed to decode to utf-8.")
+
+   return cmd_reply
+
+
 def get_version():
     # TODO
     # Version of metadata to be used in ElasticSearch tagging
     return "2.0-dev"
 
 def get_host_ips():
-    # Get external facing system IP from default route, do not rely on hostname
-    ip_address = os.system("ip route get 1 | awk '{print $NF;exit}'")
+    """
+    Get external facing system IP from default route, do not rely on hostname
+
+    Returns:
+      A string containing the ip
+    """
+
+    ip_address = exec_cmd("ip route get 1 | awk '{print $NF;exit}'")
     return ip_address
 
 def prepare_metadata(params, extra):

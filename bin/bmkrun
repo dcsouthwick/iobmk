@@ -92,6 +92,11 @@ def main():
 
     # All config checks passed
     # Dump running config
+    try:
+      os.makedirs(active_config['global']['rundir'])
+    except OSError as e:
+      logging.info("Skiping directory creation: {}".format(e))
+
     with open(os.path.join(active_config['global']['rundir'], 'run_config.yaml'), 'w') as conf_file:
       yaml.dump(active_config, conf_file)
 
