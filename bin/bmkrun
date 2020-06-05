@@ -24,17 +24,16 @@ def main():
     # Optional arguments
     parser.add_argument("-u", "--uid",        nargs='?', help="UID", default=None)
     parser.add_argument("-f", "--file",       nargs='?', help="File to store the results", default=None)
-    parser.add_argument("-d", "--rundir",     nargs='?', help="Directory where bmks ran",  default=None)
-    parser.add_argument("-n", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks.", default=None)
-    parser.add_argument("-t", "--tags",       nargs='?', help="Custom user tags.", default=None)
-    parser.add_argument("-b", "--benchmarks", nargs='+', help="Benchmarks", default=None)
-    parser.add_argument("-m", "--mode",       nargs='?', help="Run benchmarks in singularity or docker containers", default=None)
-    parser.add_argument("-c", "--config",     nargs='?', type=str, help="Configuration file to use in yaml format.", default='~/.local/config/benchmarks.yml')
+    parser.add_argument("-d", "--rundir",     nargs='?', help="Directory where benchmarks will be run",  default=None)
+    parser.add_argument("-n", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks", default=None)
+    parser.add_argument("-t", "--tags",       nargs='?', help="Custom user tags", default=None)
+    parser.add_argument("-b", "--benchmarks", nargs='+', help="List of benchmarks", default=None)
+    parser.add_argument("-m", "--mode", choices=['singularity', 'docker'],       nargs='?', help="Run benchmarks in singularity or docker containers", default=None)
+    parser.add_argument("-c", "--config",     nargs='?', type=str, help="Configuration file to use (yaml format)", default='~/.local/config/benchmarks.yml')
 
     try:
       args = parser.parse_args()
     except:
-      parser.print_help()
       sys.exit(0)
 
     # Enable logging
