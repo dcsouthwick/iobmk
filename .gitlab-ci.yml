@@ -224,7 +224,7 @@ job_test_docker_hs06:
       - pip3 install -r requirements.txt --user
       - pip3 install --user .
       - export PATH=/root/.local/bin:$PATH
-      - sed -i "s/url_tarball:.*/url_tarball: \"$HS06URL\"/" config/benchmarks.yml
+      - sed -i "s/url_tarball:.*/url_tarball:\ \"$HS06URL\"/" config/benchmarks.yml
       - bmkrun -c config/benchmarks.yml -d . -b hs06_32 -m docker
   artifacts:
         paths:
