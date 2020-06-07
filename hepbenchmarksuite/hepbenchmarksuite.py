@@ -47,6 +47,9 @@ class HepBenchmarkSuite(object):
   def _preflight(self):
     _log.info ("Running pre-flight checks")
     # TODO: Check config before running
+    _log.info (" - Checking provided work dirs exist...")
+    os.makedirs(self._config['rundir'], exist_ok=True)
+    os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
     # OK returns 0
     # NOK retuns 1
     return 0
