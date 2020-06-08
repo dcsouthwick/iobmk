@@ -228,10 +228,10 @@ job_test_docker_hs06:
       - export PATH=/root/.local/bin:$PATH
       - sed -i  "/url_tarball/d" config/benchmarks.yml
       - echo "  url_tarball:" "\"${HS06URL}\"" >> config/benchmarks.yml
-      - bmkrun -c config/benchmarks.yml -d . -b hs06_32 -m docker
+      - bmkrun -c config/benchmarks.yml -d /tmp/test_suite -b hs06_32 -m docker
   artifacts:
         paths:
-           - result_profile.json
+           - /tmp/test_suite/result_profile.json
         expire_in: 1 week
         when: always
   except:
