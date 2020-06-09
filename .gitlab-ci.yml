@@ -215,25 +215,29 @@ job_test_db12_benchmark:
         - master
         - qa
 
-job_test_docker_hs06:
+job_test_singularity_hs06:
   stage: test-integration
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
   tags:
      -  hep-benchmark-suite-docker-runner
   script:
-      - yum install -y python3 python3-pip
+      - yum install -y python3 python3-pip singularity
       - cd $CI_PROJECT_DIR/
       - pip3 install -r requirements.txt --user
       - pip3 install --user .
       - export PATH=/root/.local/bin:$PATH
       - sed -i  "/url_tarball/d" config/benchmarks.yml
       - echo "  url_tarball:" "\"${HS06URL}\"" >> config/benchmarks.yml
-      - bmkrun -c config/benchmarks.yml -d /tmp/test_suite -b hs06_32 -m docker
+      - bmkrun -c config/benchmarks.yml -d /tmp/test_suite -b hs06_32 -m singularity
   artifacts:
         paths:
            - /tmp/test_suite/result_profile.json
         expire_in: 1 week
         when: always
+  only:
+   variables:
+       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
+       - $CI_COMMIT_BRANCH =~ /^qa$/
   except:
       refs:
         - master
