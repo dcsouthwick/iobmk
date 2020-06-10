@@ -140,7 +140,7 @@ stages:
    <<: *template_test_installation
 
 # FIXME, does not work but covers a case not often used
-.job_test_hepscore_run_cc7_singularity:
+job_test_hepscore_run_cc7_singularity:
    tags:
      -  hep-benchmark-suite-docker-runner 
    before_script:
@@ -267,7 +267,7 @@ job_build_wheels:
 #####              TEST SINGULARITY                    #####
 ############################################################
 
-.definition_test_qa_singularity: &template_test_qa_singularity
+definition_test_qa_singularity: &template_test_qa_singularity
     # This job tests the hep-benchmark-suite
     # running a configurable set of benchmarks
     stage: test-qa-image
