@@ -293,7 +293,7 @@ definition_test_qa_singularity: &template_test_qa_singularity
     variables:
       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
       - $CI_COMMIT_BRANCH =~ /^qa$/
-      - $CI_COMMIT_BRANCH =~ /^v2**/
+      - $CI_COMMIT_BRANCH =~ /^v2.*/
   artifacts:
       paths:
           - hep-benchmark-suite-test-$CI_JOB_ID.tgz
