@@ -218,7 +218,7 @@ job_test_db12_benchmark:
         - master
         - qa
 
-job_test_docker_hs06:
+.job_test_docker_hs06:
   stage: test-integration
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
   tags:
