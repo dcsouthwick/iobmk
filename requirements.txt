@@ -1,4 +1,2 @@
 setuptools
 pyyaml
-#git+ssh://git@gitlab.cern.ch:7999/hep-benchmarks/hep-score.git@v0.7
-#stomppy_version=4.1.22

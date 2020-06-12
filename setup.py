@@ -24,6 +24,6 @@ setup(
     license='GPLv3',
     scripts=['bin/bmkrun', 'bin/show_metadata'],
     packages=['hepbenchmarksuite', 'hepbenchmarksuite.plugins'],
-    data_files=[('config',['config/benchmarks.yml'])],
+    include_package_data=True,
     install_requires=['pyyaml']
 )
