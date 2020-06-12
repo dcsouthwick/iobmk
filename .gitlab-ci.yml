@@ -140,7 +140,7 @@ stages:
   
 
 # FIXME, does not work but covers a case not often used
-job_test_hepscore_run_cc7_singularity:
+.job_test_hepscore_run_cc7_singularity:
   tags:
     -  hep-benchmark-suite-docker-runner 
   before_script:
@@ -172,7 +172,7 @@ job_test_hepscore_run_cc7_singularity:
 #####              TEST COMPONENTS                     #####
 ############################################################
 
-test_python_plugins:
+..test_python_plugins:
   stage: test-components
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
   script:
@@ -185,7 +185,7 @@ test_python_plugins:
         - master
         - qa
 
-test_yaml_files:
+..test_yaml_files:
   stage: test-components
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
   script:
@@ -197,7 +197,7 @@ test_yaml_files:
         - master
         - qa
 
-job_test_db12_benchmark:
+.job_test_db12_benchmark:
   stage: test-integration
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
@@ -267,31 +267,32 @@ job_build_wheels:
 #####              TEST SINGULARITY                    #####
 ############################################################
 
-definition_test_qa_singularity: &template_test_qa_singularity
+.definition_test_qa_singularity: &template_test_qa_singularity
     # This job tests the hep-benchmark-suite
-    # running a configurable set of benchmarks
+    # running a configurable set of benchmarks defined in $BMKLIST
   stage: test-qa-image
   tags: 
     - docker-privileged-xl
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
-    - whoami
-    - workdir=$(pwd)
-    - echo $workdir; ls /; 
-    - yum install -y singularity python3-pip 
-    - useradd -d $workdir -g users -M -N unprivUser
-    - chown -R unprivUser:users ..
+    - yum install -y singularity python3-pip
+    # non-root user
+    - useradd -d $(pwd) -g users -M -N unprivUser
+    - chown -Rv unprivUser:users ..
     - su - unprivUser
+    - whoami; pwd;
     - set -e
-    # install the benchmark suite
+    # install the benchmark suite python package
     - python3 -m pip install --user .
+    - export PATH=$PATH:~/.local/bin
     #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
-    - export BMK_VOLUME=/scratch/jobs/${CI_JOB_NAME}_${CI_JOB_ID}
-    - export BMK_RUNDIR=${BMK_VOLUME}/hep-benchmark-suite
+    - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+    - export RESULTS_FILE=$CI_JOB_NAME.json
     - export SINGULARITY_CACHEDIR=${BMK_VOLUME}/singularity_cache
-    - bmkrun --mode=singularity -c ~/.local/config/benchmarks.yml --benchmarks=db12
-  after_script:
-    - tar -czf hep-benchmark-suite-test-$CI_JOB_ID.tgz $BMK_RUNDIR /opt/hep-benchmark-suite 
+    # run $BMKLIST as singularity
+    - bmkrun -v --mode=singularity -c ~/.local/config/benchmarks.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    - mv $BMK_VOLUME/$RESULTS_FILE $BMK_VOLUME/run_config.yaml .
+    - rm -rf $BMK_VOLUME
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
@@ -299,9 +300,15 @@ definition_test_qa_singularity: &template_test_qa_singularity
       - $CI_COMMIT_BRANCH =~ /^v2.*/
   artifacts:
       paths:
-          - hep-benchmark-suite-test-$CI_JOB_ID.tgz
+          - $RESULTS_FILE
+          - run_config.yaml
       expire_in: 1 week
       when: always
+
+test_singularity_db12:
+    before_script:
+        - export BMKLIST="db12"
+    <<: *template_test_qa_singularity
 
 ..job_test_sing_in_sing_hepscore:
     tags:
