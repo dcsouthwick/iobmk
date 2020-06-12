@@ -172,7 +172,7 @@ stages:
 #####              TEST COMPONENTS                     #####
 ############################################################
 
-..test_python_plugins:
+test_python_plugins:
   stage: test-components
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
   script:
@@ -185,7 +185,7 @@ stages:
         - master
         - qa
 
-..test_yaml_files:
+test_yaml_files:
   stage: test-components
   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
   script:
@@ -278,9 +278,8 @@ job_build_wheels:
     - yum install -y singularity python3-pip
     # non-root user
     - useradd -d $(pwd) -g users -M -N unprivUser
-    - chown -Rv unprivUser:users ..
+    - chown -R unprivUser:users ..
     - su - unprivUser
-    - whoami; pwd;
     - set -e
     # install the benchmark suite python package
     - python3 -m pip install --user .
@@ -300,8 +299,8 @@ job_build_wheels:
       - $CI_COMMIT_BRANCH =~ /^v2.*/
   artifacts:
       paths:
-          - $RESULTS_FILE
-          - run_config.yaml
+          - *.json
+          - *.yaml
       expire_in: 1 week
       when: always
 
