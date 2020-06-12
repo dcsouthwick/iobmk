@@ -12,17 +12,26 @@ import sys
 import os
 import yaml
 import urllib.request
+try:
+    import importlib.resources as pkg_resources
+except ImportError:
+    # Try backported to PY<37 `importlib_resources`.
+    import importlib_resources as pkg_resources
 
 from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
 from hepbenchmarksuite import utils
+from hepbenchmarksuite import config
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                 description="-"*70+"\n bmkrun cli allows you to run several benchmarks\n"+"-"*70+"\nAuthor: Benchmarking Working Group\nContact: benchmark-suite-wg-devel@cern.ch", epilog="-"*70)
-
+    
+    # may be a better way to do this...
+    with pkg_resources.path(config, 'benchmarks.yml') as default_config_path:
+      default_config = default_config_path
     # Optional arguments
     parser.add_argument("-b", "--benchmarks", nargs='+', help="List of benchmarks", default=None)
-    parser.add_argument("-c", "--config",     nargs='?', type=str, help="Configuration file to use (yaml format)", default='~/.local/config/benchmarks.yml')
+    parser.add_argument("-c", "--config",     nargs='?', type=str, help="Configuration file to use (yaml format)", default=default_config)
     parser.add_argument("-d", "--rundir",     nargs='?', help="Directory where benchmarks will be run",  default=None)
     parser.add_argument("-f", "--file",       nargs='?', help="File to store the results", default=None)
     parser.add_argument("-m", "--mode",       choices=['singularity', 'docker'], nargs='?', help="Run benchmarks in singularity or docker containers", default=None)

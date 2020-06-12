@@ -1,104 +1,27 @@
 stages:
-  - build-base-image
+  - build-package
   - test-components
   - test-integration
   - export-package
-  - build-qa-image
-  - test-qa-image
-  - promote-image
-  - announce-promoted-image
-
-
+  - test-singularity
 
 ############################################################
-#####              BUILD IMAGES                        #####
+#####              BUILD PACKAGE                       #####
 ############################################################
 
-# Build the base image which is used to test installation and build the final hep-benchmark-suite image
-.definition_build_image: &template_build_image
-  image: # NB enable shared runners and do not specify a CI tag
-    name: gitlab-registry.cern.ch/ci-tools/docker-image-builder # CERN version of the Kaniko image
-    entrypoint: [""]
+build_hep-benchmark-suite:
+  stage: build-package
   script:
-    # Prepare Kaniko configuration file
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    # Build and push the image from the Dockerfile at the root of the project.
-    # To push to a specific docker tag, amend the --destination parameter, e.g. --destination $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
-    # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
-    - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE $DESTINATIONS
-
-..job_build_announcement_image:
-   stage: build-base-image
-   before_script:
-       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/announcement/Dockerfile
-       - export CONTEXT=$CI_PROJECT_DIR/docker-images/announcement
-       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/announcement:latest --destination $CI_REGISTRY_IMAGE/announcement:${CI_COMMIT_SHA:0:8}"
-   <<: *template_build_image
-   only:
-     refs:
-       - qa
-     changes:
-       - docker-images/announcement/*
-
-..job_build_base_image_cc7:
-   stage: build-base-image
-   before_script:
-       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7/Dockerfile
-       - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-base-cc7
-       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:${CI_COMMIT_SHA:0:8}"
-   <<: *template_build_image
-   only:
-     refs:
-       - qa
-     changes:
-       - docker-images/hep-benchmark-base-cc7/*
-
-..job_build_qa_image_cc7:
-   stage: build-qa-image
-   before_script:
-       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-cc7/Dockerfile
-       - export CONTEXT=$CI_PROJECT_DIR/
-       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_BRANCH} --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_SHA:0:8}"
-   <<: *template_build_image
-   only:
-      variables:
-       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
-       - $CI_COMMIT_BRANCH =~ /^qa$/
-
-############################################################
-#####              PROMOTE PROD IMAGES                 #####
-############################################################
-
-..job_promote_prod_image_cc7:
-   stage: promote-image
-   image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa
-   tags:
-     -  hep-benchmark-suite-docker-runner 
-   before_script:
-       - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN gitlab-registry.cern.ch
-   after_script:
-        - docker images
-        - docker ps -a
-   script: 
-        - echo "current commit is ${CI_COMMIT_SHA:0:8}"
-        - echo "current tag is ${CI_COMMIT_TAG}"
-        - docker tag  $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG}
-        - docker tag  $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:qa $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
-        - docker push $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG}
-        - docker push $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
-   only:
-     variables:
-       - $CI_COMMIT_TAG =~ /^v.*$/
-
-..job_announce_prod_image:
-   stage: announce-promoted-image
-   image: $CI_REGISTRY_IMAGE/announcement:latest
-   only:
-     variables:
-       - $CI_COMMIT_TAG =~ /^v.*$/
-   script: 
-     - export IMAGE=$CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_TAG}
-     - /announce.sh $IMAGE
+      - yum install -y python3-pip
+      - pip3 install --upgrade setuptools wheel
+      - python3 setup.py sdist bdist_wheel
+  artifacts:
+      paths:
+        - dist/
+  except:
+      refs:
+        - master
+        - qa
 
 ############################################################
 #####              TEST INSTALLATION                   #####
@@ -197,16 +120,14 @@ test_yaml_files:
         - master
         - qa
 
-.job_test_db12_benchmark:
+job_test_db12_benchmark:
   stage: test-integration
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
-      - yum install -y python3 python3-pip
-      - cd $CI_PROJECT_DIR/
-      - pip3 install -r requirements.txt --user
+      - yum install -y python3-pip
       - pip3 install --user .
-      - export PATH=/root/.local/bin:$PATH
-      - bmkrun -c config/benchmarks.yml -d . -b db12
+      - export PATH=~/.local/bin:$PATH
+      - bmkrun --rundir . --benchmarks db12
   artifacts:
         paths:
            - result_profile.json
@@ -270,7 +191,7 @@ job_build_wheels:
 .definition_test_qa_singularity: &template_test_qa_singularity
     # This job tests the hep-benchmark-suite
     # running a configurable set of benchmarks defined in $BMKLIST
-  stage: test-qa-image
+  stage: test-singularity
   tags: 
     - docker-privileged-xl
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
@@ -304,30 +225,25 @@ job_build_wheels:
       expire_in: 1 week
       when: always
 
-test_singularity_db12:
+test_sing_db12:
     before_script:
         - export BMKLIST="db12"
     <<: *template_test_qa_singularity
 
-..job_test_sing_in_sing_hepscore:
-    tags:
-      -  hep-benchmark-suite-docker-runner
+test_sing_hepscore:
     before_script:
         - export BMKLIST="hepscore"
-        - export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml
     <<: *template_test_qa_singularity
 
-..job_test_sing_in_sing_hs06:
-    tags:
-      -  hep-benchmark-suite-docker-runner
+
+.test_sing_hs06:
+    # needs either priv runner + pre-installed SPEC || tarball location
     before_script:
       - export BMKLIST="hs06_32"
-      - rm -f /scratch/HEPSPEC/SPEC_CPU2006_v1.2/VERIFIED_INSTALLATION
     <<: *template_test_qa_singularity
 
-..job_test_sing_in_sing_spec2017:
-    tags:
-      -  hep-benchmark-suite-docker-runner
+.test_sing_in_sing_spec2017:
+    # needs either priv runner + pre-installed SPEC || tarball location
     before_script:
         - export BMKLIST="spec2017"
     <<: *template_test_qa_singularity
