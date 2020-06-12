@@ -2,8 +2,8 @@ stages:
   - build-package
   - test-components
   - test-integration
-  - export-package
   - test-singularity
+  - test-docker
 
 ############################################################
 #####              BUILD PACKAGE                       #####
@@ -12,7 +12,7 @@ stages:
 build_hep-benchmark-suite:
   stage: build-package
   script:
-      - yum install -y python3-pip
+      - yum install -yq python3-pip
       - pip3 install --upgrade setuptools wheel
       - python3 setup.py sdist bdist_wheel
   artifacts:
@@ -22,74 +22,25 @@ build_hep-benchmark-suite:
       refs:
         - master
         - qa
-
-############################################################
-#####              TEST INSTALLATION                   #####
-############################################################
-
-.definition_test_installation: &template_test_installation
-    # This job installs the hep-benchmark-suite using "make" 
-    # then runs a configurable set of benchmarks 
-    stage: test-components
-    image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-base-cc7:latest
-    script: 
-      - export BMK_VOLUME=/scratch/jobs/${CI_JOB_NAME}_${CI_JOB_ID}
-      - export BMK_RUNDIR=${BMK_VOLUME}/hep-benchmark-suite
-      - export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
-      - if [[ -z $BMK_HEPSCORE_CONF ]]; then
-          export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci.yaml;
-        fi
-      - $CI_PROJECT_DIR/test/test_installation_and_run.sh
-    after_script:
-      - export BMK_VOLUME=/scratch/jobs/${CI_JOB_NAME}_${CI_JOB_ID}
-      - export BMK_RUNDIR=${BMK_VOLUME}/hep-benchmark-suite
-      - tar -czf hep-benchmark-suite-test-$CI_JOB_ID.tgz ${BMK_RUNDIR} /opt/hep-benchmark-suite 
-      - rm -rf ${BMK_VOLUME}
-    only:
-     variables:
-       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
-       - $CI_COMMIT_BRANCH =~ /^qa$/
-    artifacts:
+        
+job_build_wheels:
+  stage: build-package
+  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
+  script:
+      - yum install -yq python3 python3-pip
+      - cd $CI_PROJECT_DIR/
+      - pip3 install wheel --user
+      - pip3 wheel -r requirements.txt --wheel-dir=whl .
+      - tar -cvf package_wheels.tar whl/
+  artifacts:
         paths:
-           - hep-benchmark-suite-test-$CI_JOB_ID.tgz
+           - package_wheels.tar
         expire_in: 1 week
         when: always
-
-..job_test_hepscore_run_cc7:
-  tags:
-    -  hep-benchmark-suite-docker-runner 
-  before_script:
-    - export BMKLIST="hepscore"
-  
-
-# FIXME, does not work but covers a case not often used
-.job_test_hepscore_run_cc7_singularity:
-  tags:
-    -  hep-benchmark-suite-docker-runner 
-  before_script:
-    - useradd -d /builds/{GITLAB_USER} -g users -M -N unprivUser
-    - chown -R unprivUser:users ..
-    - sudo -H -i -u unprivUser bash
-    - export BMKLIST="hepscore"
-    - export BMK_HEPSCORE_CONF=/opt/hep-benchmark-suite/scripts/hepscore/hepscore_ci_singularity.yaml
-  <<: *template_test_installation
-
-..job_test_hs06_run_cc7:
-   tags:
-     -  hep-benchmark-suite-docker-runner 
-   before_script:
-       - export BMKLIST="hs06_32"
-       - rm -f /scratch/HEPSPEC/SPEC_CPU2006_v1.2/VERIFIED_INSTALLATION
-   <<: *template_test_installation
-
-
-..job_test_spec2017_run_cc7:
-   tags:
-     -  hep-benchmark-suite-docker-runner 
-   before_script:
-       - export BMKLIST="spec2017"
-   <<: *template_test_installation
-
+  except:
+      refs:
+        - master
+        - qa
 
 ############################################################
 #####              TEST COMPONENTS                     #####
@@ -97,9 +48,9 @@ build_hep-benchmark-suite:
 
 test_python_plugins:
   stage: test-components
-  image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
+  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
-      - yum install -y python3 python3-pip
+      - yum install -yq python3 python3-pip
       - pip3 install tox
       - cd $CI_PROJECT_DIR/
       - tox
@@ -110,21 +61,24 @@ test_python_plugins:
 
 test_yaml_files:
   stage: test-components
-  image: $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:latest
   script:
-      - yum install -y yamllint
-      - cd $CI_PROJECT_DIR/
-      - yamllint config/benchmarks.yml
+      - yum install -yq yamllint
+      - cd hepbenchmarksuite/config
+      - yamllint benchmarks.yml
   except:
       refs:
         - master
         - qa
 
+############################################################
+#####              TEST INTEGRATION                    #####
+############################################################
+
 job_test_db12_benchmark:
   stage: test-integration
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
-      - yum install -y python3-pip
+      - yum install -yq python3-pip
       - pip3 install --user .
       - export PATH=~/.local/bin:$PATH
       - bmkrun --rundir . --benchmarks db12
@@ -145,7 +99,7 @@ job_test_db12_benchmark:
   tags:
      -  hep-benchmark-suite-docker-runner
   script:
-      - yum install -y python3 python3-pip
+      - yum install -yq python3 python3-pip
       - cd $CI_PROJECT_DIR/
       - pip3 install -r requirements.txt --user
       - pip3 install --user .
@@ -156,26 +110,6 @@ job_test_db12_benchmark:
   artifacts:
         paths:
            - /tmp/test_suite/result_profile.json
-        expire_in: 1 week
-        when: always
-  except:
-      refs:
-        - master
-        - qa
-
-
-job_build_wheels:
-  stage: export-package
-  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
-  script:
-      - yum install -y python3 python3-pip
-      - cd $CI_PROJECT_DIR/
-      - pip3 install wheel --user
-      - pip3 wheel -r requirements.txt --wheel-dir=whl .
-      - tar -cvf package_wheels.tar whl/
-  artifacts:
-        paths:
-           - package_wheels.tar
         expire_in: 1 week
         when: always
   except:
@@ -196,7 +130,7 @@ job_build_wheels:
     - docker-privileged-xl
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
-    - yum install -y singularity python3-pip
+    - yum install -yq singularity python3-pip
     # non-root user
     - useradd -d $(pwd) -g users -M -N unprivUser
     - chown -R unprivUser:users ..
@@ -247,3 +181,53 @@ test_sing_hepscore:
     before_script:
         - export BMKLIST="spec2017"
     <<: *template_test_qa_singularity
+
+############################################################
+#####              TEST DOCKER                         #####
+############################################################
+
+.definition_test_qa_docker: &template_test_qa_docker
+    # This job tests the hep-benchmark-suite
+    # running a configurable set of benchmarks defined in $BMKLIST
+  stage: test-docker
+  tags: 
+    - docker-privileged
+  image: gitlab-registry.cern.ch/linuxsupport/cc7-base
+  services:
+    - docker:19.03.1-dind
+  variables:
+    # Disable TLS following https://about.gitlab.com/2019/07/31/docker-in-docker-with-docker-19-dot-03/
+    # This will result in a warning that the docker-in-docker service may not have started successfully
+    # (see above)
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375/ 
+  script:
+    - yum install -yq python3-pip docker-client
+    # non-root user
+    - useradd -d $(pwd) -g users -M -N unprivUser
+    - chown -R unprivUser:users ..
+    - usermod -aG docker unprivUser
+    - su - unprivUser
+    - set -e
+    # install the benchmark suite python package
+    - python3 -m pip install --user .
+    - export PATH=$PATH:~/.local/bin
+    #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
+    - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+    - export RESULTS_FILE=$CI_JOB_NAME.json
+    - export SINGULARITY_CACHEDIR=${BMK_VOLUME}/singularity_cache
+    # run $BMKLIST as docker
+    - bmkrun -v --mode=docker -c ~/.local/config/benchmarks.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    - mv $BMK_VOLUME/$RESULTS_FILE $BMK_VOLUME/run_config.yaml .
+    - rm -rf $BMK_VOLUME
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH =~ /^qa-.*$/
+      - $CI_COMMIT_BRANCH =~ /^qa$/
+      - $CI_COMMIT_BRANCH =~ /^v2.*/
+  artifacts:
+      paths:
+        - ./*.json
+        - ./*.yaml
+      expire_in: 1 week
+      when: always
