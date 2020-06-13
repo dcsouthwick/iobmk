@@ -126,7 +126,7 @@ job_test_db12_benchmark:
     - export RESULTS_FILE=$CI_JOB_NAME.json
     - export SINGULARITY_CACHEDIR=${BMK_VOLUME}/singularity_cache
     # run $BMKLIST as singularity
-    - bmkrun -v --mode=singularity -c ~/.local/config/benchmarks.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    - bmkrun -v --mode=singularity --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/$RESULTS_FILE $BMK_VOLUME/run_config.yaml .
     - rm -rf $BMK_VOLUME
   only:
@@ -199,7 +199,7 @@ test_sing_hepscore:
     - export RESULTS_FILE=$CI_JOB_NAME.json
     - export SINGULARITY_CACHEDIR=${BMK_VOLUME}/singularity_cache
     # run $BMKLIST as docker
-    - bmkrun -v --mode=docker -c ~/.local/config/benchmarks.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    - bmkrun -v --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/$RESULTS_FILE $BMK_VOLUME/run_config.yaml .
     - rm -rf $BMK_VOLUME
   only:
