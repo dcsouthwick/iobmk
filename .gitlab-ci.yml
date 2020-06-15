@@ -120,14 +120,15 @@ job_test_db12_benchmark:
     - su - unprivUser
     - set -e
     # install the benchmark suite python package
+    # sed -i 's,url_tar.*,url_tarball: "'${HS06URL}'",' hepbenchmarksuite/config/benchmarks.yml
+    - sed -i  "/url_tarball/d" hepbenchmarksuite/config/benchmarks.yml
+    - echo "  url_tarball:" "\"${HS06URL}\"" >> hepbenchmarksuite/config/benchmarks.yml
     - python3 -m pip install --user .
     - export PATH=$PATH:~/.local/bin
     #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
     - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
     - export RESULTS_FILE=$CI_JOB_NAME.json
     - export SINGULARITY_CACHEDIR=${BMK_VOLUME}/singularity_cache
-    - sed -i  "/url_tarball/d" hepbenchmarksuite/config/benchmarks.yml
-    - echo "  url_tarball:" "\"${HS06URL}\"" >> hepbenchmarksuite/config/benchmarks.yml
     # run $BMKLIST as singularity
     - bmkrun -v --mode=singularity --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/$RESULTS_FILE $BMK_VOLUME/run_config.yaml .
@@ -189,13 +190,13 @@ test_sing_in_sing_spec2017:
     #- su - unprivUser
     #- set -e
     # install the benchmark suite python package
+    - sed -i  "/url_tarball/d" hepbenchmarksuite/config/benchmarks.yml
+    - echo "  url_tarball:" "\"${HS06URL}\"" >> hepbenchmarksuite/config/benchmarks.yml
     - python3 -m pip install .
     - export PATH=$PATH:~/.local/bin
     #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
     - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
     - export RESULTS_FILE=$CI_JOB_NAME.json
-    - sed -i  "/url_tarball/d" hepbenchmarksuite/config/benchmarks.yml
-    - echo "  url_tarball:" "\"${HS06URL}\"" >> hepbenchmarksuite/config/benchmarks.yml
     # run $BMKLIST as docker
     - bmkrun -v --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/$RESULTS_FILE $BMK_VOLUME/run_config.yaml .

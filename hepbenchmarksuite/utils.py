@@ -45,7 +45,7 @@ def run_hepspec(conf, bench):
                                                                    hs06['url_tarball'])
 
     cmd = {
-          'docker'      : "docker run --network=host -v {0}:{0} -v {1}:{1} {2} {3}".format(conf['global']['rundir'],
+          'docker'      : "docker run --network=host -v {0}:{0}:Z -v {1}:{1}:Z {2} {3}".format(conf['global']['rundir'],
                                                                                            hs06['hepspec_volume'],
                                                                                            hs06['image'],
                                                                                            _run_args),
