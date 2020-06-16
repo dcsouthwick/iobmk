@@ -37,7 +37,7 @@ test_yaml_files:
         - qa
 
 test_db12_benchmark:
-  stage: test-integration
+  stage: test-components
   dependencies: []
   script:
       - yum install -y -q python3-pip
