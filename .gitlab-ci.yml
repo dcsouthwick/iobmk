@@ -79,7 +79,7 @@ test_yaml_files:
 #####              TEST INTEGRATION                    #####
 ############################################################
 
-job_test_db12_benchmark:
+test_db12_benchmark:
   stage: test-integration
   dependencies: []
   script:
@@ -136,8 +136,8 @@ job_test_db12_benchmark:
   after_script:
     # cache updated .sif file to speed up jobs - must be under $CI_PROJECT_DIR!
     # SINGULARITY_CACHEDIR is hardcoded to $RUNDIR/singularity_cachedir/cache
-    - mv $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
-    - rm -rf $BMK_VOLUME
+    - mv /tmp/${CI_JOB_NAME}_${CI_JOB_ID}/singularity_cachedir $CI_PROJECT_DIR
+    - rm -rf /tmp/${CI_JOB_NAME}_${CI_JOB_ID}
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
