@@ -86,11 +86,11 @@ test_db12_benchmark:
     - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
     - export RESULTS_FILE=$CI_JOB_NAME.json
     # if .sif was already built, then use it!
-    - if [ -d singularity_cachedir ]; then mkdir -p $BMK_VOLUME/singularity_cachedir; mv -v singularity_cachedir/ $BMK_VOLUME/; fi
+    - if [ -d singularity_cachedir ]; then mkdir -p $BMK_VOLUME/singularity_cachedir; mv singularity_cachedir/ $BMK_VOLUME/; fi
     # run $BMKLIST as singularity
     - bmkrun --mode=singularity --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
-    - mv -v $BMK_VOLUME/$RESULTS_FILE .
-    - mv -v $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
+    - mv $BMK_VOLUME/$RESULTS_FILE .
+    - mv $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
     - rm -rf $BMK_VOLUME
   only:
     variables:
