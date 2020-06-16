@@ -128,24 +128,28 @@ job_test_db12_benchmark:
     #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
     - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
     - export RESULTS_FILE=$CI_JOB_NAME.json
-    - export SINGULARITY_CACHEDIR=${BMK_VOLUME}/singularity_cache
+    # if .sif was already built, then use it!
+    - if [ -d singularity_cachedir ]; then mv singularity_cachedir/ $BMK_VOLUME
     # run $BMKLIST as singularity
-    - bmkrun -v --mode=singularity --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
-    - mv $BMK_VOLUME/$RESULTS_FILE $BMK_VOLUME/run_config.yaml .
+    - bmkrun --mode=singularity --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    - mv $BMK_VOLUME/$RESULTS_FILE .
     - rm -rf $BMK_VOLUME
+  after_script:
+    # cache updated .sif file to speed up jobs - must be under $CI_PROJECT_DIR!
+    # SINGULARITY_CACHEDIR is hardcoded to $RUNDIR/singularity_cachedir/cache
+    - mv $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
       - $CI_COMMIT_BRANCH =~ /^qa$/
       - $CI_COMMIT_BRANCH =~ /^v2.*/
   cache:
-    key: "$CI_COMMIT_REF_SLUG"
+    key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
     paths:
-      - /tmp/${CI_JOB_NAME}_${CI_JOB_ID}/singularity_cache/cache/*
+      - singularity_cachedir/cache/**/*
   artifacts:
     paths:
       - ./*.json
-      - ./*.yaml
     expire_in: 1 week
     when: always
 
@@ -202,8 +206,8 @@ test_sing_spec2017:
     - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
     - export RESULTS_FILE=$CI_JOB_NAME.json
     # run $BMKLIST as docker
-    - bmkrun -v --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
-    - mv $BMK_VOLUME/$RESULTS_FILE $BMK_VOLUME/run_config.yaml .
+    - bmkrun --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    - mv $BMK_VOLUME/$RESULTS_FILE .
     - rm -rf $BMK_VOLUME
   only:
     variables:
@@ -213,7 +217,6 @@ test_sing_spec2017:
   artifacts:
     paths:
       - ./*.json
-      - ./*.yaml
     expire_in: 1 week
     when: always
 
