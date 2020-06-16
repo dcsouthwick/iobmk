@@ -133,11 +133,11 @@ job_test_db12_benchmark:
     # run $BMKLIST as singularity
     - bmkrun --mode=singularity --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/$RESULTS_FILE .
-    - rm -rf $BMK_VOLUME
   after_script:
     # cache updated .sif file to speed up jobs - must be under $CI_PROJECT_DIR!
     # SINGULARITY_CACHEDIR is hardcoded to $RUNDIR/singularity_cachedir/cache
     - mv $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
+    - rm -rf $BMK_VOLUME
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
@@ -153,7 +153,7 @@ job_test_db12_benchmark:
     expire_in: 1 week
     when: always
 
-test_sing_db12:
+.test_sing_db12:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="db12"
