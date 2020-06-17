@@ -18,6 +18,37 @@ from hepbenchmarksuite.plugins.extractor import Extractor
 
 _log = logging.getLogger(__name__)
 
+
+def validate_hs06(conf):
+    """
+    Check if the configuration is valid for hepspec06.
+
+    Args:
+      conf:  A dict containing configuration.
+
+    Returns:
+      Error code: 0 OK , 1 Not OK
+    """
+
+    _log.debug("Configuration to apply validation: {}".format(conf))
+
+    # Required params to perform an HS06 benchmark
+    HS06_REQ = ['image', 'hepspec_volume', 'url_tarball', 'iterations']
+
+    try:
+        # Check what is missing from the config file in the hepspec06 category
+        missing_params = list(filter(lambda x: conf['hepspec06'].get(x) == None, HS06_REQ))
+
+        if len(missing_params) >= 1:
+            _log.error("Required parameter not found in configuration: {}".format(missing_params))
+            return 1
+
+    except KeyError:
+      _log.error("Not configuration found for HS06")
+      return 1
+
+    return 0
+
 def run_hepspec(conf, bench):
     """
     Run HEPSpec benchmark.
