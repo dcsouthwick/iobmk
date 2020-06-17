@@ -85,7 +85,7 @@ def main():
     # Check if user provided a benchmark
     if active_config['global']['benchmarks'] == None:
       parser.print_help()
-      sys.exit("No benchmarks were provided.")
+      sys.exit("No benchmarks were selected.")
 
     # Check if user provided valid benchmark
     AVAILABLE_BENCHMARKS  = ["db12" , "hepscore", "spec2017", "hs06_32", "hs06_64", "test"]
@@ -93,12 +93,11 @@ def main():
       if bench not in AVAILABLE_BENCHMARKS:
         sys.exit('Benchmark "{}" is not a valid benchmark. Please select one of the following benchmarks:\n- {} '.format(bench,'\n- '.join(AVAILABLE_BENCHMARKS)))
 
-    # Add CPU count if not present
-    if 'mp_num' not in active_config['global'].keys():
-      active_config['global']['mp_num'] = os.cpu_count()
-
-    # Check for a valid CPU count
-    if active_config['global']['mp_num'] == None or (int(active_config['global']['mp_num']) > os.cpu_count()):
+    # use all CPUs found if invalid parameter provided
+    if (   'mp_num' not in active_config['global'].keys()
+        or active_config['global']['mp_num'] == None
+        or int(active_config['global']['mp_num']) > os.cpu_count()
+        ):
       active_config['global']['mp_num'] = os.cpu_count()
 
     # Check if cpu count in config is integer
@@ -107,10 +106,12 @@ def main():
 
     # All config checks passed
     # Dump running config
-    try:
-      os.makedirs(active_config['global']['rundir'])
-    except OSError as e:
-      logging.info("Skiping directory creation: {}".format(e))
+    if os.path.exists(active_config['global']['rundir']):
+      logging.info("Skiping directory creation: {} exists".format(active_config['global']['rundir']))
+    else:
+      logging.info("Creating {}".format(active_config['global']['rundir']))
+    
+    os.makedirs(active_config['global']['rundir'], exist_ok=True)
 
     with open(os.path.join(active_config['global']['rundir'], 'run_config.yaml'), 'w') as conf_file:
       yaml.dump(active_config, conf_file)

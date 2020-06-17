@@ -23,17 +23,20 @@ def run_hepscore(conf, bench):
     """WIP: run hepscore as an executable"""
 
     _log.debug("Configuration in use for benchmark {}: {}".format(bench, conf))
-    hs_conf = conf['hepscore_benchmark']
+    #hs_conf = conf['hepscore_benchmark']
     if conf['global']['mode'] == 'singularity':
         run_mode = '-s'
     else:
         run_mode = '-d'
 
-    cmd = "hep-score {} -f {} {}".format(run_mode, hs_conf, conf['global']['rundir'])
+    # hepscore rc expects yaml passed as path, cannot read rundir from yaml
+    cmd = "hep-score {} -f {} {}".format(run_mode, os.path.join(
+        conf['global']['rundir'], 'run_config.yaml'), conf['global']['rundir'])
 
     # Start benchmark
     _log.debug(cmd)
     exec_wait_benchmark(cmd)
+
 
 def run_hepspec(conf, bench):
     """

@@ -11,49 +11,57 @@ variables:
 #####              TEST COMPONENTS                     #####
 ############################################################
 
+test_python_support:
+  # determine minimum supported python version
+  stage: test-components
+  dependencies: []
+  script:
+    - yum install -y -q python3-pip
+    - python3 -m pip install vermin
+    - vermin -vv .
+
 test_python_plugins:
   stage: test-components
   dependencies: []
   script:
-      - yum install -y -q python3 python3-pip
-      - python3 -m pip install tox
-      - cd $CI_PROJECT_DIR/
-      - tox
+    - yum install -y -q python3-pip
+    - python3 -m pip install tox
+    - tox
   except:
-      refs:
-        - master
-        - qa
+    refs:
+      - master
+      - qa
 
 test_yaml_files:
   stage: test-components
   dependencies: []
   script:
-      - yum install -y -q yamllint
-      - cd hepbenchmarksuite/config
-      - yamllint benchmarks.yml
+    - yum install -y -q yamllint
+    - cd hepbenchmarksuite/config
+    - yamllint benchmarks.yml
   except:
-      refs:
-        - master
-        - qa
+    refs:
+      - master
+      - qa
 
 test_db12_benchmark:
   stage: test-components
   dependencies: []
   script:
-      - yum install -y -q python3-pip
-      - python3 -m pip install --user .
-      - export PATH=~/.local/bin:$PATH
-      - bmkrun --rundir . --benchmarks db12
+    - yum install -y -q python3-pip
+    - python3 -m pip install --user .
+    - export PATH=~/.local/bin:$PATH
+    - bmkrun --rundir . --benchmarks db12
   artifacts:
-        paths:
-           - result_profile.json
-           - run_config.yaml
-        expire_in: 1 week
-        when: always
+    paths:
+      - result_profile.json
+      - run_config.yaml
+    expire_in: 1 week
+    when: always
   except:
-      refs:
-        - master
-        - qa
+    refs:
+      - master
+      - qa
 
 ############################################################
 #####              TEST SINGULARITY                    #####
@@ -192,17 +200,17 @@ build_hep-benchmark-suite:
     name: production
     url: https://staging.example.com
   script:
-      - yum install -y -q python3-pip
-      - python3 -m pip install --upgrade setuptools wheel
-      - python3 setup.py sdist bdist_wheel
-      # some package publish step here
+    - yum install -y -q python3-pip
+    - python3 -m pip install --upgrade setuptools wheel
+    - python3 setup.py sdist bdist_wheel
+    # some package publish step here
   artifacts:
-      paths:
-        - dist/
+    paths:
+      - dist/
   except:
-      refs:
-        - master
-        - qa
+    refs:
+      - master
+      - qa
         
 job_build_wheels:
   # is this job needed? it performs the same step as bdist_wheel (above)
@@ -214,16 +222,16 @@ job_build_wheels:
     name: production
     url: https://staging.example.com
   script:
-      - yum install -y -q python3-pip
-      - python3 -m pip install wheel --user
-      - python3 -m pip wheel -r requirements.txt --wheel-dir=whl .
-      - tar -cvf package_wheels.tar whl/
+    - yum install -y -q python3-pip
+    - python3 -m pip install wheel --user
+    - python3 -m pip wheel -r requirements.txt --wheel-dir=whl .
+    - tar -cvf package_wheels.tar whl/
   artifacts:
-        paths:
-           - package_wheels.tar
-        expire_in: 1 week
-        when: always
+    paths:
+      - package_wheels.tar
+    expire_in: 1 week
+    when: always
   except:
-      refs:
-        - master
-        - qa
+    refs:
+      - master
+      - qa
