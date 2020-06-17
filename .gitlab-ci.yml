@@ -11,7 +11,7 @@ variables:
 #####              TEST COMPONENTS                     #####
 ############################################################
 
-test_python_support:
+.test_python_support:
   # determine minimum supported python version
   stage: test-components
   dependencies: []
@@ -20,7 +20,7 @@ test_python_support:
     - python3 -m pip install vermin
     - vermin -vv .
 
-test_python_plugins:
+.test_python_plugins:
   stage: test-components
   dependencies: []
   script:
@@ -32,7 +32,7 @@ test_python_plugins:
       - master
       - qa
 
-test_yaml_files:
+.test_yaml_files:
   stage: test-components
   dependencies: []
   script:
@@ -44,7 +44,7 @@ test_yaml_files:
       - master
       - qa
 
-test_db12_benchmark:
+.test_db12_benchmark:
   stage: test-components
   dependencies: []
   script:
@@ -124,6 +124,8 @@ test_sing_hepscore:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hepscore"
+    - yum install -y -q singularity python3-pip
+    - python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0
 
 test_sing_hs06:
   extends: .test_qa_singularity
