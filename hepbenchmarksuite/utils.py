@@ -29,7 +29,7 @@ def run_hepscore(conf, bench):
     else:
         run_mode = '-d'
 
-    cmd = "hep-score {} -f {} {}".format(run_mode, hs_conf, conf['global']['rundir'])
+    cmd = "hep-score {} -f {} {}".format(run_mode, os.path.join(conf['global']['rundir'], 'run_config.yaml'),conf['global']['rundir'])
 
     # Start benchmark
     _log.debug(cmd)
