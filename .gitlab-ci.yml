@@ -124,7 +124,7 @@ test_sing_hepscore:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hepscore"
-    - yum install -y -q singularity python3-pip
+    - yum install -y -q singularity python3-pip git
     - python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0
 
 test_sing_hs06:

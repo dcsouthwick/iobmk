@@ -66,14 +66,13 @@ def run_hepspec(conf, bench):
 
     cmd = {
         'docker': "docker run --network=host -v {0}:{0}:Z -v {1}:{1}:Z {2} {3}".format(conf['global']['rundir'],
-                                                                                       hs06['hepspec_volume'],
-                                                                                       hs06['image'],
-                                                                                       _run_args),
+                                                                                           hs06['hepspec_volume'],
+                                                                                           hs06['image'],
+                                                                                           _run_args),
         'singularity': "SINGULARITY_CACHEDIR={0}/singularity_cachedir singularity run -B {0}:{0} -B {1}:{1} docker://{2} {3}".format(conf['global']['rundir'],
-                                                                                                                                     hs06[
-                                                                                                                                         'hepspec_volume'],
-                                                                                                                                     hs06['image'],
-                                                                                                                                     _run_args)
+                                                                                                                                        hs06['hepspec_volume'],
+                                                                                                                                        hs06['image'],
+                                                                                                                                        _run_args)
     }
 
     # Start benchmark
