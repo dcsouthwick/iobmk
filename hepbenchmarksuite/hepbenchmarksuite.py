@@ -43,19 +43,31 @@ class HepBenchmarkSuite(object):
             '%Y-%m-%dT%H:%M:%SZ', time.gmtime())
 
         if self._preflight() == 0:
+            _log.info("Pre-flight checks passed successfully.")
             self.run()
+        else:
+            _log.error("Pre-flight checks failed.")
 
     def _preflight(self):
+        """Perform pre-flight checks."""
+
         _log.info("Running pre-flight checks")
-        # TODO: Check config before running
+        checks = []
+
         _log.info(" - Checking provided work dirs exist...")
         os.makedirs(self._config['rundir'], exist_ok=True)
-        os.makedirs(self._config_full['hepspec06']
-                    ['hepspec_volume'], exist_ok=True)
-        #os.makedirs(self._config_full['hepscore_benchmark']['rundir'], exist_ok=True)
-        # OK returns 0
-        # NOK retuns 1
-        return 0
+        os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
+
+        _log.info(" - Performing configuration validation...")
+        for bench in self.selected_benchmarks:
+            if bench in ['hs06_32', 'hs06_64', 'spec2017']:
+                checks.append(utils.validate_hs06(self._config_full))
+
+        # Check if any pre-flight check failed
+        if any(checks):
+            return 1
+        else:
+            return 0
 
     def run(self):
 
@@ -71,15 +83,18 @@ class HepBenchmarkSuite(object):
             _log.info("Benchmarks left to run: {}".format(self._bench_queue))
 
             if bench2run == 'db12':
-                db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
+                returncode = db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
 
             elif bench2run == 'hepscore':
-                utils.run_hepscore(conf=self._config_full, bench=bench2run)
+                returncode = utils.run_hepscore(conf=self._config_full, bench=bench2run)
 
             elif bench2run in ['hs06_32', 'hs06_64', 'spec2017']:
-                utils.run_hepspec(conf=self._config_full, bench=bench2run)
+                returncode = utils.run_hepspec(conf=self._config_full, bench=bench2run)
 
             self.check_lock()
+
+            return returncode
+        
 
     def dequeue(self):
         return self._bench_queue.pop(0)

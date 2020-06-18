@@ -20,6 +20,7 @@ hepspec06:
   # Define writeable directory for SPEC install in unpriveliged containers
   hepspec_volume: "/tmp/SPEC"
   iterations: 1
+  bmk_set: '453.povray'
 
 # copied from upstream hepscore test
 hepscore_benchmark:
