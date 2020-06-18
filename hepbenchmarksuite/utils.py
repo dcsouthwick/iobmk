@@ -33,7 +33,7 @@ def validate_hs06(conf):
     _log.debug("Configuration to apply validation: {}".format(conf))
 
     # Required params to perform an HS06 benchmark
-    HS06_REQ = ['image', 'hepspec_volume', 'url_tarball', 'iterations']
+    HS06_REQ = ['image', 'hepspec_volume', 'url_tarball']
 
     try:
         # Check what is missing from the config file in the hepspec06 category
@@ -67,14 +67,34 @@ def run_hepspec(conf, bench):
     # Select run mode: docker, singularity, podman, etc
     run_mode = conf['global']['mode']
 
-    # HEPspec run arguments
-    _run_args = "-b {0} -w {1} -i {2} -p {3} -n {4} -u {5}".format(bench,
-                                                                   conf['global']['rundir'],
-                                                                   hs06['iterations'],
-                                                                   hs06['hepspec_volume'],
-                                                                   conf['global']['mp_num'],
-                                                                   hs06['url_tarball'])
+    # Possible hepspec06 arguments
+    hs06_args = {
+      'bench'          : ' -b {}'.format(bench),
+      'iterations'     : ' -i {}'.format(hs06.get('iterations')),
+      'mp_num'         : ' -n {}'.format(conf['global'].get('mp_num')),
+      'hepspec_volume' : ' -p {}'.format(hs06.get('hepspec_volume')),
+      'bmk_set'        : ' -s {}'.format(hs06.get('bmk_set')),
+      'url_tarball'    : ' -u {}'.format(hs06.get('url_tarball')),
+      'workdir'        : ' -w {}'.format(conf['global'].get('rundir')),
+    }
+    _log.debug("hepspec06 arguments: {}". format(hs06_args))
 
+    # Populate CLI from the global configuration section
+    _run_args = hs06_args['bench'] + hs06_args['workdir'] + hs06_args['mp_num']
+
+    # Populate CLI from the hepspec06 configuration section
+    # Removing image key from this population since its specified bellow at command level
+    populate_keys = [*hs06.keys()]
+    populate_keys.remove('image')
+
+    for k in populate_keys:
+     try:
+       _run_args += hs06_args[k]
+
+     except KeyError as e:
+       _log.error("Not a valid HEPSPEC06 key: {}.".format(e))
+
+    # Command specification
     cmd = {
           'docker'      : "docker run --network=host -v {0}:{0}:Z -v {1}:{1}:Z {2} {3}".format(conf['global']['rundir'],
                                                                                            hs06['hepspec_volume'],
