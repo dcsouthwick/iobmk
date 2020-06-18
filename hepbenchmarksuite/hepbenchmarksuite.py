@@ -42,17 +42,31 @@ class HepBenchmarkSuite(object):
     self._extra['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
 
     if self._preflight() == 0:
+      _log.info("Pre-flight checks passed successfully.")
       self.run()
+    else:
+      _log.error("Pre-flight checks failed.")
 
   def _preflight(self):
-    _log.info ("Running pre-flight checks")
-    # TODO: Check config before running
-    _log.info (" - Checking provided work dirs exist...")
+    """Perform pre-flight checks."""
+
+    _log.info("Running pre-flight checks")
+    checks = []
+
+    _log.info(" - Checking provided work dirs exist...")
     os.makedirs(self._config['rundir'], exist_ok=True)
     os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
-    # OK returns 0
-    # NOK retuns 1
-    return 0
+
+    _log.info(" - Performing configuration validation...")
+    for bench in self.selected_benchmarks:
+      if bench in ['hs06_32', 'hs06_64', 'spec2017']:
+        checks.append(utils.validate_hs06(self._config_full))
+
+    # Check if any pre-flight check failed
+    if any(checks):
+      return 1
+    else:
+      return 0
 
   def run(self):
 
