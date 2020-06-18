@@ -75,20 +75,13 @@ if __name__ == '__main__':
     stomp_mversion = stomp.__version__[0]
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--port", required=True,
-                        default='', help="Queue port")
-    parser.add_argument("-s", "--server", required=True,
-                        default='', help="Queue host")
-    parser.add_argument("-u", "--username", nargs='?',
-                        default='', help="Queue username")
-    parser.add_argument("-w", "--password", nargs='?',
-                        default='', help="Queue password")
-    parser.add_argument("-n", "--name", required=True,
-                        default='', help="Queue name")
-    parser.add_argument("-k", "--key_file", nargs='?',
-                        default='', help="AMQ authentication key")
-    parser.add_argument("-c", "--cert_file", nargs='?',
-                        default='', help="AMQ authentication certificate")
+    parser.add_argument("-p", "--port", required=True, default='', help="Queue port")
+    parser.add_argument("-s", "--server", required=True, default='', help="Queue host")
+    parser.add_argument("-u", "--username", nargs='?', default='', help="Queue username")
+    parser.add_argument("-w", "--password", nargs='?', default='', help="Queue password")
+    parser.add_argument("-n", "--name", required=True, default='', help="Queue name")
+    parser.add_argument("-k", "--key_file", nargs='?', default='', help="AMQ authentication key")
+    parser.add_argument("-c", "--cert_file", nargs='?', default='', help="AMQ authentication certificate")
     parser.add_argument("-f", "--file", required=True, help="File to send")
     args = parser.parse_args()
 

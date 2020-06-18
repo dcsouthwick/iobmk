@@ -93,8 +93,7 @@ def exec_wait_benchmark(cmd_str):
 
     _log.debug("Excuting command: {}".format(cmd_str))
 
-    cmd = subprocess.Popen(cmd_str, shell=True,
-                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    cmd = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     # Output stdout from child process
     line = cmd.stdout.readline()
@@ -107,8 +106,7 @@ def exec_wait_benchmark(cmd_str):
 
     # Check for errors
     if cmd.returncode != 0:
-        _log.error(
-            "Benchmark execution failed; returncode = {}.".format(cmd.returncode))
+        _log.error("Benchmark execution failed; returncode = {}.".format(cmd.returncode))
 
     return cmd.returncode
 
@@ -132,8 +130,7 @@ def convert_tags_to_json(tag_str):
 
     except:
         # User provided wrong format. Default tags are provided.
-        _log.warning(
-            "Not a valid tag json format specified: {}".format(tag_str))
+        _log.warning("Not a valid tag json format specified: {}".format(tag_str))
         tags = {}
 
     return tags
@@ -152,8 +149,7 @@ def exec_cmd(cmd_str):
 
     _log.debug("Excuting command: {}".format(cmd_str))
 
-    cmd = subprocess.Popen(cmd_str, shell=True, executable='/bin/bash',
-                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd = subprocess.Popen(cmd_str, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     cmd_reply, cmd_error = cmd.communicate()
 
     # Check for errors
@@ -204,15 +200,15 @@ def prepare_metadata(params, extra):
     # Create output metadata
     result = {'host': {}}
     result.update({
-        '_id': "{}_{}".format(params['uid'], extra['start_time']),
-        '_timestamp': extra['start_time'],
-        '_timestamp_end': extra['end_time'],
-        'json_version': get_version()
+        '_id'            : "{}_{}".format(params['uid'], extra['start_time']),
+        '_timestamp'     : extra['start_time'],
+        '_timestamp_end' : extra['end_time'],
+        'json_version'   : get_version()
     })
 
     result['host'].update({
         'hostname': socket.gethostname(),
-        'ip': get_host_ips(),
+        'ip'      : get_host_ips(),
     })
 
     for i in ['UID', 'tags']:
@@ -260,9 +256,9 @@ def print_results(results):
 
     p = results['profiles']
     bmk_print_action = {
-        "db12": lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(p[x]['value']), p[x]['unit']),
-        "hs06_32": lambda x: "HS06 32 bit Benchmark = %s" % p[x]['score'],
-        "hs06_64": lambda x: "HS06 64 bit Benchmark = %s" % p[x]['score'],
+        "db12"    : lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(p[x]['value']), p[x]['unit']),
+        "hs06_32" : lambda x: "HS06 32 bit Benchmark = %s" % p[x]['score'],
+        "hs06_64" : lambda x: "HS06 64 bit Benchmark = %s" % p[x]['score'],
         "spec2017": lambda x: "SPEC2017 64 bit Benchmark = %s" % p[x]['score'],
         "hepscore": lambda x: "HEPSCORE Benchmark = %s over benchmarks %s" % (round(p[x]['score'], 2), p[x]['benchmarks'].keys()),
     }
