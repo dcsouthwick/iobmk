@@ -93,10 +93,7 @@ class HepBenchmarkSuite(object):
                 returncode = utils.run_hepspec(conf=self._config_full, bench=bench2run)
 
             self.check_lock()
-            # where exit(0) is success
-            if returncode:
-                _log.info("{} failed with exitcode {}".format(bench2run, returncode))
-
+            
             return returncode
         
 
