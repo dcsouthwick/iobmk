@@ -19,6 +19,10 @@ test_python_support:
     - yum install -y -q python3-pip
     - python3 -m pip install vermin
     - vermin -vv .
+  only:
+    changes:
+      - "*.py"
+      - bin/*
 
 test_python_plugins:
   stage: test-components
@@ -39,6 +43,10 @@ test_yaml_files:
     - yum install -y -q yamllint
     - cd hepbenchmarksuite/config
     - yamllint benchmarks.yml
+  only:
+    changes:
+      - "*.yaml"
+      - "*.yml"
   except:
     refs:
       - master
