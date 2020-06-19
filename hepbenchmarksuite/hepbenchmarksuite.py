@@ -21,11 +21,11 @@ class HepBenchmarkSuite(object):
      *********************************************************"""
 
     RESULT_FILES = {
-        'hs06_32': 'HS06/hs06_32_result.json',
-        'hs06_64': 'HS06/hs06_64_result.json',
+        'hs06_32' : 'HS06/hs06_32_result.json',
+        'hs06_64' : 'HS06/hs06_64_result.json',
         'spec2017': 'SPEC2017/spec2017_result.json',
         'hepscore': 'HEPSCORE/hepscore_result.json',
-        'db12': 'db12_result.json',
+        'db12'    : 'db12_result.json',
     }
 
     def __init__(self,  config=None):
@@ -78,9 +78,10 @@ class HepBenchmarkSuite(object):
             self.cleanup()
 
         else:
+            _log.info("Benchmarks left to run: {}".format(self._bench_queue))
             bench2run = self.dequeue()
             _log.info("Running benchmark: {}".format(bench2run))
-            _log.info("Benchmarks left to run: {}".format(self._bench_queue))
+            
 
             if bench2run == 'db12':
                 returncode = db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
@@ -92,6 +93,9 @@ class HepBenchmarkSuite(object):
                 returncode = utils.run_hepspec(conf=self._config_full, bench=bench2run)
 
             self.check_lock()
+            # where exit(0) is success
+            if returncode:
+                _log.info("{} failed with exitcode {}".format(bench2run, returncode))
 
             return returncode
         
