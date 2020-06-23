@@ -1,2 +1,3 @@
 setuptools
 pyyaml
+git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0

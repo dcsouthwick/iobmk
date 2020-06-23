@@ -25,6 +25,6 @@ setup(
     scripts=['bin/bmkrun', 'bin/show_metadata'],
     packages=['hepbenchmarksuite', 'hepbenchmarksuite.plugins', 'hepbenchmarksuite.config'],
     package_data={'hepbenchmarksuite': ['config/*.yml']},
-    python_requires='>=3',
+    python_requires='~=3.4',
     install_requires=['pyyaml', 'importlib-resources']
 )

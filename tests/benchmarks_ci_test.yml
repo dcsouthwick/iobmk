@@ -1,0 +1,45 @@
+---
+global:
+  mode: "singularity"
+  file: "result_profile.json"
+  rundir: "/tmp/hep-spec_wd3"
+  # mp_num: "48"
+  benchmarks:
+    - "db12"
+    - "hs06_32"
+    - "hs06_64"
+  tags:
+    cloud: "Suite CI"
+    vo: "Some VM"
+    other_tag: "Some text"
+  uid: "machineX"
+
+hepspec06:
+  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
+  url_tarball: "https://example.com"
+  # Define writeable directory for SPEC install in unpriveliged containers
+  hepspec_volume: "/tmp/SPEC"
+  iterations: 1
+  bmk_set: '453.povray'
+
+# copied from upstream hepscore test
+hepscore_benchmark:
+  app_info:
+    name: HEPscore19
+    reference_machine: 'Unknown'
+    registry: gitlab-registry.cern.ch/hep-benchmarks/hep-workloads
+  settings:
+    scaling: 10
+    repetitions: 2  #number of repetitions of the same benchmark
+    method: geometric_mean #or any other algorithm
+  benchmarks:
+    atlas-kv-bmk:
+      ref_scores:
+        sim: 1
+      args:
+        scorekey: wl-scores
+        events: 3
+        threads: 1
+        copies: 2
+        version: ci1.1
+        debug : true
