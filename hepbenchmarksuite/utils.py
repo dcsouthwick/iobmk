@@ -35,7 +35,8 @@ def run_hepscore(conf, bench):
 
     # Start benchmark
     _log.debug(cmd)
-    exec_wait_benchmark(cmd)
+    outcode = exec_wait_benchmark(cmd)
+    return outcode
 
 def validate_hs06(conf):
     """
@@ -126,7 +127,8 @@ def run_hepspec(conf, bench):
 
     # Start benchmark
     _log.debug(cmd[run_mode])
-    exec_wait_benchmark(cmd[run_mode])
+    returncode = exec_wait_benchmark(cmd[run_mode])
+    return returncode
 
 
 def exec_wait_benchmark(cmd_str):
