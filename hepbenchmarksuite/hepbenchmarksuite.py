@@ -93,8 +93,7 @@ class HepBenchmarkSuite(object):
                 returncode = utils.run_hepspec(conf=self._config_full, bench=bench2run)
 
             self.check_lock()
-            
-            return returncode
+            _log.info("Completed {} with return code {}".format(bench2run, returncode))
         
 
     def dequeue(self):
