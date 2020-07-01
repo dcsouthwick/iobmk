@@ -35,10 +35,12 @@ It is built in a modular approach to target the following use cases in HEP compu
 
 ## Benchmark suite architecture
 
-
-![Benchmark Suite architectural view](doc/images/HEP-Benchmark-Suite.png)
 *The figure shows the high level architecture of the benchmark suite.*
 
+
+<div align="center">
+![Benchmark Suite architectural view](doc/images/HEP-Benchmark-Suite.png)
+</div>
 
 A configurable sequence of benchmarks may be launched by the HEP Benchmark Suite.
 
