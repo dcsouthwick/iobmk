@@ -30,17 +30,16 @@ class HepBenchmarkSuite(object):
 
     def __init__(self,  config=None):
         """Initialize setup"""
-        self._bench_queue = config['global']['benchmarks']
+        self._bench_queue        = config['global']['benchmarks']
         self.selected_benchmarks = config['global']['benchmarks'].copy()
-        self._config = config['global']
-        self._config_full = config
-        self._extra = {}
+        self._config             = config['global']
+        self._config_full        = config
+        self._extra              = {}
 
     def start(self):
         _log.info("Starting benchmark suite")
 
-        self._extra['start_time'] = time.strftime(
-            '%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+        self._extra['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
 
         if self._preflight() == 0:
             _log.info("Pre-flight checks passed successfully.")
@@ -53,6 +52,14 @@ class HepBenchmarkSuite(object):
 
         _log.info("Running pre-flight checks")
         checks = []
+
+        _log.info(" - Checking if handler for run mode exists...")
+        _, _return_mode = utils.exec_cmd('{} --version'.format(self._config['mode']))
+        checks.append(_return_mode)
+
+        if _return_mode != 0:
+            _log.error("Specified run mode is not present in the system: {}".format(self._config['mode']))
+
 
         _log.info(" - Checking provided work dirs exist...")
         os.makedirs(self._config['rundir'], exist_ok=True)
@@ -71,17 +78,18 @@ class HepBenchmarkSuite(object):
 
     def run(self):
 
+        # Reset return code on each run
+        returncode = 0
+
         # Check if there are still benchmarks to run
         if len(self._bench_queue) == 0:
-            self._extra['end_time'] = time.strftime(
-                '%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+            self._extra['end_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
             self.cleanup()
 
         else:
             _log.info("Benchmarks left to run: {}".format(self._bench_queue))
             bench2run = self.dequeue()
             _log.info("Running benchmark: {}".format(bench2run))
-            
 
             if bench2run == 'db12':
                 returncode = db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
@@ -94,7 +102,6 @@ class HepBenchmarkSuite(object):
 
             self.check_lock()
             _log.info("Completed {} with return code {}".format(bench2run, returncode))
-        
 
     def dequeue(self):
         return self._bench_queue.pop(0)
