@@ -50,6 +50,28 @@ Optionally, the final report can be sent to a transport layer, to be further dig
 
 Users may also execute the suite in stand-alone mode without result reporting. (see [How to run](#how-to-run) for further details).
 
+### Integration status
+
+The current Hep-Benchmark-Suite integration status.
+
+- Benchmarks
+
+Benchmark | Docker | Singularity
+:---:| :---:| :---: |
+HEPSpec06_32| :heavy_check_mark: | :heavy_check_mark: |
+HEPSpec06_64| :heavy_check_mark: | :heavy_check_mark: |
+SPEC2017  | :x: | :x: |
+HEP-Score |:construction: | :construction: |
+
+- Plugins
+
+Plugin | Status |
+:---:| :--:|
+HW-Metadata| :heavy_check_mark: |
+ActiveMQ|:x: |
+Elastic Search|:x: |
+
+
 ### Available benchmarks
 The HEP Benchmark Suite is delivered **ready-to-run** with a [default yaml](hepbenchmarksuite/config/benchmarks.yml) configuration file (see [How to run](#how-to-run)). The  currently available benchmarks are:
 - [HEP-score](https://gitlab.cern.ch/hep-benchmarks/hep-score)
