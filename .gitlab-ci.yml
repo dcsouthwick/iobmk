@@ -56,7 +56,7 @@ test_db12_benchmark:
   stage: test-components
   dependencies: []
   script:
-    - yum install -y -q python3-pip
+    - yum install -y -q singularity python3-pip
     - python3 -m pip install --user .
     - export PATH=~/.local/bin:$PATH
     - bmkrun --rundir . --benchmarks db12

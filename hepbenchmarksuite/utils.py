@@ -206,7 +206,7 @@ def exec_cmd(cmd_str):
     # Check for errors
     if cmd.returncode != 0:
         cmd_reply = "not_available"
-        _log.error(cmd_error)
+        _log.error(cmd_error.decode('utf-8').rstrip())
 
     else:
         # Convert bytes to text and remove \n
@@ -215,7 +215,7 @@ def exec_cmd(cmd_str):
         except UnicodeDecodeError:
             _log.error("Failed to decode to utf-8.")
 
-    return cmd_reply
+    return cmd_reply, cmd.returncode
 
 
 def get_version():
@@ -232,7 +232,7 @@ def get_host_ips():
       A string containing the ip
     """
 
-    ip_address = exec_cmd("ip route get 1 | awk '{print $NF;exit}'")
+    ip_address, _ = exec_cmd("ip route get 1 | awk '{print $NF;exit}'")
     return ip_address
 
 

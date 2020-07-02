@@ -35,10 +35,12 @@ It is built in a modular approach to target the following use cases in HEP compu
 
 ## Benchmark suite architecture
 
-
-![Benchmark Suite architectural view](doc/images/HEP-Benchmark-Suite.png)
 *The figure shows the high level architecture of the benchmark suite.*
 
+
+<div align="center">
+![Benchmark Suite architectural view](doc/images/HEP-Benchmark-Suite.png)
+</div>
 
 A configurable sequence of benchmarks may be launched by the HEP Benchmark Suite.
 
@@ -47,6 +49,28 @@ Benchmark results are aggregated into a single JSON document, together with the 
 Optionally, the final report can be sent to a transport layer, to be further digested and analysed by applications that are subscribed as consumer to the transport layer.
 
 Users may also execute the suite in stand-alone mode without result reporting. (see [How to run](#how-to-run) for further details).
+
+### Integration status
+
+The current Hep-Benchmark-Suite integration status.
+
+- Benchmarks
+
+Benchmark | Docker | Singularity
+:---:| :---:| :---: |
+HEPSpec06_32| :heavy_check_mark: | :heavy_check_mark: |
+HEPSpec06_64| :heavy_check_mark: | :heavy_check_mark: |
+SPEC2017  | :x: | :x: |
+HEP-Score |:construction: | :construction: |
+
+- Plugins
+
+Plugin | Status |
+:---:| :--:|
+HW-Metadata| :heavy_check_mark: |
+ActiveMQ|:x: |
+Elastic Search|:x: |
+
 
 ### Available benchmarks
 The HEP Benchmark Suite is delivered **ready-to-run** with a [default yaml](hepbenchmarksuite/config/benchmarks.yml) configuration file (see [How to run](#how-to-run)). The  currently available benchmarks are:
