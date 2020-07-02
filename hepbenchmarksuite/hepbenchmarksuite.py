@@ -8,6 +8,7 @@ import os
 import json
 import logging
 import time
+import shutil
 
 from hepbenchmarksuite import db12
 from hepbenchmarksuite import utils
@@ -19,7 +20,7 @@ class HepBenchmarkSuite(object):
     """********************************************************
                   *** HEP-BENCHMARK-SUITE ***
      *********************************************************"""
-
+    # Location of result files
     RESULT_FILES = {
         'hs06_32' : 'HS06/hs06_32_result.json',
         'hs06_64' : 'HS06/hs06_64_result.json',
@@ -27,6 +28,9 @@ class HepBenchmarkSuite(object):
         'hepscore': 'HEPSCORE/hepscore_result.json',
         'db12'    : 'db12_result.json',
     }
+
+    # Required disk space (in GB) for all benchmarks
+    DISK_THRESHOLD = 20.0
 
     def __init__(self,  config=None):
         """Initialize setup"""
@@ -65,10 +69,22 @@ class HepBenchmarkSuite(object):
         os.makedirs(self._config['rundir'], exist_ok=True)
         os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
 
-        _log.info(" - Performing configuration validation...")
+        _log.info(" - Checking for a valid configuration...")
         for bench in self.selected_benchmarks:
             if bench in ['hs06_32', 'hs06_64', 'spec2017']:
                 checks.append(utils.validate_hs06(self._config_full))
+
+        _log.info(" - Checking if rundir has enough space...")
+        disk_stats = shutil.disk_usage(self._config['rundir'])
+        disk_space_gb = round(disk_stats.free * (10 ** -9), 2)
+
+        _log.debug("Calculated disk space: {}".format(disk_space_gb))
+
+        if disk_space_gb <= self.DISK_THRESHOLD:
+            _log.error("Not enough disk space on {}, free: {} GB, required: {} GB".format(self._config['rundir'], disk_space_gb, self.DISK_THRESHOLD))
+
+            # Flag for a failed check
+            checks.append(1)
 
         # Check if any pre-flight check failed
         if any(checks):
