@@ -27,7 +27,7 @@ spec2017:
   # URL to fetch the spec2017. It will only be used if the software is not found under hepspec_volume.
   url_tarball: "https://www.example.com/"
   # Define the location on where spec2017 should be found
-  # If spec2017 is not present, the directory should be writeable to allow the installation via the url_tarball
+  # If spec2017 is not present, the directory should be writeable to allow the installation
   hepspec_volume: "/tmp/SPEC"
   # Number of iterations to run the benchmark
   iterations: 1
