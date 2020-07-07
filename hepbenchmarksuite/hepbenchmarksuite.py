@@ -72,7 +72,7 @@ class HepBenchmarkSuite(object):
         _log.info(" - Checking for a valid configuration...")
         for bench in self.selected_benchmarks:
             if bench in ['hs06_32', 'hs06_64', 'spec2017']:
-                checks.append(utils.validate_hs06(self._config_full))
+                checks.append(utils.validate_spec(self._config_full, bench))
 
         _log.info(" - Checking if rundir has enough space...")
         disk_stats = shutil.disk_usage(self._config['rundir'])

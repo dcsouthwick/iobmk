@@ -38,7 +38,7 @@ def run_hepscore(conf, bench):
     outcode = exec_wait_benchmark(cmd)
     return outcode
 
-def validate_hs06(conf):
+def validate_spec(conf, bench):
     """
     Check if the configuration is valid for hepspec06.
 
@@ -51,12 +51,19 @@ def validate_hs06(conf):
 
     _log.debug("Configuration to apply validation: {}".format(conf))
 
+    # Config section to use
+    if bench in ['hs06_32', 'hs06_64']:
+        spec = conf['hepspec06']
+
+    elif bench in ['spec2017']:
+        spec = conf['spec2017']
+
     # Required params to perform an HS06 benchmark
-    HS06_REQ = ['image', 'hepspec_volume', 'url_tarball']
+    SPEC_REQ = ['image', 'hepspec_volume']
 
     try:
         # Check what is missing from the config file in the hepspec06 category
-        missing_params = list(filter(lambda x: conf['hepspec06'].get(x) == None, HS06_REQ))
+        missing_params = list(filter(lambda x: spec.get(x) == None, SPEC_REQ))
 
         if len(missing_params) >= 1:
             _log.error("Required parameter not found in configuration: {}".format(missing_params))
@@ -81,34 +88,38 @@ def run_hepspec(conf, bench):
     _log.debug("Configuration in use for benchmark {}: {}".format(bench, conf))
 
     # Config section to use
-    hs06 = conf['hepspec06']
+    if bench in ['hs06_32', 'hs06_64']:
+        spec = conf['hepspec06']
+
+    elif bench in ['spec2017']:
+        spec = conf['spec2017']
 
     # Select run mode: docker, singularity, podman, etc
     run_mode = conf['global']['mode']
 
     # Possible hepspec06 arguments
-    hs06_args = {
+    spec_args = {
       'bench'          : ' -b {}'.format(bench),
-      'iterations'     : ' -i {}'.format(hs06.get('iterations')),
+      'iterations'     : ' -i {}'.format(spec.get('iterations')),
       'mp_num'         : ' -n {}'.format(conf['global'].get('mp_num')),
-      'hepspec_volume' : ' -p {}'.format(hs06.get('hepspec_volume')),
-      'bmk_set'        : ' -s {}'.format(hs06.get('bmk_set')),
-      'url_tarball'    : ' -u {}'.format(hs06.get('url_tarball')),
+      'hepspec_volume' : ' -p {}'.format(spec.get('hepspec_volume')),
+      'bmk_set'        : ' -s {}'.format(spec.get('bmk_set')),
+      'url_tarball'    : ' -u {}'.format(spec.get('url_tarball')),
       'workdir'        : ' -w {}'.format(conf['global'].get('rundir')),
     }
-    _log.debug("hepspec06 arguments: {}". format(hs06_args))
+    _log.debug("spec arguments: {}". format(spec_args))
 
     # Populate CLI from the global configuration section
-    _run_args = hs06_args['bench'] + hs06_args['workdir'] + hs06_args['mp_num']
+    _run_args = spec_args['bench'] + spec_args['workdir'] + spec_args['mp_num']
 
     # Populate CLI from the hepspec06 configuration section
     # Removing image key from this population since its specified bellow at command level
-    populate_keys = [*hs06.keys()]
+    populate_keys = [*spec.keys()]
     populate_keys.remove('image')
 
     for k in populate_keys:
      try:
-       _run_args += hs06_args[k]
+       _run_args += spec_args[k]
 
      except KeyError as e:
        _log.error("Not a valid HEPSPEC06 key: {}.".format(e))
@@ -116,12 +127,12 @@ def run_hepspec(conf, bench):
     # Command specification
     cmd = {
         'docker': "docker run --network=host -v {0}:{0}:Z -v {1}:{1}:Z {2} {3}".format(conf['global']['rundir'],
-                                                                                           hs06['hepspec_volume'],
-                                                                                           hs06['image'],
+                                                                                           spec['hepspec_volume'],
+                                                                                           spec['image'],
                                                                                            _run_args),
         'singularity': "SINGULARITY_CACHEDIR={0}/singularity_cachedir singularity run -B {0}:{0} -B {1}:{1} docker://{2} {3}".format(conf['global']['rundir'],
-                                                                                                                                        hs06['hepspec_volume'],
-                                                                                                                                        hs06['image'],
+                                                                                                                                        spec['hepspec_volume'],
+                                                                                                                                        spec['image'],
                                                                                                                                         _run_args)
     }
 

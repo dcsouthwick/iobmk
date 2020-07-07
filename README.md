@@ -60,8 +60,8 @@ Benchmark | Docker | Singularity
 :---:| :---:| :---: |
 HEPSpec06_32| :heavy_check_mark: | :heavy_check_mark: |
 HEPSpec06_64| :heavy_check_mark: | :heavy_check_mark: |
-SPEC2017  | :x: | :x: |
-HEP-Score |:construction: | :construction: |
+SPEC2017    | :heavy_check_mark: | :heavy_check_mark: |
+HEP-Score   | :construction:     | :construction: |
 
 - Plugins
 
