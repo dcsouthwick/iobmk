@@ -16,27 +16,31 @@ global:
 
 hepspec06:
   image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
-  # URL to fetch the hepspec06. It will only be used if the software is  not found under hepspec_volume.
+  # URL to fetch the hepspec06. It will only be used if the software
+  # is  not found under hepspec_volume.
   url_tarball: "https://www.example.com/"
   # Define the location on where hepspec06 should be found
-  # If hepspec06 is not present, the directory should be writeable to allow the installation via the url_tarball
+  # If hepspec06 is not present, the directory should be writeable
+  # to allow the installation via the url_tarball
   hepspec_volume: "/tmp/SPEC"
   # Number of iterations to run the benchmark
   iterations: 1
   # Run only a benchmark set
-  bmk_set: '453.povray'
+  # bmk_set: '453.povray'
 
 spec2017:
   image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
-  # URL to fetch the spec2017. It will only be used if the software is not found under hepspec_volume.
+  # URL to fetch the spec2017. It will only be used if the software
+  # is not found under hepspec_volume.
   url_tarball: "https://www.example.com/"
   # Define the location on where spec2017 should be found
-  # If spec2017 is not present, the directory should be writeable to allow the installation via the url_tarball
+  # If spec2017 is not present, the directory should be writeable
+  # to allow the installation via the url_tarball
   hepspec_volume: "/tmp/SPEC"
   # Number of iterations to run the benchmark
   iterations: 1
   # Run only a benchmark set
-  #bmk_set: '508.namd_r'
+  # bmk_set: '508.namd_r'
 
 hepscore_benchmark:
   benchmarks:

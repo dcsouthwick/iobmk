@@ -43,6 +43,7 @@ test_yaml_files:
     - yum install -y -q yamllint
     - cd hepbenchmarksuite/config
     - yamllint benchmarks.yml
+  allow_failure: true
   only:
     changes:
       - "*.yaml"
