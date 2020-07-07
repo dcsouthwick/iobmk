@@ -138,9 +138,7 @@ test_sing_hs06:
   before_script:
     - export BMKLIST="hs06_32"
     # sed -i 's,url_tar.*,url_tarball: "'${HS06URL}'",' hepbenchmarksuite/config/benchmarks.yml
-    - sed -i "s/url_tarball:.*/url_tarball: \"${HS06URL}\"/g" tests/benchmarks_ci_test.yml
-    #- sed -i  "/url_tarball/d" tests/benchmarks_ci_test.yml
-    #- echo "  url_tarball:" "\"${HS06URL}\"" >> tests/benchmarks_ci_test.yml
+    - sed -i "s/url_tarball:.*/url_tarball:\ \"${HS06URL}\"/g" tests/benchmarks_ci_test.yml
 
 test_sing_spec2017:
   extends: .test_qa_singularity
