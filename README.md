@@ -112,7 +112,6 @@ The python executable (*bmkrun*) can be added to the user's `$PATH`, and launche
 Without argument, this will execute the distributed defaults as defined in `benchmarks.yml`. 
 Users are free to provide [command-line arguments](#description-of-all-arguments), or edit the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml) file directly. 
 
-A set of examples is available in the [examples folder of this repository](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/tree/master/examples).
 - Running the HEP Benchmark Suite using Docker containers (default)
 	- `./bmkrun`
 - Running using Singularity containers
