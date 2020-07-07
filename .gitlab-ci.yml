@@ -43,6 +43,7 @@ test_yaml_files:
     - yum install -y -q yamllint
     - cd hepbenchmarksuite/config
     - yamllint benchmarks.yml
+  allow_failure: true
   only:
     changes:
       - "*.yaml"
@@ -93,9 +94,6 @@ test_db12_benchmark:
     - su - unprivUser
     - set -e
     # install the benchmark suite python package
-    # sed -i 's,url_tar.*,url_tarball: "'${HS06URL}'",' hepbenchmarksuite/config/benchmarks.yml
-    - sed -i  "/url_tarball/d" hepbenchmarksuite/config/benchmarks.yml
-    - echo "  url_tarball:" "\"${HS06URL}\"" >> hepbenchmarksuite/config/benchmarks.yml
     - python3 -m pip install --user .
     - export PATH=$PATH:~/.local/bin
     #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
@@ -104,7 +102,7 @@ test_db12_benchmark:
     # if .sif was already built, then use it!
     - if [ -d singularity_cachedir ]; then mkdir -p $BMK_VOLUME/singularity_cachedir; mv singularity_cachedir/ $BMK_VOLUME/; fi
     # run $BMKLIST as singularity
-    - bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    - bmkrun -v --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/$RESULTS_FILE .
     - mv $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
   only:
@@ -112,6 +110,7 @@ test_db12_benchmark:
       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
       - $CI_COMMIT_BRANCH =~ /^qa$/
       - $CI_COMMIT_BRANCH =~ /^v2.*/
+      - $CI_COMMIT_BRANCH =~ /^redesign.*/
   cache:
     key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
     paths:
@@ -139,6 +138,9 @@ test_sing_hs06:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hs06_32"
+    # sed -i 's,url_tar.*,url_tarball: "'${HS06URL}'",' hepbenchmarksuite/config/benchmarks.yml
+    #- sed -i "s/url_tarball:.*/url_tarball:\ \"${HS06URL}\"/g" tests/benchmarks_ci_test.yml
+    - sed -i "s/url_tarball:.*/url_tarball\:\ \"$HS06URL\"/g" tests/benchmarks_ci_test.yml
 
 test_sing_spec2017:
   extends: .test_qa_singularity
