@@ -102,7 +102,7 @@ test_db12_benchmark:
     # if .sif was already built, then use it!
     - if [ -d singularity_cachedir ]; then mkdir -p $BMK_VOLUME/singularity_cachedir; mv singularity_cachedir/ $BMK_VOLUME/; fi
     # run $BMKLIST as singularity
-    - bmkrun -v --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    - bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/$RESULTS_FILE .
     - mv $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
   only:
