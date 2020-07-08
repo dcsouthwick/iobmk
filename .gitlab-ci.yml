@@ -121,16 +121,11 @@ test_db12_benchmark:
     expire_in: 1 week
     when: always
 
-.test_sing_db12:
-  extends: .test_qa_singularity
-  before_script:
-    - export BMKLIST="db12"
-
 test_sing_hepscore:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hepscore"
-    # ugly way to install hep-score... is it published 
+    # ugly way to install hep-score... is it published
     - yum install -y -q singularity python3-pip git
     - python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0
 
@@ -139,15 +134,14 @@ test_sing_hs06:
   before_script:
     - export BMKLIST="hs06_32"
     - export HS06URL=$HS06URL
-    # sed -i 's,url_tar.*,url_tarball: "'${HS06URL}'",' hepbenchmarksuite/config/benchmarks.yml
-    #- sed -i "s/url_tarball:.*/url_tarball:\ \"${HS06URL}\"/g" tests/benchmarks_ci_test.yml
-    #- sed -i "s/url_tarball:.*/url_tarball\:\ \"$HS06URL\"/g" tests/benchmarks_ci_test.yml
     - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/benchmarks_ci_test.yml
 
 test_sing_spec2017:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="spec2017"
+    - export SPEC2017URL=$SPEC2017URL
+    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$SPEC2017URL\"|" tests/benchmarks_ci_test.yml
 
 ############################################################
 #####              TEST DOCKER                         #####
@@ -164,7 +158,7 @@ test_sing_spec2017:
     # Disable TLS following https://about.gitlab.com/2019/07/31/docker-in-docker-with-docker-19-dot-03/
     # This will result in a warning that the docker-in-docker service may not have started successfully
     DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375/ 
+    DOCKER_HOST: tcp://docker:2375/
   script:
     - yum install -y -q python3-pip docker-client
     # non-root user
@@ -174,8 +168,6 @@ test_sing_spec2017:
     #- su - unprivUser
     #- set -e
     # install the benchmark suite python package
-    - sed -i  "/url_tarball/d" hepbenchmarksuite/config/benchmarks.yml
-    - echo "  url_tarball:" "\"${HS06URL}\"" >> hepbenchmarksuite/config/benchmarks.yml
     - python3 -m pip install .
     - export PATH=$PATH:~/.local/bin
     #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
@@ -200,6 +192,15 @@ test_docker_hs06:
   extends: .test_qa_docker
   before_script:
     - export BMKLIST="hs06_32"
+    - export HS06URL=$HS06URL
+    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/benchmarks_ci_test.yml
+
+test_docker_spec2017:
+  extends: .test_qa_docker
+  before_script:
+    - export BMKLIST="spec2017"
+    - export SPEC2017URL=$SPEC2017URL
+    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$SPEC2017URL\"|" tests/benchmarks_ci_test.yml
 
 ############################################################
 #####           BUILD & PUBLISH PACKAGE                #####
@@ -225,7 +226,7 @@ build_hep-benchmark-suite:
     refs:
       - master
       - qa
-        
+
 job_build_wheels:
   # is this job needed? it performs the same step as bdist_wheel (above)
   stage: deploy
