@@ -22,10 +22,11 @@ from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
 from hepbenchmarksuite import utils
 from hepbenchmarksuite import config
 
+
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                 description="-"*70+"\n bmkrun cli allows you to run several benchmarks\n"+"-"*70+"\nAuthor: Benchmarking Working Group\nContact: benchmark-suite-wg-devel@cern.ch", epilog="-"*70)
-    
+
     # may be a better way to do this...
     with pkg_resources.path(config, 'benchmarks.yml') as default_config_path:
       default_config = default_config_path
@@ -44,15 +45,6 @@ def main():
       args = parser.parse_args()
     except:
       sys.exit(0)
-
-    # Log verbosity
-    if args.verbose:
-       log_level = logging.DEBUG
-    else:
-       log_level = logging.INFO
-
-    # Enable logging
-    logging.basicConfig(stream=sys.stdout, level=log_level)
 
     # Select config file
     if args.config != None:
@@ -80,7 +72,6 @@ def main():
       else:
         active_config['global'][i] = non_empty[i]
 
-    # TO BE IMPROVED: Run config validation
 
     # Check if user provided a benchmark
     if active_config['global']['benchmarks'] == None:
@@ -104,15 +95,39 @@ def main():
     if not isinstance(active_config['global']['mp_num'], int):
       sys.exit("CPU number is not an integer.")
 
-    # All config checks passed
-    # Dump running config
-    if os.path.exists(active_config['global']['rundir']):
-      logging.info("Skiping directory creation: {} exists".format(active_config['global']['rundir']))
-    else:
-      logging.info("Creating {}".format(active_config['global']['rundir']))
-    
+    # Create rundir if not present
     os.makedirs(active_config['global']['rundir'], exist_ok=True)
 
+    # Configure logging
+    # Log verbosity
+    if args.verbose:
+       log_level = logging.DEBUG
+    else:
+       log_level = logging.INFO
+
+    # Enable logging
+    logger = logging.getLogger()
+    logger.setLevel(log_level)
+
+    # Log format
+    log_formatter = logging.Formatter('%(asctime)s, %(name)s [%(levelname)s] %(message)s',  datefmt='%Y-%m-%d %H:%M:%S')
+
+    # Handler to write logs to stdout
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(log_formatter)
+    stream_handler.setLevel(log_level)
+
+    # Handler to write logs to file
+    LOG_PATH = os.path.join(active_config['global']['rundir'], 'hep-benchmark-suite.log')
+    file_handler = logging.FileHandler(LOG_PATH)
+    file_handler.setFormatter(log_formatter)
+    file_handler.setLevel(log_level)
+
+    # Select loggers
+    logger.addHandler(stream_handler)
+    logger.addHandler(file_handler)
+
+    # Save running config
     with open(os.path.join(active_config['global']['rundir'], 'run_config.yaml'), 'w') as conf_file:
       yaml.dump(active_config, conf_file)
 
@@ -126,6 +141,7 @@ def main():
     utils.print_results_from_file(FULL_PATH)
 
     print("\nFull results can be found in {}".format(FULL_PATH))
+    print("Full run log can can be found in {}".format(LOG_PATH))
 
 if __name__ == "__main__":
     main()
