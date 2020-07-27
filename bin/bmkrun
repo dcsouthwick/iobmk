@@ -28,8 +28,13 @@ def main():
                                 description="-"*70+"\n bmkrun cli allows you to run several benchmarks\n"+"-"*70+"\nAuthor: Benchmarking Working Group\nContact: benchmark-suite-wg-devel@cern.ch", epilog="-"*70)
 
     # may be a better way to do this...
-    with pkg_resources.path(config, 'benchmarks.yml') as default_config_path:
-      default_config = default_config_path
+    try:
+      with pkg_resources.path(config, 'benchmarks.yml') as default_config_path:
+        default_config = default_config_path
+    except *
+      print("Unable to load default config yaml")
+      pass
+      
     # Optional arguments
     parser.add_argument("-b", "--benchmarks", nargs='+', help="List of benchmarks", default=None)
     parser.add_argument("-c", "--config",     nargs='?', type=str, help="Configuration file to use (yaml format)", default=default_config)
@@ -39,6 +44,13 @@ def main():
     parser.add_argument("-n", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks", default=None)
     parser.add_argument("-t", "--tags",       nargs='?', help="Custom user tags", default=None)
     parser.add_argument("-u", "--uid",        nargs='?', help="UID", default=None)
+    parser.add_argument("--port",             nargs='?', type=int, help="ActiveMQ broker port, if reporting", default=None)
+    parser.add_argument("--server",           nargs='?', help="ActiveMQ server address, if reporting", default=None)
+    parser.add_argument("--username",         nargs='?', help="ActiveMQ username, if reporting", default=None)
+    parser.add_argument("--password",         nargs='?', help="ActiveMQ password, if reporting", default=None)
+    parser.add_argument("--topic",            nargs='?', help="ActiveMQ topic, if reporting", default=None)
+    parser.add_argument("--key",              nargs='?', help="ActiveMQ key file, without passphrase. Requires --cert", default=None)
+    parser.add_argument("--cert",             nargs='?', help="ActiveMQ certificate, needed by key file", default=None)
     parser.add_argument("-v", "--verbose",    action='store_true', help="Enables verbose mode. Display debug messages.", default=None)
 
     try:
@@ -139,6 +151,13 @@ def main():
     # Display results
     FULL_PATH  = os.path.join(active_config['global']['rundir'], active_config['global']['file'])
     utils.print_results_from_file(FULL_PATH)
+
+    # Publish to AMQ broker
+    #send_queue
+    #  --port=$QUEUE_PORT --server=$QUEUE_HOST \
+    #  --username=$QUEUE_USERNAME --password=$QUEUE_PASSWORD --name=$QUEUE_NAME \
+    #  --key_file=$AMQ_KEY --cert_file=$AMQ_CERT --file=$RESULTS_FILE
+
 
     print("\nFull results can be found in {}".format(FULL_PATH))
     print("Full run log can can be found in {}".format(LOG_PATH))
