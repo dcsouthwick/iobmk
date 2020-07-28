@@ -30,39 +30,43 @@ class MyListener(stomp.ConnectionListener):
         logger.info('received a message "%s"' % message)
 
 
-def send_message(resdoc, args, stomp_mversion):
+def send_message(filepath, connection):
+    """ expects a filepath string, and a dict of args"""
 
-    if args.key_file != '' and args.cert_file != '':
+    if os.path.isfile(filepath) == False:
+        raise IOError("The result input file {} does not exist".format(filepath))
+
+    with open(filepath, 'r') as f:
+        message_contents = f.read()
+
+    # debug
+    print(filepath, connection)
+    print(message_contents)
+
+    if connection['key'] and connection['cert']:
         ssl_flag = True
         logger.info("AMQ SSL: certificate based authentication")
-    elif args.username != '' and args.password != '':
+    elif connection['username'] and connection['password']
         ssl_flag = False
         logger.info("AMQ Plain: user-password based authentication")
     else:
         raise IOError(
             "The input arguments do not include a valid pair of authentication (certificate, key) or (user,password)")
 
-    conn = stomp.Connection(host_and_ports=[(args.server, int(args.port))], use_ssl=ssl_flag,
-                            ssl_key_file=args.key_file, ssl_cert_file=args.cert_file, ssl_version=3)
+    conn = stomp.Connection(host_and_ports=[(connection['server'], int(connection['port']))], use_ssl=ssl_flag,
+                            ssl_key_file=connection['key'], ssl_cert_file=connection['cert'], ssl_version=3)
 
-    mylistener = MyListener(conn)
-    conn.set_listener('mylistener', mylistener)
+    conn.set_listener('mylistener', MyListener(conn))
 
-    conn.start()
+    logger.info("Sending results to AMQ topic")
     if ssl_flag:
         conn.connect(wait=True)
     else:
-        conn.connect(login=args.username, passcode=args.password, wait=True)
+        conn.connect(login=connection['username'], passcode=connection['password'], wait=True)
 
-    # This nees to stay before the check of the status, in order to get it
     time.sleep(5)
+    conn.send(body=message_contents, destination=connection['topic'], content_type='application/json')
 
-    if stomp_mversion == 3:
-        conn.send(resdoc, destination=args.name)
-    else:
-        conn.send(body=resdoc, destination=args.name)
-
-    # This nees to stay before the check of the status, in order to get it
     time.sleep(5)
 
     if conn.get_listener('mylistener').status == False:
@@ -70,26 +74,29 @@ def send_message(resdoc, args, stomp_mversion):
                         conn.get_listener('mylistener').message)
     conn.disconnect()
 
+    logger.info("Results sent to AMQ topic")
 
-if __name__ == '__main__':
-    stomp_mversion = stomp.__version__[0]
-
+def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--port", required=True, default='', help="Queue port")
-    parser.add_argument("-s", "--server", required=True, default='', help="Queue host")
-    parser.add_argument("-u", "--username", nargs='?', default='', help="Queue username")
-    parser.add_argument("-w", "--password", nargs='?', default='', help="Queue password")
-    parser.add_argument("-n", "--name", required=True, default='', help="Queue name")
-    parser.add_argument("-k", "--key_file", nargs='?', default='', help="AMQ authentication key")
-    parser.add_argument("-c", "--cert_file", nargs='?', default='', help="AMQ authentication certificate")
-    parser.add_argument("-f", "--file", required=True, help="File to send")
+    parser.add_argument("-p", "--port",     required=True, type=int, help="Queue port")
+    parser.add_argument("-s", "--server",   required=True, help="Queue host")
+    parser.add_argument("-u", "--username", nargs='?', default=None, help="Queue username")
+    parser.add_argument("-w", "--password", nargs='?', default=None, help="Queue password")
+    parser.add_argument("-t", "--topic",    required=True, help="Queue topic")
+    parser.add_argument("-k", "--key",      nargs='?', default=None, help="AMQ authentication key")
+    parser.add_argument("-c", "--cert",     nargs='?', default=None, help="AMQ authentication certificate")
+    parser.add_argument("-f", "--file",     required=True, help="File to send")
     args = parser.parse_args()
 
-    if os.path.isfile(args.file) == False:
-        raise IOError("The result input file %s does not exist" % args.file)
+    # Get non-None cli arguments
+    non_empty = {k: v for k, v in vars(args).items() if v is not None}
 
-    resdoc = open(args.file, 'r').read()
+    # Populate active config with cli override
+    connection_details=[]
+    for i in non_empty.keys():
+        connection_details[i] = non_empty[i]
 
-    logger.info("Sending results to AMQ topic")
-    send_message(resdoc, args, stomp_mversion)
-    logger.info("Results sent to AMQ topic")
+    send_message(args.file, connection_details)
+
+if __name__ == '__main__':
+    main()

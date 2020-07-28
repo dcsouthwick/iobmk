@@ -21,6 +21,7 @@ except ImportError:
 from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
 from hepbenchmarksuite import utils
 from hepbenchmarksuite import config
+from hepbenchmarksuite import send_queue
 
 
 def main():
@@ -46,8 +47,8 @@ def main():
     parser.add_argument("-u", "--uid",        nargs='?', help="UID", default=None)
     parser.add_argument("--port",             nargs='?', type=int, help="ActiveMQ broker port, if reporting", default=None)
     parser.add_argument("--server",           nargs='?', help="ActiveMQ server address, if reporting", default=None)
-    parser.add_argument("--username",         nargs='?', help="ActiveMQ username, if reporting", default=None)
-    parser.add_argument("--password",         nargs='?', help="ActiveMQ password, if reporting", default=None)
+    parser.add_argument("--username",         nargs='?', help="ActiveMQ username, if reporting. Requires --password", default=None)
+    parser.add_argument("--password",         nargs='?', help="ActiveMQ password, if reporting. Needed by username", default=None)
     parser.add_argument("--topic",            nargs='?', help="ActiveMQ topic, if reporting", default=None)
     parser.add_argument("--key",              nargs='?', help="ActiveMQ key file, without passphrase. Requires --cert", default=None)
     parser.add_argument("--cert",             nargs='?', help="ActiveMQ certificate, needed by key file", default=None)
@@ -152,12 +153,9 @@ def main():
     FULL_PATH  = os.path.join(active_config['global']['rundir'], active_config['global']['file'])
     utils.print_results_from_file(FULL_PATH)
 
-    # Publish to AMQ broker
-    #send_queue
-    #  --port=$QUEUE_PORT --server=$QUEUE_HOST \
-    #  --username=$QUEUE_USERNAME --password=$QUEUE_PASSWORD --name=$QUEUE_NAME \
-    #  --key_file=$AMQ_KEY --cert_file=$AMQ_CERT --file=$RESULTS_FILE
-
+    # Publish to AMQ broker if provided
+    if active_config['global']['server']
+      send_queue.send_message(FULL_PATH, active_config['global'])
 
     print("\nFull results can be found in {}".format(FULL_PATH))
     print("Full run log can can be found in {}".format(LOG_PATH))
