@@ -14,6 +14,10 @@ import sys
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger('[send_queue]')
 
+# TODO: handle None keys in passed conn args
+# TODO: test wait=true on connect() in firewalled nodes
+# This is supported in stomp...
+
 
 class MyListener(stomp.ConnectionListener):
     def __init__(self, conn):
@@ -33,56 +37,58 @@ class MyListener(stomp.ConnectionListener):
 def send_message(filepath, connection):
     """ expects a filepath string, and a dict of args"""
 
-    if os.path.isfile(filepath) == False:
-        raise IOError("The result input file {} does not exist".format(filepath))
+    if os.path.isfile(filepath) is False:
+        raise IOError("The result input file {} does not exist"
+                      .format(filepath))
 
     with open(filepath, 'r') as f:
         message_contents = f.read()
 
-    # debug
-    print(filepath, connection)
-    print(message_contents)
+    conn = stomp.Connection(host_and_ports=[(connection['server'],
+                                            int(connection['port']))])
+    conn.set_listener('mylistener', MyListener(conn))
+    conn.start()
 
-    if connection['key'] and connection['cert']:
-        ssl_flag = True
+    if 'key' in connection and 'cert' in connection:
+        conn.set_ssl(for_hosts=[connection['server']],
+                     cert_file=connection['cert'],
+                     key_file=connection['key'],
+                     # TODO: verify SSL support
+                     ssl_version=5)  # <_SSLMethod.PROTOCOL_TLSv1_2: 5>
+        conn.connect(wait=True)
         logger.info("AMQ SSL: certificate based authentication")
-    elif connection['username'] and connection['password']
-        ssl_flag = False
+    elif 'username' in connection and 'password' in connection:
+        conn.connect(connection['username'], connection['password'], wait=True)
         logger.info("AMQ Plain: user-password based authentication")
     else:
-        raise IOError(
-            "The input arguments do not include a valid pair of authentication (certificate, key) or (user,password)")
-
-    conn = stomp.Connection(host_and_ports=[(connection['server'], int(connection['port']))], use_ssl=ssl_flag,
-                            ssl_key_file=connection['key'], ssl_cert_file=connection['cert'], ssl_version=3)
-
-    conn.set_listener('mylistener', MyListener(conn))
+        raise IOError("The input arguments do not include a valid pair of authentication\
+                     (certificate, key) or (user,password)")
 
     logger.info("Sending results to AMQ topic")
-    if ssl_flag:
-        conn.connect(wait=True)
-    else:
-        conn.connect(login=connection['username'], passcode=connection['password'], wait=True)
-
+    conn.start()
     time.sleep(5)
-    conn.send(body=message_contents, destination=connection['topic'], content_type='application/json')
+    conn.send(connection['topic'], message_contents, "application/json")
 
     time.sleep(5)
 
-    if conn.get_listener('mylistener').status == False:
-        raise Exception("Error occurred %s" %
-                        conn.get_listener('mylistener').message)
+    if conn.get_listener('mylistener').status is False:
+        raise Exception("ERROR: {}".format(conn.get_listener('mylistener').message))
+    conn.stop()
     conn.disconnect()
 
     logger.info("Results sent to AMQ topic")
 
+
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog='send_queue',
+        description="This sends a file.json to an AMQ broker via STOMP. \
+            Default STOMP port is 61613, if not overridden")
     parser.add_argument("-p", "--port",     required=True, type=int, help="Queue port")
     parser.add_argument("-s", "--server",   required=True, help="Queue host")
     parser.add_argument("-u", "--username", nargs='?', default=None, help="Queue username")
     parser.add_argument("-w", "--password", nargs='?', default=None, help="Queue password")
-    parser.add_argument("-t", "--topic",    required=True, help="Queue topic")
+    parser.add_argument("-t", "--topic",    required=True, help="Queue name")
     parser.add_argument("-k", "--key",      nargs='?', default=None, help="AMQ authentication key")
     parser.add_argument("-c", "--cert",     nargs='?', default=None, help="AMQ authentication certificate")
     parser.add_argument("-f", "--file",     required=True, help="File to send")
@@ -92,11 +98,12 @@ def main():
     non_empty = {k: v for k, v in vars(args).items() if v is not None}
 
     # Populate active config with cli override
-    connection_details=[]
+    connection_details = {}
     for i in non_empty.keys():
         connection_details[i] = non_empty[i]
 
     send_message(args.file, connection_details)
+
 
 if __name__ == '__main__':
     main()
