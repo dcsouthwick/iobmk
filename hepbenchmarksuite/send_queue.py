@@ -72,7 +72,8 @@ def send_message(filepath, connection):
     time.sleep(5)
 
     if conn.get_listener('mylistener').status is False:
-        raise Exception("ERROR: {}".format(conn.get_listener('mylistener').message))
+        raise Exception("ERROR: {}".format(
+            conn.get_listener('mylistener').message))
     conn.stop()
     conn.disconnect()
 
@@ -81,10 +82,9 @@ def send_message(filepath, connection):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='send_queue',
         description="This sends a file.json to an AMQ broker via STOMP. \
             Default STOMP port is 61613, if not overridden")
-    parser.add_argument("-p", "--port",     required=True, type=int, help="Queue port")
+    parser.add_argument("-p", "--port",     default=61613 type=int, help="Queue port")
     parser.add_argument("-s", "--server",   required=True, help="Queue host")
     parser.add_argument("-u", "--username", nargs='?', default=None, help="Queue username")
     parser.add_argument("-w", "--password", nargs='?', default=None, help="Queue password")
@@ -98,11 +98,12 @@ def main():
     non_empty = {k: v for k, v in vars(args).items() if v is not None}
 
     # Populate active config with cli override
-    connection_details = {}
+    connection_details = dict()
     for i in non_empty.keys():
         connection_details[i] = non_empty[i]
 
     send_message(args.file, connection_details)
+    return(connection_details)
 
 
 if __name__ == '__main__':

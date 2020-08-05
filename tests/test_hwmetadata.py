@@ -5,8 +5,15 @@
 # the top-level directory of this distribution.
 ###############################################################################
 
+import argparse
+from datetime import datetime
+import logging
+import os
 import unittest
+from unittest import mock
 from hepbenchmarksuite.plugins.extractor import Extractor
+from hepbenchmarksuite import send_queue
+
 
 class TestHWExtractor(unittest.TestCase):
     """********************************************************
@@ -46,9 +53,13 @@ class TestHWExtractor(unittest.TestCase):
 
         parser = hw.get_parser(bios_text)
 
-        self.assertEqual(parser('Version'), 'SE5C600.86B.02.01.0002.082220131453', 'BIOS parser mismatch!')
-        self.assertEqual(parser('Vendor'), 'Intel Corp.', 'BIOS parser mismatch!')
-        self.assertEqual(parser('Release Date'), '08/22/2013',  'BIOS parser mismatch!')
+        self.assertEqual(parser('Version'),
+                         'SE5C600.86B.02.01.0002.082220131453',
+                         'BIOS parser mismatch!')
+        self.assertEqual(parser('Vendor'), 'Intel Corp.',
+                         'BIOS parser mismatch!')
+        self.assertEqual(parser('Release Date'), '08/22/2013',
+                         'BIOS parser mismatch!')
 
     def test_parser_cpu(self):
         """
@@ -59,7 +70,6 @@ class TestHWExtractor(unittest.TestCase):
 
         with open('tests/data/CPU.sample', 'r') as cpu_file:
             cpu_text = cpu_file.read()
-
 
         CPU_OK = {
             "Architecture": "x86_64",
@@ -128,7 +138,91 @@ class TestHWExtractor(unittest.TestCase):
             "disk3": "/dev/sdc | INTEL SSDSC2CW24 | 223GiB (240GB)"
         }
 
-        self.assertEqual(storage_output, STORAGE_OK, "Storage parser mismatch!")
+        self.assertEqual(storage_output, STORAGE_OK,
+                         "Storage parser mismatch!")
+
+
+class TestAMQ(unittest.TestCase):
+    """AMQ send_queue functionality"""
+
+    def setUp(self, message):
+        """Create json with timestamp and random string"""
+
+        # get CI environment args.
+        # TODO(someone): fix for testing outside CI
+        USER = os.getenv('QUEUE_USERNAME')
+        PASSWORD = os.getenv('QUEUE_PASSWORD')
+        SERVER = os.getenv('QUEUE_HOST')
+        PORT = 61113
+        TOPIC = os.getenv('QUEUE_NAME')
+        CERT = os.getenv('CERT_FILE')
+        KEY = os.getenv('KEY_FILE')
+        TESTDIR = os.getcwd()
+        print(TESTDIR)
+        with open(TESTDIR+"/data/result_profile_template.json", "r") as t:
+            lines = t.readlines()
+
+        def genJSON(message){
+            timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+            self.assertTrue(isinstance(message, str),
+                            'Message is not a string')
+            with open(TESTDIR+"/data/result_profile.json", "w") as profile:
+                for line in lines:
+                    line = re.sub(r'_INSERTTIMESTAMP_', timestamp, line)
+                    line = re.sub(r'_INSERTFREETEXT_', self.message, line)
+                    profile.write(line)
+        }
+
+    def test_generate_json(self):
+        """Test if the json creation is successfull."""
+
+        open_mock = mock.mock_open()
+        with mock.patch("main.open", open_mock, create=True):
+            genJSON("test amq user-password")
+        open_mock.assert_called_with(TESTDIR+"/data/result_profile.json", "w")
+        open_mock.return_value.write.assert_called_once_with("test amq user-password")
+        self.assertTrue(os.path.isfile(TESTDIR+"/data/result_profile.json"))
+
+    @mock.patch('argparse.ArgumentParser.parse_args',
+                return_value=argparse.Namespace(
+                    port=PORT,
+                    server=SERVER,
+                    username=USER,
+                    password=PASSWORD,
+                    topic=TOPIC,
+                    key=None,
+                    cert=None,
+                    file=TESTDIR+"/data/result_profile.json"
+                ))
+    def test_AMQ_commandline(mock_args):
+        """Pass command line arguments to send_queue via mock"""
+        self.args = send_queue.main()
+        self.assertEqual(self.args, mock_args)
+
+    def test_AMQ_call(self):
+        """Pass config object to send_queue"""
+        test_connection = {
+            'port': PORT,
+            'server': SERVER,
+            'topic': TOPIC,
+            'username': USER
+            'password': PASSWORD
+        }
+        send_queue.send_message(TESTDIR+"/data/result_profile.json",
+                                test_connection)
+        self.assertLogs()
+
+    def test_bad_UN_PW(self):
+
+    def test_missing_topic(self):
+    def test_wrong_topic(self):
+    def test_wrong_cert(self):
+    def 
+
+
+    def tearDown(self):
+        events.append("tearDown")
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
