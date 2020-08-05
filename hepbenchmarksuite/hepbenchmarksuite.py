@@ -111,6 +111,17 @@ class HepBenchmarkSuite(object):
                 returncode = db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
 
             elif bench2run == 'hepscore':
+                try:
+                    from hepscore import HEPscore
+                except ImportError:
+                    _log.error("Failed to import hepscore!")
+                    returncode = 1
+                # hepscore constructor cannot handle excess keys...
+                # hs = HEPscore(**self._config_full)
+                hs = HEPscore()
+                # this command actually runs too...
+                hs.read_and_parse_conf()
+                hs.write_output(outtype, outfile)
                 returncode = utils.run_hepscore(conf=self._config_full, bench=bench2run)
 
             elif bench2run in ['hs06_32', 'hs06_64', 'spec2017']:
