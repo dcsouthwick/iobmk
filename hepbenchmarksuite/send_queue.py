@@ -80,11 +80,11 @@ def send_message(filepath, connection):
     logger.info("Results sent to AMQ topic")
 
 
-def main():
+def parse_args(args):
     parser = argparse.ArgumentParser(
         description="This sends a file.json to an AMQ broker via STOMP. \
             Default STOMP port is 61613, if not overridden")
-    parser.add_argument("-p", "--port",     default=61613 type=int, help="Queue port")
+    parser.add_argument("-p", "--port",     default=61613, type=int, help="Queue port")
     parser.add_argument("-s", "--server",   required=True, help="Queue host")
     parser.add_argument("-u", "--username", nargs='?', default=None, help="Queue username")
     parser.add_argument("-w", "--password", nargs='?', default=None, help="Queue password")
@@ -92,7 +92,11 @@ def main():
     parser.add_argument("-k", "--key",      nargs='?', default=None, help="AMQ authentication key")
     parser.add_argument("-c", "--cert",     nargs='?', default=None, help="AMQ authentication certificate")
     parser.add_argument("-f", "--file",     required=True, help="File to send")
-    args = parser.parse_args()
+    return parser.parse_args(args)
+
+
+def main():
+    args = parse_args(sys.argv[1:])
 
     # Get non-None cli arguments
     non_empty = {k: v for k, v in vars(args).items() if v is not None}
