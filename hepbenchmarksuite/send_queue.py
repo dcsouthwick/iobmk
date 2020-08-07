@@ -81,6 +81,7 @@ def send_message(filepath, connection):
 
 
 def parse_args(args):
+    """Parse passed list of args"""
     parser = argparse.ArgumentParser(
         description="This sends a file.json to an AMQ broker via STOMP. \
             Default STOMP port is 61613, if not overridden")
@@ -105,7 +106,8 @@ def main():
     connection_details = dict()
     for i in non_empty.keys():
         connection_details[i] = non_empty[i]
-
+    
+    connection_details.pop('file', None)
     send_message(args.file, connection_details)
     return(connection_details)
 

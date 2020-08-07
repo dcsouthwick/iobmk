@@ -6,15 +6,12 @@
 ###############################################################################
 
 import argparse
-import builtins
 from datetime import datetime
-from functools import wraps
 import json
-import logging
 import os
-import re
+import stomp
 import unittest
-from unittest.mock import patch, mock_open, call, MagicMock, create_autospec
+from unittest.mock import patch, mock_open, MagicMock
 from hepbenchmarksuite import send_queue
 
 
@@ -69,8 +66,16 @@ class TestAMQ(unittest.TestCase):
         mock_open_file.return_value.__enter__().write.assert_called_once_with(json.dumps(self.test_json))
 
     def test_parser(self):
+        """Command-line arguments test"""
         parser = send_queue.parse_args(
-            ['-p', '1', '-s', 'google.com', '-u', 'mickey', '-w', 'mouse', '-t', 'hepscore', '-k', 'd', '-c', 'cert:SSA!~!@', '-f', 'howto.json'])
+            ['-p', '1',
+             '-s', 'google.com',
+             '-u', 'mickey',
+             '-w', 'mouse',
+             '-t', 'hepscore',
+             '-k', 'd',
+             '-c', 'cert:SSA!~!@',
+             '-f', 'howto.json'])
         self.assertEqual(parser.port, 1)
         self.assertEqual(parser.server, "google.com")
         self.assertEqual(parser.username, "mickey")
@@ -80,18 +85,40 @@ class TestAMQ(unittest.TestCase):
         self.assertEqual(parser.cert, "cert:SSA!~!@")
         self.assertEqual(parser.file, "howto.json")
 
+        parser = send_queue.parse_args(['-s', 'www', '-t', 'topic', '-f', 'foobar'])
+        self.assertEqual(parser.port, 61613)
+        self.assertEqual(parser.server, "www")
+        self.assertEqual(parser.username, None)
+        self.assertEqual(parser.password, None)
+        self.assertEqual(parser.topic, "topic")
+        self.assertEqual(parser.key, None)
+        self.assertEqual(parser.cert, None)
+        self.assertEqual(parser.file, "foobar")
+
+        with self.assertRaises(SystemExit) as cm:
+            parser = send_queue.parse_args(['-s'])
+        self.assertEqual(cm.exception.code, 2)
+
+        with self.assertRaises(SystemExit) as cm:
+            parser = send_queue.parse_args(['-s', 'www', '-t', 'topic', '-f', 'foobar', '--port', "fifteen"])
+        self.assertEqual(cm.exception.code, 2)
+
     @patch.object(send_queue, 'send_message', autospec=True)
-    def test_AMQ_commandline(self, mock_send_queue):
-        """Pass command line arguments to send_queue via mock"""
-        mock_result = argparse.Namespace(cert=None, file='test.json', key=None, password=None, port=111, server='google.com', topic='a', username=None)
-        with patch.object(send_queue, 'parse_args', return_value=mock_result) as mock_args:
+    def test_send_message_commandline(self, mock_send_queue):
+        """Pass command line arguments to send_message via mock"""
+        mock_result = argparse.Namespace(
+            cert=None, file='test.json',
+            key=None, password=None,
+            port=111, server='google.com',
+            topic='a', username=None)
+        with patch.object(send_queue, 'parse_args', return_value=mock_result):
             real = send_queue
             real.send_message = MagicMock()
             real.main()
-            real.send_message.assert_called_once_with('test.json', {'file': 'test.json', 'port': 111, 'server': 'google.com', 'topic': 'a'})
+            real.send_message.assert_called_once_with('test.json', {'port': 111, 'server': 'google.com', 'topic': 'a'})
 
-    # @patch('send_queue.send_message')
-    # def test_AMQ_call(self):
+    #@patch(stomp, autospec=True)
+    #def test_send_message_call(self, mock_send_queue):
     #    """Pass config object to send_queue"""
 
     #    send_queue.send_message()
