@@ -61,11 +61,10 @@ def send_message(filepath, connection):
         conn.connect(connection['username'], connection['password'], wait=True)
         logger.info("AMQ Plain: user-password based authentication")
     else:
-        raise IOError("The input arguments do not include a valid pair of authentication\
+        raise IOError("The input arguments do not include a valid pair of authentication \
                      (certificate, key) or (user,password)")
 
     logger.info("Sending results to AMQ topic")
-    conn.start()
     time.sleep(5)
     conn.send(connection['topic'], message_contents, "application/json")
 
