@@ -3,4 +3,5 @@ pyyaml
 pytest
 flake8-docstrings
 stomp.py
+coverage
 git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0

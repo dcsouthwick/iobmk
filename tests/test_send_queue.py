@@ -32,6 +32,7 @@ class TestAMQ(unittest.TestCase):
 
     def genJSON(self, message="None"):
         """Generate JSON with passed message, return its path"""
+        # Currently unused
         self.assertTrue(isinstance(message, str),
                         'Message is not a string')
         timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -43,6 +44,7 @@ class TestAMQ(unittest.TestCase):
 
     def setUp(self):
         """Collect CI env and setup testing objects"""
+        # currently unused
 
         self.test_dir = os.path.join(os.getcwd(), "tests/")
         self.test_file_path = os.path.join(self.test_dir, "/data/result_profile.json")
@@ -55,7 +57,7 @@ class TestAMQ(unittest.TestCase):
     @patch('builtins.open', new_callable=mock_open())
     def test_genJSON(self, mock_open_file):
         """Test if the json creation is successfull."""
-
+        # currently unused
         ret = self.genJSON("testString")
 
         mock_open_file.assert_called_once_with(self.test_file_path, 'w')
@@ -63,7 +65,7 @@ class TestAMQ(unittest.TestCase):
         self.assertDictEqual(ret, self.test_json)
         self.assertEqual(ret['host']['freetext'], "testString")
 
-    def test_parser(self):
+    def test_parse_args(self):
         """Command-line arguments test"""
         parser = send_queue.parse_args(
             ['-p', '1',
@@ -105,63 +107,87 @@ class TestAMQ(unittest.TestCase):
             parser = send_queue.parse_args(['-s', 'www', '-t', 'topic', '-f', 'foobar', '--port', "fifteen"])
             self.assertEqual(cm.exception.code, 2)
 
-    def test_send_queue_commandline(self):
+    @patch('hepbenchmarksuite.send_queue.send_message')
+    def test_main(self, mock_send_message):
         """Pass command line arguments to send_queue"""
         mock_result = send_queue.argparse.Namespace(
             cert=None, file='test.json',
             key=None, password=None,
             port=111, server='google.com',
             topic='a', username=None)
-        with patch.object(send_queue, 'parse_args', return_value=mock_result):
-            real = send_queue
-            real.send_message = MagicMock()
-            real.main()
-            real.send_message.assert_called_once_with('test.json', {'port': 111, 'server': 'google.com', 'topic': 'a'})
 
+        with patch('hepbenchmarksuite.send_queue.parse_args', return_value=mock_result) as mock_parse_args:
+            send_queue.main()
+        mock_send_message.assert_called_once_with('test.json', {'port': 111, 'server': 'google.com', 'topic': 'a'})
+        self.assertTrue(mock_parse_args.called)
+
+    @patch('hepbenchmarksuite.send_queue.time.sleep', return_value=None)
     @patch('hepbenchmarksuite.send_queue.MyListener', autospec=True)
     @patch('hepbenchmarksuite.send_queue.os.path', return_value=True)
     @patch('hepbenchmarksuite.send_queue.stomp', autospec=True)
-    def test_send_message(self, mock_stomp, mock_filecheck, mock_listener):
+    def test_send_message(self, mock_stomp, mock_filecheck, mock_listener, mock_sleep):
         """Pass config object to send_queue"""
         test_args = {'port': 8181, 'server': 'home.cern', 'topic': 'test'}
         mock_conn = MagicMock()
         mock_stomp.Connection.return_value = mock_conn
 
-        with self.assertRaises(FileNotFoundError) as cm:
-            # test bad filepath
-            send_queue.send_message(self.test_file_path, test_args)
-            self.assertEqual(cm.exception.code, 2)
+        with self.assertRaises(FileNotFoundError):
+            # test bad file read
+            send_queue.send_message('garbage/file.json', dict())
+            self.assertTrue(mock_filecheck.called)
 
         with patch('hepbenchmarksuite.send_queue.open', mock_open(read_data="{'test':1}")) as mock_json:
+            # mock the file read, and continue testing
 
             # Test no credentials
-            with self.assertRaises(OSError) as cm:
+            with self.assertRaises(OSError):
                 send_queue.send_message(self.test_file_path, test_args)
-                mock_json.assert_called_once_with(self.test_file_path)
+            mock_json.assert_called_once_with(self.test_file_path, 'r')
             mock_stomp.Connection.assert_called_once_with(host_and_ports=[(test_args['server'],
                                                                            int(test_args['port']))])
-            mock_conn.set_listener.assert_called_once_with('mylistener', mock_listener)
-            # TODO(anyone): logging tests
-            # Test good credentials
-            test_args = {'port': 8181, 'server': 'home.cern', 'topic': 'test', 'username': "Dave", 'password': "password"}
-            #with self.assertLogs('hepbenchmarksuite.send_queue.logging.logger', level='INFO') as cm:
-            #    send_queue.send_message(self.test_file_path, test_args)
-                # self.assertEqual(cm.output, ['INFO:[send_queue]:AMQ Plain: user-password based authentication'])
+            mock_conn.set_listener.assert_called_once_with('mylistener', mock_listener(mock_conn))
+            mock_conn.start.assert_called()
+            mock_json.reset_mock()
+            mock_stomp.reset_mock()
+            mock_conn.reset_mock()
 
+            # Test user/pw
+            test_args = {'port': 8181,
+                         'server': 'home.cern',
+                         'topic': 'test',
+                         'username': "Dave",
+                         'password': "password"}
+            with self.assertLogs('[send_queue]', level='INFO') as logger:
+                send_queue.send_message(self.test_file_path, test_args)
+            mock_conn.connect.assert_called_once_with(test_args['username'],
+                                                      test_args['password'],
+                                                      wait=True)
+            mock_conn.set_ssl.assert_not_called()
+            self.assertIn('INFO:[send_queue]:AMQ Plain: user-password based authentication', logger.output)
+            self.assertIn('INFO:[send_queue]:Sending results to AMQ topic', logger.output)
+            mock_conn.send.assert_called_once_with(test_args['topic'], "{'test':1}", "application/json")
+            mock_conn.disconnect.assert_called()
+            mock_json.reset_mock()
+            mock_stomp.reset_mock()
+            mock_conn.reset_mock()
 
-
-        #self.mock_filecheck.isfile.assert_called_once_with(self.test_file_path)
-        # self.mock_logger.warn.assert_called_with("
-        #self.assertTrue(mock_logger.warn.called)
-
-
-    # def test_bad_UN_PW(self):
-
-    # def test_missing_topic(self):
-    # def test_wrong_topic(self):
-    # def test_wrong_cert(self):
-    # def test_cert_UN_PW(self):
-    # def test_success(self):
+            # Test cert/key
+            test_args = {'port': 8181,
+                         'server': 'home.cern',
+                         'topic': 'test',
+                         'cert': "somecert",
+                         'key': "somekey"}
+            with self.assertLogs('[send_queue]', level='INFO') as logger:
+                send_queue.send_message(self.test_file_path, test_args)
+            mock_conn.set_ssl.assert_called_once_with(for_hosts=[test_args['server']],
+                                                      cert_file=test_args['cert'],
+                                                      key_file=test_args['key'],
+                                                      ssl_version=5)
+            mock_conn.connect.assert_called_once_with(wait=True)
+            self.assertIn('INFO:[send_queue]:AMQ SSL: certificate based authentication', logger.output)
+            self.assertIn('INFO:[send_queue]:Sending results to AMQ topic', logger.output)
+            mock_conn.send.assert_called_once_with(test_args['topic'], "{'test':1}", "application/json")
+            mock_conn.disconnect.assert_called()
 
 
 if __name__ == '__main__':

@@ -26,20 +26,19 @@ class MyListener(stomp.ConnectionListener):
         self.message = ''
 
     def on_error(self, headers, message):
-        logger.error('received an error \n%s' % message)
+        logger.error('received error: {}'.format(message))
         self.status = False
         self.message = message
 
     def on_message(self, headers, message):
-        logger.info('received a message "%s"' % message)
+        logger.info('received message: {}'.format(message))
 
 
 def send_message(filepath, connection):
     """ expects a filepath string, and a dict of args"""
 
     if os.path.isfile(filepath) is False:
-        raise IOError("The result input file {} does not exist"
-                      .format(filepath))
+        raise IOError
 
     with open(filepath, 'r') as f:
         message_contents = f.read()
@@ -61,8 +60,8 @@ def send_message(filepath, connection):
         conn.connect(connection['username'], connection['password'], wait=True)
         logger.info("AMQ Plain: user-password based authentication")
     else:
-        raise IOError("The input arguments do not include a valid pair of authentication \
-                     (certificate, key) or (user,password)")
+        raise IOError("The input arguments do not include a valid pair of authentication"
+                      "(certificate, key) or (user,password)")
 
     logger.info("Sending results to AMQ topic")
     time.sleep(5)
@@ -82,8 +81,8 @@ def send_message(filepath, connection):
 def parse_args(args):
     """Parse passed list of args"""
     parser = argparse.ArgumentParser(
-        description="This sends a file.json to an AMQ broker via STOMP. \
-            Default STOMP port is 61613, if not overridden")
+        description="This sends a file.json to an AMQ broker via STOMP."
+                    "Default STOMP port is 61613, if not overridden")
     parser.add_argument("-p", "--port",     default=61613, type=int, help="Queue port")
     parser.add_argument("-s", "--server",   required=True, help="Queue host")
     parser.add_argument("-u", "--username", nargs='?', default=None, help="Queue username")
@@ -105,7 +104,7 @@ def main():
     connection_details = dict()
     for i in non_empty.keys():
         connection_details[i] = non_empty[i]
-    
+
     connection_details.pop('file', None)
     send_message(args.file, connection_details)
     return(connection_details)
