@@ -3,7 +3,7 @@ stages:
   - test-singularity
   - test-docker
   - deploy
-dependencies: []
+
 variables:
   GIT_DEPTH: "3"
 
@@ -14,7 +14,7 @@ variables:
 test_python_support:
   # determine minimum supported python version
   stage: test-components
-  
+  dependencies: []
   script:
     - yum install -y -q python3-pip
     - python3 -m pip install vermin
@@ -26,6 +26,7 @@ test_python_support:
 
 test_python_plugins:
   stage: test-components
+  dependencies: []
   script:
     - yum install -y -q python3-pip
     - python3 -m pip install tox
@@ -37,6 +38,7 @@ test_python_plugins:
 
 test_yaml_files:
   stage: test-components
+  dependencies: []
   script:
     - yum install -y -q yamllint
     - cd hepbenchmarksuite/config
@@ -53,6 +55,7 @@ test_yaml_files:
 
 test_db12_benchmark:
   stage: test-components
+  dependencies: []
   script:
     - yum install -y -q singularity python3-pip
     - python3 -m pip install --user .
@@ -77,6 +80,7 @@ test_db12_benchmark:
     # This job tests the hep-benchmark-suite
     # running a configurable set of benchmarks defined in $BMKLIST
   stage: test-singularity
+  dependencies: []
   tags: 
     - docker-privileged-xl
     #- hep-benchmark-suite-docker-runner
@@ -203,6 +207,7 @@ test_docker_spec2017:
 
 build_hep-benchmark-suite:
   stage: deploy
+  dependencies: []
   when: manual
   environment:
     # production keyword for gitlab value tracking
@@ -224,6 +229,7 @@ build_hep-benchmark-suite:
 job_build_wheels:
   # is this job needed? it performs the same step as bdist_wheel (above)
   stage: deploy
+  dependencies: []
   when: manual
   environment:
     # production keyword for gitlab value tracking
