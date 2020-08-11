@@ -61,6 +61,8 @@ def run_hepspec(conf, bench):
       conf:  A dict containing configuration.
       bench: A string with the benchmark to run.
 
+    Return:
+      POSIX exit code from subprocess
     """
 
     _log.debug("Configuration in use for benchmark {}: {}".format(bench, conf))
@@ -130,7 +132,7 @@ def exec_wait_benchmark(cmd_str):
       cmd_str: Command to execute.
 
     Returns:
-      An integer with the error code
+      An POSIX exit code (0 through 255)
     """
 
     _log.debug("Excuting command: {}".format(cmd_str))
@@ -170,7 +172,7 @@ def convert_tags_to_json(tag_str):
     try:
         tags = json.loads(tag_str)
 
-    except:
+    except Exception:
         # User provided wrong format. Default tags are provided.
         _log.warning("Not a valid tag json format specified: {}".format(tag_str))
         tags = {}

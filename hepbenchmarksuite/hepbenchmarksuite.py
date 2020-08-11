@@ -9,6 +9,7 @@ import json
 import logging
 import time
 import shutil
+import yaml
 
 from hepbenchmarksuite import db12
 from hepbenchmarksuite import utils
@@ -30,7 +31,8 @@ class HepBenchmarkSuite(object):
     }
 
     # Required disk space (in GB) for all benchmarks
-    DISK_THRESHOLD = 20.0
+    # TODO(anyone): update this value based on benchmarks selected
+    DISK_THRESHOLD = 5.0
 
     def __init__(self,  config=None):
         """Initialize setup"""
@@ -39,13 +41,15 @@ class HepBenchmarkSuite(object):
         self._config             = config['global']
         self._config_full        = config
         self._extra              = {}
+        self.failures            = []
 
     def start(self):
+        """Entrypoint for suite."""
         _log.info("Starting benchmark suite")
 
         self._extra['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
 
-        if self._preflight() == 0:
+        if self._preflight():
             _log.info("Pre-flight checks passed successfully.")
             self.run()
         else:
@@ -63,7 +67,6 @@ class HepBenchmarkSuite(object):
 
         if _return_mode != 0:
             _log.error("Specified run mode is not present in the system: {}".format(self._config['mode']))
-
 
         _log.info(" - Checking provided work dirs exist...")
         os.makedirs(self._config['rundir'], exist_ok=True)
@@ -88,14 +91,12 @@ class HepBenchmarkSuite(object):
 
         # Check if any pre-flight check failed
         if any(checks):
-            return 1
+            return False
         else:
-            return 0
+            return True
 
     def run(self):
-
-        # Reset return code on each run
-        returncode = 0
+        """Run the benchmark at the head of _bench_queue and recurse"""
 
         # Check if there are still benchmarks to run
         if len(self._bench_queue) == 0:
@@ -104,34 +105,61 @@ class HepBenchmarkSuite(object):
 
         else:
             _log.info("Benchmarks left to run: {}".format(self._bench_queue))
-            bench2run = self.dequeue()
+            bench2run = self._bench_queue.pop(0)
             _log.info("Running benchmark: {}".format(bench2run))
 
             if bench2run == 'db12':
+                # returns a dict{'DB12':{ 'value': float(), 'unit': string() }}
                 returncode = db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
+                if not returncode['DB12']['value']:
+                    self.failures.append(bench2run)
 
             elif bench2run == 'hepscore':
                 try:
                     from hepscore import HEPscore
                 except ImportError:
                     _log.error("Failed to import hepscore!")
-                    returncode = 1
+                    _log.warn("Skipping hepscore: unable to import")
+                    raise
                 # hepscore constructor cannot handle excess keys...
                 # hs = HEPscore(**self._config_full)
-                hs = HEPscore()
-                # this command actually runs too...
-                hs.read_and_parse_conf()
-                hs.write_output(outtype, outfile)
-                returncode = utils.run_hepscore(conf=self._config_full, bench=bench2run)
+
+                # Override output directory so suite can find results
+                # will write results to resultsdir/HEPscore19.json
+                hepscore_overrides = {'cec': self._config['mode'],
+                                      'resultsdir': self._config['rundir']+'/HEPSCORE'}
+
+                hs = HEPscore(**hepscore_overrides)
+                # Empty args defaults to hepscore distributed yaml
+                # hs.read_and_parse_conf()
+                # There is no way to pass config arguments to hepscore, it demands reading them
+                hepscore_temp = {}
+                hepscore_temp['hepscore_benchmark'] = self._config_full['hepscore_benchmark'].copy()
+                with open(os.path.join(self._config['rundir'], 'hepscore.yaml'), 'w') as conf_file:
+                    yaml.dump(hepscore_temp, conf_file)
+
+                hs.read_and_parse_conf(os.path.join(self._config['rundir'], 'hepscore.yaml'))
+                os.remove(os.path.join(self._config['rundir'], 'hepscore.yaml'))
+
+                # hepscore flavor of error propagation
+                # run() returns score from most recent workload
+                returncode = hs.run()
+                if returncode >= 0:
+                    hs.gen_score()
+                    hs.write_output("json",
+                                    os.path.join(self._config['rundir'],
+                                                 self.RESULT_FILES['hepscore']
+                                                 ))
+                else:
+                    self.failures.append(bench2run)
 
             elif bench2run in ['hs06_32', 'hs06_64', 'spec2017']:
                 returncode = utils.run_hepspec(conf=self._config_full, bench=bench2run)
-
-            self.check_lock()
+                if returncode > 0:
+                    self.failures.append(bench2run)
             _log.info("Completed {} with return code {}".format(bench2run, returncode))
-
-    def dequeue(self):
-        return self._bench_queue.pop(0)
+            # recursive call to run() with check_lock
+            self.check_lock()
 
     def check_lock(self):
         # TODO: Check lock files
@@ -166,5 +194,10 @@ class HepBenchmarkSuite(object):
         with open(os.path.join(self._config['rundir'], self._config['file']), 'w') as fo:
             fo.write(json.dumps(self._result))
 
-    def results(self):
-        return self._result
+        # Check for workload errors
+        if len(self.failures) == len(self.selected_benchmarks):
+            _log.error('All benchmarks failed!')
+        elif len(self.failures) > 0:
+            # something failed, response?
+            _log.error("{} Failed. Please check logs".format(*self.failures))
+            exit(1)

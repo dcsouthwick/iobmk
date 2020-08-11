@@ -9,7 +9,6 @@ import json
 import logging
 import random
 import multiprocessing
-import argparse
 
 UNITS = {'HS06': 1., 'SI00': 1. / 344.}
 
