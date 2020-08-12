@@ -24,13 +24,46 @@ test_python_support:
       - "*.py"
       - bin/*
 
-test_python_plugins:
+test_python_coverage:
   stage: test-components
   dependencies: []
+  allow_failure: true
   script:
     - yum install -y -q python3-pip
     - python3 -m pip install tox
     - tox
+  except:
+    refs:
+      - master
+      - qa
+  artifacts:
+    paths:
+      - coverage.xml
+      - htmlcov/*
+    expire_in: 1 week
+    when: always
+
+test_python_pep8:
+  stage: test-components
+  dependencies: []
+  allow_failure: true
+  script:
+    - yum install -y -q python3-pip
+    - python3 -m pip install tox
+    - tox -e pep8
+  except:
+    refs:
+      - master
+      - qa
+
+test_python_security:
+  stage: test-components
+  dependencies: []
+  allow_failure: true
+  script:
+    - yum install -y -q python3-pip
+    - python3 -m pip install tox
+    - tox -e bandit
   except:
     refs:
       - master
