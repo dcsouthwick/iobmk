@@ -14,7 +14,6 @@ import sys
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger('[send_queue]')
 
-# TODO: handle None keys in passed conn args
 # TODO: test wait=true on connect() in firewalled nodes
 # This is supported in stomp...
 
@@ -65,6 +64,7 @@ def send_message(filepath, connection):
 
     logger.info("Sending results to AMQ topic")
     time.sleep(5)
+    logger.debug("Attempting send of message {}".format(message_contents))
     conn.send(connection['topic'], message_contents, "application/json")
 
     time.sleep(5)

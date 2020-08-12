@@ -23,7 +23,7 @@ except ImportError:
 from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
 from hepbenchmarksuite import utils
 from hepbenchmarksuite import config
-from hepbenchmarksuite import send_queue
+from hepbenchmarksuite.plugins import send_queue
 
 
 def main():
@@ -60,13 +60,7 @@ def main():
     parser.add_argument("-n", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks", default=None)
     parser.add_argument("-t", "--tags",       nargs='?', help="Custom user tags", default=None)
     parser.add_argument("-u", "--uid",        nargs='?', help="UID", default=None)
-    parser.add_argument("--port",             nargs='?', type=int, help="ActiveMQ broker port, if reporting", default=None)
-    parser.add_argument("--server",           nargs='?', help="ActiveMQ server address, if reporting", default=None)
-    parser.add_argument("--username",         nargs='?', help="ActiveMQ username, if reporting. Requires --password", default=None)
-    parser.add_argument("--password",         nargs='?', help="ActiveMQ password, if reporting. Needed by username", default=None)
-    parser.add_argument("--topic",            nargs='?', help="ActiveMQ topic, if reporting", default=None)
-    parser.add_argument("--key",              nargs='?', help="ActiveMQ key file, without passphrase. Requires --cert", default=None)
-    parser.add_argument("--cert",             nargs='?', help="ActiveMQ certificate, needed by key file", default=None)
+    parser.add_argument("--publish",          action='store_true', help="enable reporting via AMQ credentials in YAML file", default=None)
     parser.add_argument("-v", "--verbose",    action='store_true', help="Enables verbose mode. Display debug messages.", default=None)
 
     try:
@@ -162,8 +156,7 @@ def main():
     logger.addHandler(file_handler)
 
     # Save running config
-    with open(os.path.join(active_config['global']['rundir'],
-              'run_config.yaml'), 'w') as conf_file:
+    with open(os.path.join(active_config['global']['rundir'], 'run_config.yaml'), 'w') as conf_file:
         yaml.dump(active_config, conf_file)
 
     # Configure hep-benchmark-suite
@@ -177,13 +170,13 @@ def main():
     utils.print_results_from_file(FULL_PATH)
 
     # Publish to AMQ broker if provided
-    if 'server' in active_config['global']:
+    if active_config['global']['publish']:
         try:
             send_queue.send_message(FULL_PATH, active_config['global'])
         except Exception as e:
-            print("Something went wrong attempting to report via AMQ.")
-            print("Results may not have been correctly transmitted.")
-            print(e)
+            logging.error("Something went wrong attempting to report via AMQ.")
+            logging.error("Results may not have been correctly transmitted.")
+            logging.error(e)
             pass
 
     print("\nFull results can be found in {}".format(FULL_PATH))

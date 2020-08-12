@@ -32,7 +32,7 @@ class HepBenchmarkSuite(object):
     # Required disk space (in GB) for all benchmarks
     DISK_THRESHOLD = 20.0
 
-    def __init__(self,  config=None):
+    def __init__(self, config=None):
         """Initialize setup"""
         self._bench_queue        = config['global']['benchmarks']
         self.selected_benchmarks = config['global']['benchmarks'].copy()
