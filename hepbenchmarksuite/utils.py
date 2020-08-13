@@ -5,10 +5,12 @@
 ###############################################################################
 
 import json
-import sys
 import logging
-import subprocess
+import os
 import socket
+import subprocess
+import sys
+import yaml
 
 from hepbenchmarksuite.plugins.extractor import Extractor
 
@@ -51,6 +53,48 @@ def validate_spec(conf, bench):
         return 1
 
     return 0
+
+
+def run_hepscore(conf):
+    """
+    Import and run hepscore
+    This method is temporary, as tag 1.0rc requires reading files from disk
+    """
+    try:
+        from hepscore import HEPscore
+    except ImportError:
+        _log.error("Failed to import hepscore!")
+        _log.warn("Skipping hepscore: unable to import")
+        raise
+    # hepscore constructor cannot handle excess keys...
+    # hs = HEPscore(**self._config_full)
+
+    # Override output directory so suite can find results
+    # will write results to resultsdir/HEPscore19.json
+    hepscore_overrides = {'cec': conf['global']['mode'],
+                          'resultsdir': conf['global']['rundir']+'/HEPSCORE'}
+
+    hs = HEPscore(**hepscore_overrides)
+    # Empty args defaults to hepscore distributed yaml
+    # hs.read_and_parse_conf()
+    # There is no way to pass config arguments to hepscore, it demands reading from disk
+    hepscore_temp = {'hepscore_benchmark': conf['hepscore_benchmark']}
+    hepscore_conf_path = os.path.join(conf['global']['rundir'], 'hepscore.yaml')
+    with open(hepscore_conf_path, 'w') as conf_file:
+        yaml.dump(hepscore_temp, conf_file)
+
+    hs.read_and_parse_conf(hepscore_conf_path)
+    os.remove(hepscore_conf_path)
+
+    # hepscore flavor of error propagation
+    # run() returns score from last workload if successful
+    returncode = hs.run()
+    if returncode >= 0:
+        hs.gen_score()
+        hs.write_output("json",
+                        os.path.join(conf['global']['rundir'],
+                                     'HEPSCORE/hepscore_result.json'))
+    return returncode
 
 
 def run_hepspec(conf, bench):

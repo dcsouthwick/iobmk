@@ -9,7 +9,6 @@ import json
 import logging
 import time
 import shutil
-import yaml
 
 from hepbenchmarksuite import db12
 from hepbenchmarksuite import utils
@@ -32,7 +31,7 @@ class HepBenchmarkSuite(object):
 
     # Required disk space (in GB) for all benchmarks
     # TODO(anyone): update this value based on benchmarks selected
-    DISK_THRESHOLD = 5.0
+    DISK_THRESHOLD = 20.0
 
     def __init__(self,  config=None):
         """Initialize setup"""
@@ -107,50 +106,17 @@ class HepBenchmarkSuite(object):
             _log.info("Benchmarks left to run: {}".format(self._bench_queue))
             bench2run = self._bench_queue.pop(0)
             _log.info("Running benchmark: {}".format(bench2run))
-
+            
             if bench2run == 'db12':
                 # returns a dict{'DB12':{ 'value': float(), 'unit': string() }}
                 returncode = db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
+                # TODO: fix with x in y
                 if not returncode['DB12']['value']:
                     self.failures.append(bench2run)
 
             elif bench2run == 'hepscore':
-                try:
-                    from hepscore import HEPscore
-                except ImportError:
-                    _log.error("Failed to import hepscore!")
-                    _log.warn("Skipping hepscore: unable to import")
-                    raise
-                # hepscore constructor cannot handle excess keys...
-                # hs = HEPscore(**self._config_full)
-
-                # Override output directory so suite can find results
-                # will write results to resultsdir/HEPscore19.json
-                hepscore_overrides = {'cec': self._config['mode'],
-                                      'resultsdir': self._config['rundir']+'/HEPSCORE'}
-
-                hs = HEPscore(**hepscore_overrides)
-                # Empty args defaults to hepscore distributed yaml
-                # hs.read_and_parse_conf()
-                # There is no way to pass config arguments to hepscore, it demands reading them
-                hepscore_temp = {}
-                hepscore_temp['hepscore_benchmark'] = self._config_full['hepscore_benchmark'].copy()
-                with open(os.path.join(self._config['rundir'], 'hepscore.yaml'), 'w') as conf_file:
-                    yaml.dump(hepscore_temp, conf_file)
-
-                hs.read_and_parse_conf(os.path.join(self._config['rundir'], 'hepscore.yaml'))
-                os.remove(os.path.join(self._config['rundir'], 'hepscore.yaml'))
-
-                # hepscore flavor of error propagation
-                # run() returns score from most recent workload
-                returncode = hs.run()
-                if returncode >= 0:
-                    hs.gen_score()
-                    hs.write_output("json",
-                                    os.path.join(self._config['rundir'],
-                                                 self.RESULT_FILES['hepscore']
-                                                 ))
-                else:
+                returncode = utils.run_hepscore(self._config_full)
+                if returncode <= 0:
                     self.failures.append(bench2run)
 
             elif bench2run in ['hs06_32', 'hs06_64', 'spec2017']:
@@ -197,7 +163,10 @@ class HepBenchmarkSuite(object):
         # Check for workload errors
         if len(self.failures) == len(self.selected_benchmarks):
             _log.error('All benchmarks failed!')
+            exit(1)
         elif len(self.failures) > 0:
             # something failed, response?
             _log.error("{} Failed. Please check logs".format(*self.failures))
             exit(1)
+        else:
+            _log.info("Successfully completed all requested benchmarks")
