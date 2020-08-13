@@ -170,7 +170,7 @@ def main():
     utils.print_results_from_file(FULL_PATH)
 
     # Publish to AMQ broker if provided
-    if active_config['global']['publish']:
+    if 'publish' in active_config['global']:
         try:
             send_queue.send_message(FULL_PATH, active_config['global'])
         except Exception as e:
