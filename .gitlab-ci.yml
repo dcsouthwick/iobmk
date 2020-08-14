@@ -134,8 +134,8 @@ test_sing_hepscore:
     - python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0
   after_script:
        # temporary debugging
-    - ls -R $BMK_VOLUME
-    - mv $BMK_VOLUME $CI_PROJECT_DIR
+    - ls -R /tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+    - mv /tmp/${CI_JOB_NAME}_${CI_JOB_ID} $CI_PROJECT_DIR
 test_sing_hs06:
   extends: .test_qa_singularity
   before_script:
