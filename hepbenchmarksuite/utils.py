@@ -74,6 +74,7 @@ def run_hepscore(conf):
     hepscore_overrides = {'cec': conf['global']['mode'],
                           'resultsdir': conf['global']['rundir']+'/HEPSCORE'}
 
+    os.makedirs(hepscore_overrides['resultsdir'], exist_ok=True)
     hs = HEPscore(**hepscore_overrides)
     # Empty args defaults to hepscore distributed yaml
     # hs.read_and_parse_conf()
