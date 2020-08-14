@@ -80,12 +80,12 @@ test_db12_benchmark:
     # This job tests the hep-benchmark-suite
     # running a configurable set of benchmarks defined in $BMKLIST
   stage: test-singularity
+  dependencies: []
   tags: 
     - docker-privileged-xl
     #- hep-benchmark-suite-docker-runner
   # use image that has singularity.cern repo
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
-  dependencies: []
   script:
     - yum install -y -q singularity python3-pip
     # non-root user
@@ -124,7 +124,7 @@ test_sing_hepscore:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hepscore"
-    # ugly way to install hep-score... is it published
+    # ugly way to install hep-score...
     - yum install -y -q singularity python3-pip git
     - python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0
 
@@ -207,8 +207,8 @@ test_docker_spec2017:
 
 build_hep-benchmark-suite:
   stage: deploy
-  when: manual
   dependencies: []
+  when: manual
   environment:
     # production keyword for gitlab value tracking
     name: production
@@ -229,8 +229,8 @@ build_hep-benchmark-suite:
 job_build_wheels:
   # is this job needed? it performs the same step as bdist_wheel (above)
   stage: deploy
-  when: manual
   dependencies: []
+  when: manual
   environment:
     # production keyword for gitlab value tracking
     name: production
