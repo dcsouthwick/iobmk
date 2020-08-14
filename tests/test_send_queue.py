@@ -10,7 +10,7 @@ import json
 import os
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
-from hepbenchmarksuite import send_queue
+from hepbenchmarksuite.plugins import send_queue
 
 
 class TestAMQ(unittest.TestCase):
@@ -107,7 +107,7 @@ class TestAMQ(unittest.TestCase):
             parser = send_queue.parse_args(['-s', 'www', '-t', 'topic', '-f', 'foobar', '--port', "fifteen"])
             self.assertEqual(cm.exception.code, 2)
 
-    @patch('hepbenchmarksuite.send_queue.send_message')
+    @patch('hepbenchmarksuite.plugins.send_queue.send_message')
     def test_main(self, mock_send_message):
         """Pass command line arguments to send_queue"""
         mock_result = send_queue.argparse.Namespace(
@@ -116,15 +116,15 @@ class TestAMQ(unittest.TestCase):
             port=111, server='google.com',
             topic='a', username=None)
 
-        with patch('hepbenchmarksuite.send_queue.parse_args', return_value=mock_result) as mock_parse_args:
+        with patch.object(send_queue, 'parse_args', return_value=mock_result) as mock_parse_args:
             send_queue.main()
         mock_send_message.assert_called_once_with('test.json', {'port': 111, 'server': 'google.com', 'topic': 'a'})
         self.assertTrue(mock_parse_args.called)
 
-    @patch('hepbenchmarksuite.send_queue.time.sleep', return_value=None)
-    @patch('hepbenchmarksuite.send_queue.MyListener', autospec=True)
-    @patch('hepbenchmarksuite.send_queue.os.path', return_value=True)
-    @patch('hepbenchmarksuite.send_queue.stomp', autospec=True)
+    @patch('hepbenchmarksuite.plugins.send_queue.time.sleep', return_value=None)
+    @patch('hepbenchmarksuite.plugins.send_queue.MyListener', autospec=True)
+    @patch('hepbenchmarksuite.plugins.send_queue.os.path', return_value=True)
+    @patch('hepbenchmarksuite.plugins.send_queue.stomp', autospec=True)
     def test_send_message(self, mock_stomp, mock_filecheck, mock_listener, mock_sleep):
         """Pass config object to send_queue"""
         test_args = {'port': 8181, 'server': 'home.cern', 'topic': 'test'}
@@ -136,7 +136,7 @@ class TestAMQ(unittest.TestCase):
             send_queue.send_message('garbage/file.json', dict())
             self.assertTrue(mock_filecheck.called)
 
-        with patch('hepbenchmarksuite.send_queue.open', mock_open(read_data="{'test':1}")) as mock_json:
+        with patch.object(send_queue, 'open', mock_open(read_data="{'test':1}")) as mock_json:
             # mock the file read, and continue testing
 
             # Test no credentials

@@ -28,9 +28,9 @@ from hepbenchmarksuite.plugins import send_queue
 
 def main():
     parser = argparse.ArgumentParser(
-      prog='bmkrun',
-      formatter_class=argparse.RawDescriptionHelpFormatter,
-      description=textwrap.dedent('''
+        prog='bmkrun',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent('''
         -----------------------------------------------
         High Energy Physics Benchmark Suite
         -----------------------------------------------
@@ -47,14 +47,14 @@ def main():
     try:
         with pkg_resources.path(config, 'benchmarks.yml') as defaultcfg:
             default_config = defaultcfg
-    except:
+    except Exception:
         print("Unable to load default config yaml")
         pass
 
     # Optional arguments
     parser.add_argument("-b", "--benchmarks", nargs='+', help="List of benchmarks", default=None)
     parser.add_argument("-c", "--config",     nargs='?', type=str, help="Configuration file to use (yaml format)", default=default_config)
-    parser.add_argument("-d", "--rundir",     nargs='?', help="Directory where benchmarks will be run",  default=None)
+    parser.add_argument("-d", "--rundir",     nargs='?', help="Directory where benchmarks will be run", default=None)
     parser.add_argument("-f", "--file",       nargs='?', help="File to store the results", default=None)
     parser.add_argument("-m", "--mode",       choices=['singularity', 'docker'], nargs='?', help="Run benchmarks in singularity or docker containers", default=None)
     parser.add_argument("-n", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks", default=None)
@@ -65,7 +65,7 @@ def main():
 
     try:
         args = parser.parse_args()
-    except:
+    except Exception:
         sys.exit(0)
 
     # Select config file
@@ -114,9 +114,8 @@ def main():
 
     # use all CPUs found if invalid parameter provided
     if ('mp_num' not in active_config['global'].keys()
-        or active_config['global']['mp_num'] is None
-        or int(active_config['global']['mp_num']) > os.cpu_count()
-        ):
+            or active_config['global']['mp_num'] is None
+            or int(active_config['global']['mp_num']) > os.cpu_count()):
         active_config['global']['mp_num'] = os.cpu_count()
 
     # Check if cpu count in config is integer
@@ -138,7 +137,7 @@ def main():
     logger.setLevel(log_level)
 
     # Log format
-    log_formatter = logging.Formatter('%(asctime)s, %(name)s [%(levelname)s] %(message)s',  datefmt='%Y-%m-%d %H:%M:%S')
+    log_formatter = logging.Formatter('%(asctime)s, %(name)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
     # Handler to write logs to stdout
     stream_handler = logging.StreamHandler(sys.stdout)

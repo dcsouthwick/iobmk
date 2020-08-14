@@ -13,12 +13,10 @@ develop-eggs
 .installed.cfg
 
 # Unit test / coverage reports
-.coverage
-.coverage.*
-cover/
+.coverage*
 .tox
-.stestr/
 .venv
+htmlcov*
 
 # Editors
 *~
