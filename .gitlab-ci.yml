@@ -105,6 +105,8 @@ test_db12_benchmark:
     - bmkrun -v --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/$RESULTS_FILE .
     - mv $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
+    # temporary debugging
+    - mv $BMK_VOLUME .
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
@@ -115,8 +117,11 @@ test_db12_benchmark:
     paths:
       - singularity_cachedir/cache/**/*
   artifacts:
-    paths:
-      - ./*.json
+    untracked: true
+    #paths:
+    #  - ./*.json
+    exclude:
+      - singularity_cachedir
     expire_in: 1 week
     when: always
 
