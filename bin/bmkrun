@@ -164,8 +164,7 @@ def main():
     suite.start()
 
     # Display results
-    FULL_PATH = os.path.join(active_config['global']['rundir'],
-                             active_config['global']['file'])
+    FULL_PATH = os.path.join(active_config['global']['rundir'], active_config['global']['file'])
     utils.print_results_from_file(FULL_PATH)
 
     # Publish to AMQ broker if provided
