@@ -26,5 +26,5 @@ setup(
     packages=['hepbenchmarksuite', 'hepbenchmarksuite.plugins', 'hepbenchmarksuite.config'],
     package_data={'hepbenchmarksuite': ['config/*.yml']},
     python_requires='~=3.4',
-    install_requires=['pyyaml', 'importlib-resources']
+    install_requires=['pyyaml', 'importlib-resources', 'stomp.py']
 )

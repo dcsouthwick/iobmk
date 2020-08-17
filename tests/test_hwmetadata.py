@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 ###############################################################################
 # Copyright 2019-2020 CERN. See the COPYRIGHT file at the top-level directory
 # of this distribution. For licensing information, see the COPYING file at
@@ -7,6 +7,7 @@
 
 import unittest
 from hepbenchmarksuite.plugins.extractor import Extractor
+
 
 class TestHWExtractor(unittest.TestCase):
     """********************************************************
@@ -46,9 +47,13 @@ class TestHWExtractor(unittest.TestCase):
 
         parser = hw.get_parser(bios_text)
 
-        self.assertEqual(parser('Version'), 'SE5C600.86B.02.01.0002.082220131453', 'BIOS parser mismatch!')
-        self.assertEqual(parser('Vendor'), 'Intel Corp.', 'BIOS parser mismatch!')
-        self.assertEqual(parser('Release Date'), '08/22/2013',  'BIOS parser mismatch!')
+        self.assertEqual(parser('Version'),
+                         'SE5C600.86B.02.01.0002.082220131453',
+                         'BIOS parser mismatch!')
+        self.assertEqual(parser('Vendor'), 'Intel Corp.',
+                         'BIOS parser mismatch!')
+        self.assertEqual(parser('Release Date'), '08/22/2013',
+                         'BIOS parser mismatch!')
 
     def test_parser_cpu(self):
         """
@@ -59,7 +64,6 @@ class TestHWExtractor(unittest.TestCase):
 
         with open('tests/data/CPU.sample', 'r') as cpu_file:
             cpu_text = cpu_file.read()
-
 
         CPU_OK = {
             "Architecture": "x86_64",
@@ -128,7 +132,8 @@ class TestHWExtractor(unittest.TestCase):
             "disk3": "/dev/sdc | INTEL SSDSC2CW24 | 223GiB (240GB)"
         }
 
-        self.assertEqual(storage_output, STORAGE_OK, "Storage parser mismatch!")
+        self.assertEqual(storage_output, STORAGE_OK,
+                         "Storage parser mismatch!")
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

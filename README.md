@@ -12,6 +12,7 @@
 - [Installation](#installation)
 - [How to run](#how-to-run)
   * [Description of major arguments](#description-of-major-arguments)
+  * [ActiveMQ reporting](#advanced-message-queuing-amq)
 - [Complete arguments description](#description-of-all-arguments)
 
 ## About
@@ -124,45 +125,48 @@ The aggregated results of the selected benchmarks are written to the location an
 In order to run a sequence of benchmarks, specify the list using the `--benchmarks` argument.
 Multiple benchmarks can be executed in sequence via a single call to the hep-benchmark-suite, passing the dedicated configuration parameters. When a benchmark is not specified in the list defined by `--benchmarks`, the dedicated configuration parameters relevant to that benchmark are ignored.
 
-**TODO:**
-If publication to an AMQ broker is needed, replace the variable `AMQ_ARGUMENTS=" -o"` with the expected AMQ authentication parameters (host, port, username, password, topic)
-`AMQ_ARGUMENTS="--queue_host=**** --queue_port=**** --username=**** --password=**** --topic=**** "`
+In the case of running HS06, and/or SPEC CPU2017, the benchmark will look for the install at the specified `hepspec_volume:`, and if it does not exist, it will attempt to install it via tarball argument `url_tarball:`, as defined in the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml)).
 
-In the case of running HS06, and/or SPEC CPU2017, the benchmark will look for the install at the specified `hepspec_volume:`, and if it does not exist, it will attempt to install it via tarball argument `url_tarball:`, as defined in the `benchmarks.yaml`.
+#### Advanced Message Queuing (AMQ)
+
+If publication to an AMQ broker is needed, replace the variable in the `activemq` tree of the [config yaml](hepbenchmarksuite/config/benchmarks.yml). with the expected AMQ authentication parameters (host, port, username, password, topic, etc). You can then pass the argument `--publish` to the suite, or set the value in the yaml.
+
+
 
 ### Description of all arguments
 
 The `-h` option provides an explanation of all command line arguments
 
 ```
-# bmkrun --help
-usage: bmkrun [-h] [-u [UID]] [-f [FILE]] [-d [RUNDIR]] [-n [MP_NUM]] [-t [TAGS]] [-b BENCHMARKS [BENCHMARKS ...]]
-              [-m [{singularity,docker}]] [-c [CONFIG]]
+$ bmkrun --help
+-----------------------------------------------
+High Energy Physics Benchmark Suite
+-----------------------------------------------
+This utility orchestrates several benchmarks
 
-----------------------------------------------------------------------
- bmkrun cli allows you to run several benchmarks
-----------------------------------------------------------------------
 Author: Benchmarking Working Group
 Contact: benchmark-suite-wg-devel@cern.ch
 
 optional arguments:
   -h, --help            show this help message and exit
-  -u [UID], --uid [UID]
-                        UID
-  -f [FILE], --file [FILE]
-                        File to store the results
+  -b BENCHMARKS [BENCHMARKS ...], --benchmarks BENCHMARKS [BENCHMARKS ...]
+                        List of benchmarks
+  -c [CONFIG], --config [CONFIG]
+                        Configuration file to use (yaml format)
   -d [RUNDIR], --rundir [RUNDIR]
                         Directory where benchmarks will be run
+  -f [FILE], --file [FILE]
+                        File to store the results
+  -m [{singularity,docker}], --mode [{singularity,docker}]
+                        Run benchmarks in singularity or docker containers
   -n [MP_NUM], --mp_num [MP_NUM]
                         Number of cpus to run the benchmarks
   -t [TAGS], --tags [TAGS]
                         Custom user tags
-  -b BENCHMARKS [BENCHMARKS ...], --benchmarks BENCHMARKS [BENCHMARKS ...]
-                        List of benchmarks
-  -m [{singularity,docker}], --mode [{singularity,docker}]
-                        Run benchmarks in singularity or docker containers
-  -c [CONFIG], --config [CONFIG]
-                        Configuration file to use (yaml format)
+  -u [UID], --uid [UID]
+                        UID
+  -p, --publish         enable reporting via AMQ credentials in YAML file
+  -v, --verbose         Enables verbose mode. Display debug messages.
 
-----------------------------------------------------------------------
+-----------------------------------------------
 ```

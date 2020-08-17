@@ -11,6 +11,9 @@ import logging
 import sys
 import os
 import yaml
+import textwrap
+# import urllib.request
+
 try:
     import importlib.resources as pkg_resources
 except ImportError:
@@ -20,39 +23,59 @@ except ImportError:
 from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
 from hepbenchmarksuite import utils
 from hepbenchmarksuite import config
+from hepbenchmarksuite.plugins import send_queue
 
 
 def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                description="-"*70+"\n bmkrun cli allows you to run several benchmarks\n"+"-"*70+"\nAuthor: Benchmarking Working Group\nContact: benchmark-suite-wg-devel@cern.ch", epilog="-"*70)
+    parser = argparse.ArgumentParser(
+        prog='bmkrun',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent('''
+        -----------------------------------------------
+        High Energy Physics Benchmark Suite
+        -----------------------------------------------
+        This utility orchestrates several benchmarks
 
-    with pkg_resources.path(config, 'benchmarks.yml') as default_config_path:
-      default_config = default_config_path
+        Author: Benchmarking Working Group
+        Contact: benchmark-suite-wg-devel@cern.ch
+        '''), epilog=textwrap.dedent('''
+        -----------------------------------------------
+        ''')
+    )
+
+    # may be a better way to do this...
+    try:
+        with pkg_resources.path(config, 'benchmarks.yml') as defaultcfg:
+            default_config = defaultcfg
+    except Exception:
+        print("Unable to load default config yaml")
+        pass
+
     # Optional arguments
     parser.add_argument("-b", "--benchmarks", nargs='+', help="List of benchmarks", default=None)
     parser.add_argument("-c", "--config",     nargs='?', type=str, help="Configuration file to use (yaml format)", default=default_config)
-    parser.add_argument("-d", "--rundir",     nargs='?', help="Directory where benchmarks will be run",  default=None)
+    parser.add_argument("-d", "--rundir",     nargs='?', help="Directory where benchmarks will be run", default=None)
     parser.add_argument("-f", "--file",       nargs='?', help="File to store the results", default=None)
     parser.add_argument("-m", "--mode",       choices=['singularity', 'docker'], nargs='?', help="Run benchmarks in singularity or docker containers", default=None)
     parser.add_argument("-n", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks", default=None)
     parser.add_argument("-t", "--tags",       nargs='?', help="Custom user tags", default=None)
     parser.add_argument("-u", "--uid",        nargs='?', help="UID", default=None)
+    parser.add_argument("-p", "--publish",    action='store_true', help="enable reporting via AMQ credentials in YAML file", default=None)
     parser.add_argument("-v", "--verbose",    action='store_true', help="Enables verbose mode. Display debug messages.", default=None)
 
     try:
-      args = parser.parse_args()
-    except:
-      sys.exit(0)
+        args = parser.parse_args()
+    except Exception:
+        sys.exit(0)
 
     # Select config file
-    if args.config != None:
-      with open(args.config, 'r') as yam:
-        conf_data = yaml.full_load(yam)
-
-      active_config = conf_data
+    if args.config is not None:
+        with open(args.config, 'r') as yam:
+            conf_data = yaml.full_load(yam)
+        active_config = conf_data
     else:
-      parser.print_help()
-      sys.exit("No config file specified.")
+        parser.print_help()
+        sys.exit("No config file specified.")
 
     # Check for cli overrides
     # Convert arguments to dict
@@ -64,34 +87,40 @@ def main():
 
     # Populate active config with cli override
     for i in non_empty.keys():
-      if i == 'tags':
-        # Update tags with json format
-        active_config['global']['tags'] = utils.convert_tags_to_json(args.tags)
-      else:
-        active_config['global'][i] = non_empty[i]
-
+        if i == 'tags':
+            # Update tags with json format
+            active_config['global']['tags'] = utils.convert_tags_to_json(args.tags)
+        else:
+            active_config['global'][i] = non_empty[i]
 
     # Check if user provided a benchmark
-    if active_config['global']['benchmarks'] == None:
-      parser.print_help()
-      sys.exit("No benchmarks were selected.")
+    if active_config['global']['benchmarks'] is None:
+        parser.print_help()
+        sys.exit("No benchmarks were selected.")
 
     # Check if user provided valid benchmark
-    AVAILABLE_BENCHMARKS  = ["db12" , "hepscore", "spec2017", "hs06_32", "hs06_64", "test"]
+    AVAILABLE_BENCHMARKS = ["db12",
+                            "hepscore",
+                            "spec2017",
+                            "hs06_32",
+                            "hs06_64",
+                            "test"]
+
     for bench in active_config['global']['benchmarks']:
-      if bench not in AVAILABLE_BENCHMARKS:
-        sys.exit('Benchmark "{}" is not a valid benchmark. Please select one of the following benchmarks:\n- {} '.format(bench,'\n- '.join(AVAILABLE_BENCHMARKS)))
+        if bench not in AVAILABLE_BENCHMARKS:
+            sys.exit('Benchmark "{}" is not a valid benchmark.\
+                      Please select one of the following benchmarks:\n- {} \
+                      '.format(bench, '\n- '.join(AVAILABLE_BENCHMARKS)))
 
     # use all CPUs found if invalid parameter provided
-    if (   'mp_num' not in active_config['global'].keys()
-        or active_config['global']['mp_num'] == None
-        or int(active_config['global']['mp_num']) > os.cpu_count()
-        ):
-      active_config['global']['mp_num'] = os.cpu_count()
+    if ('mp_num' not in active_config['global'].keys()
+            or active_config['global']['mp_num'] is None
+            or int(active_config['global']['mp_num']) > os.cpu_count()):
+        active_config['global']['mp_num'] = os.cpu_count()
 
     # Check if cpu count in config is integer
     if not isinstance(active_config['global']['mp_num'], int):
-      sys.exit("CPU number is not an integer.")
+        sys.exit("CPU number is not an integer.")
 
     # Create rundir if not present
     os.makedirs(active_config['global']['rundir'], exist_ok=True)
@@ -99,16 +128,16 @@ def main():
     # Configure logging
     # Log verbosity
     if args.verbose:
-       log_level = logging.DEBUG
+        log_level = logging.DEBUG
     else:
-       log_level = logging.INFO
+        log_level = logging.INFO
 
     # Enable logging
     logger = logging.getLogger()
     logger.setLevel(log_level)
 
     # Log format
-    log_formatter = logging.Formatter('%(asctime)s, %(name)s [%(levelname)s] %(message)s',  datefmt='%Y-%m-%d %H:%M:%S')
+    log_formatter = logging.Formatter('%(asctime)s, %(name)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
     # Handler to write logs to stdout
     stream_handler = logging.StreamHandler(sys.stdout)
@@ -127,7 +156,7 @@ def main():
 
     # Save running config
     with open(os.path.join(active_config['global']['rundir'], 'run_config.yaml'), 'w') as conf_file:
-      yaml.dump(active_config, conf_file)
+        yaml.dump(active_config, conf_file)
 
     # Configure hep-benchmark-suite
     logging.debug("Active configuration in use: {}".format(active_config))
@@ -137,6 +166,16 @@ def main():
     # Display results
     FULL_PATH = os.path.join(active_config['global']['rundir'], active_config['global']['file'])
     utils.print_results_from_file(FULL_PATH)
+
+    # Publish to AMQ broker if provided
+    if 'publish' in active_config['global']:
+        try:
+            send_queue.send_message(FULL_PATH, active_config['activemq'])
+        except Exception as e:
+            logging.error("Something went wrong attempting to report via AMQ.")
+            logging.error("Results may not have been correctly transmitted.")
+            logging.error(e)
+            pass
 
     print("\nFull results can be found in {}".format(FULL_PATH))
     print("Full run log can can be found in {}".format(LOG_PATH))

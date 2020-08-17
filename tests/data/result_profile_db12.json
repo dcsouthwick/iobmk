@@ -1,0 +1,75 @@
+{
+    "host": {
+        "hostname": "gitlab-ci",
+        "ip": "127.0.0.1",
+        "UID": "not_defined",
+        "tags": {
+            "cloud": "Suite CI",
+            "vo": "Gitlab Runner",
+            "other_tag": "CI"
+        },
+        "FLAGS": {
+            "mp_num": 48
+        },
+        "SW": {
+            "python_version": "3.7.3",
+            "os_version": "CentOS Linux release 7.8.2003 (Core)",
+            "kernel_version": "3.10.0-1127.10.1.el7.x86_64",
+            "gcc_version": "gcc (GCC) 7.4.0",
+            "glibc_version": "2.17-307.el7.1"
+        },
+        "HW": {
+            "CPU": {
+                "Architecture": "x86_64",
+                "CPU_Model": "Intel(R) Xeon(R) Platinum 8268 CPU @ 2.90GHz",
+                "CPU_Family": "6",
+                "CPU": "48",
+                "Online_CPUs_list": "0-47",
+                "Threads_per_core": "1",
+                "Cores_per_socket": "24",
+                "Sockets": "2",
+                "Vendor_ID": "GenuineIntel",
+                "Stepping": "7",
+                "CPU_Max_Speed_MHz": "3900.0000",
+                "CPU_Min_Speed_MHz": "1200.0000",
+                "BogoMIPS": "5800.00",
+                "L2_cache": "1024K",
+                "L3_cache": "36608K",
+                "NUMA_node0_CPUs": "0-23",
+                "NUMA_node1_CPUs": "24-47",
+                "Power_Policy": "powersave",
+                "Power_Driver": "intel_pstate",
+                "Microcode": "0x5002f01",
+                "SMT_Enabled?": true
+            },
+            "BIOS": {
+                "Vendor": "not_available",
+                "Version": "not_available",
+                "Release_data": "not_available"
+            },
+            "SYSTEM": {
+                "Manufacturer": "not_available",
+                "Product_Name": "not_available",
+                "Version": "not_available",
+                "Product_Serial": "not_available",
+                "Product_Asset_Tag": "not_available"
+            },
+            "MEMORY": {
+                "Mem_Total": "792266476",
+                "Mem_Available": "769611044",
+                "Mem_Swap": "1048572"
+            },
+            "STORAGE": {}
+        }
+    },
+    "_id": "machineX_2020-08-06T07:14:30Z",
+    "_timestamp": "2020-08-06T07:14:30Z",
+    "_timestamp_end": "2020-08-06T07:14:51Z",
+    "json_version": "2.0-dev",
+    "profiles": {
+        "DB12": {
+            "value": 34.40039007927594,
+            "unit": "est. HS06"
+        }
+    }
+}
