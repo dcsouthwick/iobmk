@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = hepbenchmarksuite
+omit = tests/*
+
+[report]
+ignore_errors = True
+exclude_lines =
+    if __name__ == .__main__.:

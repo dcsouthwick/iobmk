@@ -170,7 +170,7 @@ def main():
     # Publish to AMQ broker if provided
     if 'publish' in active_config['global']:
         try:
-            send_queue.send_message(FULL_PATH, active_config['global'])
+            send_queue.send_message(FULL_PATH, active_config['activemq'])
         except Exception as e:
             logging.error("Something went wrong attempting to report via AMQ.")
             logging.error("Results may not have been correctly transmitted.")
