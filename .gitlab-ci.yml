@@ -37,8 +37,9 @@ test_python_coverage:
       - master
       - qa
   artifacts:
+    reports:
+      cobertura: coverage.xml
     paths:
-      - coverage.xml
       - htmlcov/*
     expire_in: 1 week
     when: always

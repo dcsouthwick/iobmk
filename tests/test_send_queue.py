@@ -19,15 +19,16 @@ class TestAMQ(unittest.TestCase):
     Reads a minimal test json format2.0 from data/
     """
     # get CI environment args.
+    # currently unused
     # TODO(anyone): fix for testing without gitlab CI vars
     ci_args = {
         'username': os.getenv('QUEUE_USERNAME'),
         'password': os.getenv('QUEUE_PASSWORD'),
-        'server':   os.getenv('QUEUE_HOST'),
-        'port':     os.getenv('QUEUE_PORT'),
-        'topic':    os.getenv('QUEUE_NAME'),
-        'cert':     os.getenv('CERT_FILE'),
-        'key':      os.getenv('KEY_FILE')
+        'server'  : os.getenv('QUEUE_HOST'),
+        'port'    : os.getenv('QUEUE_PORT'),
+        'topic'   : os.getenv('QUEUE_NAME'),
+        'cert'    : os.getenv('CERT_FILE'),
+        'key'     : os.getenv('KEY_FILE')
     }
 
     def genJSON(self, message="None"):
@@ -121,6 +122,18 @@ class TestAMQ(unittest.TestCase):
         mock_send_message.assert_called_once_with('test.json', {'port': 111, 'server': 'google.com', 'topic': 'a'})
         self.assertTrue(mock_parse_args.called)
 
+    def test_file_path(self):
+
+        with self.assertRaises(IOError):
+            send_queue.send_message('', dict())
+
+        with patch('hepbenchmarksuite.plugins.send_queue.os.path', autospec=True) as mock_filecheck:
+            with self.assertRaises(FileNotFoundError):
+                send_queue.send_message('garbage.json', dict())
+        self.assertTrue(mock_filecheck.isfile.called)
+
+
+
     @patch('hepbenchmarksuite.plugins.send_queue.time.sleep', return_value=None)
     @patch('hepbenchmarksuite.plugins.send_queue.MyListener', autospec=True)
     @patch('hepbenchmarksuite.plugins.send_queue.os.path', return_value=True)
@@ -143,8 +156,7 @@ class TestAMQ(unittest.TestCase):
             with self.assertRaises(OSError):
                 send_queue.send_message(self.test_file_path, test_args)
             mock_json.assert_called_once_with(self.test_file_path, 'r')
-            mock_stomp.Connection.assert_called_once_with(host_and_ports=[(test_args['server'],
-                                                                           int(test_args['port']))])
+            mock_stomp.Connection.assert_called_once_with(host_and_ports=[(test_args['server'], int(test_args['port']))])
             mock_conn.set_listener.assert_called_once_with('mylistener', mock_listener(mock_conn))
             mock_conn.start.assert_called()
             mock_json.reset_mock()
@@ -187,7 +199,17 @@ class TestAMQ(unittest.TestCase):
             self.assertIn('INFO:[send_queue]:AMQ SSL: certificate based authentication', logger.output)
             self.assertIn('INFO:[send_queue]:Sending results to AMQ topic', logger.output)
             mock_conn.send.assert_called_once_with(test_args['topic'], "{'test':1}", "application/json")
+            mock_conn.get_listener.assert_called_once_with('mylistener')
             mock_conn.disconnect.assert_called()
+
+            mock_conn.get_listener('mylistener').configure_mock(status=False)
+            with self.assertRaises(Exception):
+                send_queue.send_message(self.test_file_path, test_args)
+
+
+    def test_listener(self):
+        """TODO(anyone): listener function"""
+        pass
 
 
 if __name__ == '__main__':
