@@ -60,7 +60,7 @@ def main():
     parser.add_argument("-n", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks", default=None)
     parser.add_argument("-t", "--tags",       nargs='?', help="Custom user tags", default=None)
     parser.add_argument("-u", "--uid",        nargs='?', help="UID", default=None)
-    parser.add_argument("--publish",          action='store_true', help="enable reporting via AMQ credentials in YAML file", default=None)
+    parser.add_argument("-p", "--publish",    action='store_true', help="enable reporting via AMQ credentials in YAML file", default=None)
     parser.add_argument("-v", "--verbose",    action='store_true', help="Enables verbose mode. Display debug messages.", default=None)
 
     try:

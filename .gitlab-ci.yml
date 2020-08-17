@@ -144,7 +144,6 @@ test_db12_benchmark:
     variables:
       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
       - $CI_COMMIT_BRANCH =~ /^qa$/
-      - $CI_COMMIT_BRANCH =~ /^v2.*/
   cache:
     key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
     paths:
