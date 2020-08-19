@@ -11,12 +11,10 @@ import os
 import logging
 import sys
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-logger = logging.getLogger('[send_queue]')
+_log = logging.getLogger(__name__)
 
 # TODO: test wait=true on connect() in firewalled nodes
 # This is supported in stomp...
-
 
 class MyListener(stomp.ConnectionListener):
     def __init__(self, conn):
@@ -25,12 +23,12 @@ class MyListener(stomp.ConnectionListener):
         self.message = ''
 
     def on_error(self, headers, message):
-        logger.error('received error: {}'.format(message))
+        _log.error('received error: {}'.format(message))
         self.status = False
         self.message = message
 
     def on_message(self, headers, message):
-        logger.info('received message: {}'.format(message))
+        _log.info('received message: {}'.format(message))
 
 
 def send_message(filepath, connection):
@@ -54,17 +52,17 @@ def send_message(filepath, connection):
                      # TODO: verify SSL support
                      ssl_version=5)  # <_SSLMethod.PROTOCOL_TLSv1_2: 5>
         conn.connect(wait=True)
-        logger.info("AMQ SSL: certificate based authentication")
+        _log.info("AMQ SSL: certificate based authentication")
     elif 'username' in connection and 'password' in connection:
         conn.connect(connection['username'], connection['password'], wait=True)
-        logger.info("AMQ Plain: user-password based authentication")
+        _log.info("AMQ Plain: user-password based authentication")
     else:
         raise IOError("The input arguments do not include a valid pair of authentication"
                       "(certificate, key) or (user,password)")
 
-    logger.info("Sending results to AMQ topic")
+    _log.info("Sending results to AMQ topic")
     time.sleep(5)
-    logger.debug("Attempting send of message {}".format(message_contents))
+    _log.debug("Attempting send of message {}".format(message_contents))
     conn.send(connection['topic'], message_contents, "application/json")
 
     time.sleep(5)
@@ -75,7 +73,7 @@ def send_message(filepath, connection):
     conn.stop()
     conn.disconnect()
 
-    logger.info("Results sent to AMQ topic")
+    _log.info("Results sent to AMQ topic")
 
 
 def parse_args(args):

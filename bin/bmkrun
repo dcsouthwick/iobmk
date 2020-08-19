@@ -159,7 +159,7 @@ def main():
         yaml.dump(active_config, conf_file)
 
     # Configure hep-benchmark-suite
-    logging.debug("Active configuration in use: {}".format(active_config))
+    logger.debug("Active configuration in use: {}".format(active_config))
     suite = HepBenchmarkSuite(config=active_config)
     suite.start()
 
@@ -172,9 +172,9 @@ def main():
         try:
             send_queue.send_message(FULL_PATH, active_config['activemq'])
         except Exception as e:
-            logging.error("Something went wrong attempting to report via AMQ.")
-            logging.error("Results may not have been correctly transmitted.")
-            logging.error(e)
+            logger.error("Something went wrong attempting to report via AMQ.")
+            logger.error("Results may not have been correctly transmitted.")
+            logger.exception(e)
             pass
 
     print("\nFull results can be found in {}".format(FULL_PATH))
