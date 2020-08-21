@@ -69,7 +69,8 @@ class HepBenchmarkSuite(object):
 
         _log.info(" - Checking provided work dirs exist...")
         os.makedirs(self._config['rundir'], exist_ok=True)
-        os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
+        if 'hepspec06' in self._config_full:
+            os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
 
         _log.info(" - Checking for a valid configuration...")
         for bench in self.selected_benchmarks:
