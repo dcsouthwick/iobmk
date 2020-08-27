@@ -44,7 +44,7 @@ class HepBenchmarkSuite(object):
 
     def start(self):
         """Entrypoint for suite."""
-        _log.info("Starting benchmark suite")
+        _log.info("Starting HEP Benchmark Suite")
 
         self._extra['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
 
