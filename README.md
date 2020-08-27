@@ -17,16 +17,16 @@
 
 ## About
 The HEP Benchmark Suite is a toolkit which aggregates several different benchmarks
-in one single application for characterizing the perfomance of individual and clustered heterogeneous hardware. 
+in one single application for characterizing the perfomance of individual and clustered heterogeneous hardware.
 
 It is built in a modular approach to target the following use cases in HEP computing:
 
 1. Mimic the usage of WLCG resources for experiment workloads
    * Run workloads representative of the production applications running on WLCG
 1. Allow collection of a configurable number of benchmarks
-   * Enable performance studies on heterogeneous hardware 
+   * Enable performance studies on heterogeneous hardware
 1. Collect the hardware metadata and the running conditions
-   * Compare the benchmark outcome under similar conditions  
+   * Compare the benchmark outcome under similar conditions
 1. Have prompt feedback about executed benchmarks
    * By publishing results to a monitoring system
 1. Probe randomly assigned slots in a cloud environment
@@ -62,15 +62,15 @@ Benchmark | Docker | Singularity
 HEPSpec06_32| :heavy_check_mark: | :heavy_check_mark: |
 HEPSpec06_64| :heavy_check_mark: | :heavy_check_mark: |
 SPEC2017    | :heavy_check_mark: | :heavy_check_mark: |
-HEP-Score   | :construction:     | :construction: |
+HEP-Score   | :heavy_check_mark: | :heavy_check_mark: |
 
 - Plugins
 
-Plugin | Status |
-:---:| :--:|
-HW-Metadata| :heavy_check_mark: |
-ActiveMQ|:x: |
-Elastic Search|:x: |
+Plugin          | Status             |
+:--------------:| :-----------------:|
+HW-Metadata     | :heavy_check_mark: |
+ActiveMQ        | :heavy_check_mark: |
+Elastic Search  | :x:                |
 
 
 ### Available benchmarks
@@ -78,13 +78,13 @@ The HEP Benchmark Suite is delivered **ready-to-run** with a [default yaml](hepb
 - [HEP-score](https://gitlab.cern.ch/hep-benchmarks/hep-score)
 - [HS06](https://w3.hepix.org/benchmarking.html)
 - [SPEC CPU2017](https://www.spec.org/cpu2017/)
-- some fast benchmarks: 
+- Fast benchmarks (should not be used for performance measurments):
     - DIRAC Benchmark (DB12)
     - [ATLAS Kit Validation](https://gitlab.cern.ch/hep-benchmarks/hep-workloads/blob/master/atlas/kv/atlas-kv/DESCRIPTION)
 
 **Due to proprietary license requirements, HS06 and SPEC CPU 2017 must be provided by the end user.** This tool will work with either a pre-installed or tarball archive of SPEC software.
 
-### Example of a sparse deployment of HEP Benchmark Suite 
+### Example of a sparse deployment of HEP Benchmark Suite
 
 <img src="doc/images/HEP-Benchmark-Suite-Workflow.png" width="500">
 
@@ -96,7 +96,7 @@ In this example, an AMQ consumer may then digest the messages from the broker, a
 
 Users are free to build/use transport and aggregation/visualization tools of their choice to ingest the generated JSON results.
 
-## Installation 
+## Installation
 
 ```sh
 python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@qa-v2.0
@@ -109,9 +109,9 @@ This will install the suite to the user's home directory:
 
 ## How to run
 
-The python executable (*bmkrun*) can be added to the user's `$PATH`, and launched directly. 
-Without argument, this will execute the distributed defaults as defined in `benchmarks.yml`. 
-Users are free to provide [command-line arguments](#description-of-all-arguments), or edit the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml) file directly. 
+The python executable (*bmkrun*) can be added to the user's `$PATH`, and launched directly.
+Without argument, this will execute the distributed defaults as defined in `benchmarks.yml`.
+Users are free to provide [command-line arguments](#description-of-all-arguments), or edit the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml) file directly.
 
 - Running the HEP Benchmark Suite using Docker containers (default)
 	- `./bmkrun`
@@ -119,7 +119,7 @@ Users are free to provide [command-line arguments](#description-of-all-arguments
 	- `./bmkrun --mode=singularity`
 
 The aggregated results of the selected benchmarks are written to the location and file defined by the `--rundir=` & `--file=` argument (defined as `/tmp/hep-spec_wd3/result_profile.json` in [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml)).
-    
+
 ### Description of major arguments
 
 In order to run a sequence of benchmarks, specify the list using the `--benchmarks` argument.
@@ -148,7 +148,7 @@ Author: Benchmarking Working Group
 Contact: benchmark-suite-wg-devel@cern.ch
 
 optional arguments:
-  -h, --help            show this help message and exit
+  -h, --help            Show this help message and exit
   -b BENCHMARKS [BENCHMARKS ...], --benchmarks BENCHMARKS [BENCHMARKS ...]
                         List of benchmarks
   -c [CONFIG], --config [CONFIG]
@@ -165,7 +165,7 @@ optional arguments:
                         Custom user tags
   -u [UID], --uid [UID]
                         UID
-  -p, --publish         enable reporting via AMQ credentials in YAML file
+  -p, --publish         Enable reporting via AMQ credentials in YAML file
   -v, --verbose         Enables verbose mode. Display debug messages.
 
 -----------------------------------------------

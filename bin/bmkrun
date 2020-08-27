@@ -7,12 +7,13 @@
 ################################################################################
 
 import argparse
+import datetime
 import logging
 import sys
+import socket
 import os
 import yaml
 import textwrap
-# import urllib.request
 
 try:
     import importlib.resources as pkg_resources
@@ -55,6 +56,7 @@ def main():
     parser.add_argument("-b", "--benchmarks", nargs='+', help="List of benchmarks", default=None)
     parser.add_argument("-c", "--config",     nargs='?', type=str, help="Configuration file to use (yaml format)", default=default_config)
     parser.add_argument("-d", "--rundir",     nargs='?', help="Directory where benchmarks will be run", default=None)
+    parser.add_argument("-e", "--export",     action='store_true', help="Export all json and log files from rundir and compresses them.", default=None)
     parser.add_argument("-f", "--file",       nargs='?', help="File to store the results", default=None)
     parser.add_argument("-m", "--mode",       choices=['singularity', 'docker'], nargs='?', help="Run benchmarks in singularity or docker containers", default=None)
     parser.add_argument("-n", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks", default=None)
@@ -137,7 +139,7 @@ def main():
     logger.setLevel(log_level)
 
     # Log format
-    log_formatter = logging.Formatter('%(asctime)s, %(name)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    log_formatter = logging.Formatter('%(asctime)s, %(name)s:%(funcName)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
     # Handler to write logs to stdout
     stream_handler = logging.StreamHandler(sys.stdout)
@@ -162,6 +164,13 @@ def main():
     logger.debug("Active configuration in use: {}".format(active_config))
     suite = HepBenchmarkSuite(config=active_config)
     suite.start()
+
+    # Export logs and json to a compressed tarball
+    # format of export: dirname_hostname_datetime.tar.gz
+    if args.export:
+        utils.export(active_config['global']['rundir'], '{}_{}_{}.tar.gz'.format(os.path.split(active_config['global']['rundir'])[-1],
+                                                                                 socket.gethostname(),
+                                                                                 datetime.datetime.now().strftime("%Y-%m-%d_%H%M")))
 
     # Display results
     FULL_PATH = os.path.join(active_config['global']['rundir'], active_config['global']['file'])

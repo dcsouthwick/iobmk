@@ -10,12 +10,38 @@ import os
 import socket
 import subprocess
 import sys
+import tarfile
 import yaml
 
 from hepbenchmarksuite.plugins.extractor import Extractor
 
 _log = logging.getLogger(__name__)
 
+
+def export(result_dir, outfile):
+    """
+    Export all json and log files from a given dir.
+
+    Args:
+      result_dir: String with the directory to compress the files.
+      outfile:    String with the filename to save.
+
+    Returns:
+      Error code: 0 OK , 1 Not OK
+    """
+
+    _log.info("Exporting *.json, *.log from {}...".format(result_dir))
+
+    with tarfile.open(outfile, 'w:gz') as archive:
+        # Respect the tree hierarchy on compressing
+        for root, dirs, files in os.walk(result_dir):
+            for name in files:
+                if name.endswith('.json') or name.endswith('.log'):
+                    archive.add(os.path.join(root,name))
+
+    _log.info("Files compressed! The resulting file was created: {}".format(outfile))
+
+    return 0
 
 def validate_spec(conf, bench):
     """
