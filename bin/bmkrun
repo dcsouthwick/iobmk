@@ -22,8 +22,14 @@ except ImportError:
     import importlib_resources as pkg_resources
 
 from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
+
 from hepbenchmarksuite import utils
 from hepbenchmarksuite import config
+
+from hepbenchmarksuite.exceptions import PreFlightError
+from hepbenchmarksuite.exceptions import BenchmarkFailure
+from hepbenchmarksuite.exceptions import BenchmarkFullFailure
+
 from hepbenchmarksuite.plugins import send_queue
 
 
@@ -163,7 +169,16 @@ def main():
     # Configure hep-benchmark-suite
     logger.debug("Active configuration in use: {}".format(active_config))
     suite = HepBenchmarkSuite(config=active_config)
-    suite.start()
+    try:
+        suite.start()
+    except PreFlightError:
+        logger.error("HEP-Benchmark Suite was aborted due to pre-flight check failure.")
+        exit(1)
+    except BenchmarkFullFailure:
+        logger.warning("HEP-Benchmark Suite failed all benchmarks.")
+        exit(1)
+    except BenchmarkFailure:
+        logger.warning("HEP-Benchmark Suite ran with failed benchmarks. Please be aware of the results.")
 
     # Export logs and json to a compressed tarball
     # format of export: dirname_hostname_datetime.tar.gz
