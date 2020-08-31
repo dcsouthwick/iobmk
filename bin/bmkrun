@@ -171,11 +171,8 @@ def main():
     suite = HepBenchmarkSuite(config=active_config)
     try:
         suite.start()
-    except PreFlightError:
-        logger.error("HEP-Benchmark Suite was aborted due to pre-flight check failure.")
-        exit(1)
-    except BenchmarkFullFailure:
-        logger.warning("HEP-Benchmark Suite failed all benchmarks.")
+    except PreFlightError, BenchmarkFullFailure:
+        logger.error("HEP-Benchmark Suite failed.")
         exit(1)
     except BenchmarkFailure:
         logger.warning("HEP-Benchmark Suite ran with failed benchmarks. Please be aware of the results.")
