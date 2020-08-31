@@ -171,7 +171,7 @@ def main():
     suite = HepBenchmarkSuite(config=active_config)
     try:
         suite.start()
-    except PreFlightError, BenchmarkFullFailure:
+    except (PreFlightError, BenchmarkFullFailure):
         logger.error("HEP-Benchmark Suite failed.")
         exit(1)
     except BenchmarkFailure:
