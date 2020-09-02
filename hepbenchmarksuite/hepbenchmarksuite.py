@@ -12,6 +12,9 @@ import shutil
 
 from hepbenchmarksuite import db12
 from hepbenchmarksuite import utils
+from hepbenchmarksuite.exceptions import PreFlightError
+from hepbenchmarksuite.exceptions import BenchmarkFailure
+from hepbenchmarksuite.exceptions import BenchmarkFullFailure
 
 _log = logging.getLogger(__name__)
 
@@ -53,6 +56,7 @@ class HepBenchmarkSuite(object):
             self.run()
         else:
             _log.error("Pre-flight checks failed.")
+            raise PreFlightError
 
     def _preflight(self):
         """Perform pre-flight checks."""
@@ -164,10 +168,12 @@ class HepBenchmarkSuite(object):
         # Check for workload errors
         if len(self.failures) == len(self.selected_benchmarks):
             _log.error('All benchmarks failed!')
-            exit(1)
+            raise BenchmarkFullFailure
+
         elif len(self.failures) > 0:
             # something failed, response?
             _log.error("{} Failed. Please check logs".format(*self.failures))
-            exit(1)
+            raise BenchmarkFailure
+
         else:
             _log.info("Successfully completed all requested benchmarks")
