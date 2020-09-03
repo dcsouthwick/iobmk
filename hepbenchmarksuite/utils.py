@@ -6,6 +6,11 @@
 
 import json
 import logging
+try:
+    from importlib.resources import files
+except ImportError:
+    # Try backported to PY<37 `importlib_resources`.
+    from importlib_resources import files
 import os
 import socket
 import subprocess
@@ -84,42 +89,34 @@ def validate_spec(conf, bench):
 def run_hepscore(conf):
     """
     Import and run hepscore
-    This method is temporary, as tag 1.0rc requires reading files from disk
     """
     try:
-        from hepscore import HEPscore
+        import hepscore
     except ImportError:
-        _log.error("Failed to import hepscore!")
-        _log.warn("Skipping hepscore: unable to import")
-        raise
-    # hepscore constructor cannot handle excess keys...
-    # hs = HEPscore(**self._config_full)
+        _log.exception("Failed to import hepscore!")
+        return -1
 
-    # Override output directory so suite can find results
-    # will write results to resultsdir/HEPscore19.json
-    hepscore_overrides = {'cec': conf['global']['mode'],
-                          'resultsdir': conf['global']['rundir']+'/HEPSCORE'}
+    # Use hepscore-distributed config if not provided:
+    if 'hepscore_benchmark' not in conf:
+        try:
+            cfgString = files(hepscore).joinpath('etc/hepscore-default.yaml').read_text()
+            conf.update(yaml.safe_load(cfgString))
+        except Exception:
+            _log.exception("Unable to load default config yaml")
+            return -1
 
-    hs = HEPscore(**hepscore_overrides)
-    # Empty args defaults to hepscore distributed yaml
-    # hs.read_and_parse_conf()
-    # There is no way to pass config arguments to hepscore, it demands reading from disk
-    hepscore_temp = {'hepscore_benchmark': conf['hepscore_benchmark']}
-    hepscore_conf_path = os.path.join(conf['global']['rundir'], 'hepscore.yaml')
-    with open(hepscore_conf_path, 'w') as conf_file:
-        yaml.dump(hepscore_temp, conf_file)
+    # ensure same runmode as suite
+    conf['hepscore_benchmark']['settings']['container_exec'] = conf['global']['mode']
+    hepscore_resultsDir = os.path.join(conf['global']['rundir'], 'HEPSCORE')
 
-    hs.read_and_parse_conf(hepscore_conf_path)
-    os.remove(hepscore_conf_path)
+    hs = hepscore.HEPscore(conf, hepscore_resultsDir)
 
     # hepscore flavor of error propagation
     # run() returns score from last workload if successful
     returncode = hs.run()
     if returncode >= 0:
         hs.gen_score()
-        hs.write_output("json",
-                        os.path.join(conf['global']['rundir'],
-                                     'HEPSCORE/hepscore_result.json'))
+        hs.write_output("json", os.path.join(conf['global']['rundir'], 'HEPSCORE/hepscore_result.json'))
     return returncode
 
 
@@ -284,7 +281,7 @@ def exec_cmd(cmd_str):
 def get_version():
     # TODO
     # Version of metadata to be used in ElasticSearch tagging
-    return "2.0-dev"
+    return "v2.0-dev"
 
 
 def get_host_ips():

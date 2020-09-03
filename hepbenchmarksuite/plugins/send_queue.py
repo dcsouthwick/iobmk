@@ -13,8 +13,6 @@ import sys
 
 _log = logging.getLogger(__name__)
 
-# TODO: test wait=true on connect() in firewalled nodes
-# This is supported in stomp...
 
 class MyListener(stomp.ConnectionListener):
     def __init__(self, conn):
@@ -35,7 +33,7 @@ def send_message(filepath, connection):
     """ expects a filepath string, and a dict of args"""
 
     if os.path.isfile(filepath) is False:
-        raise IOError
+        raise IOError("{} is not a valid filepath!".format(filepath))
 
     with open(filepath, 'r') as f:
         message_contents = f.read()
@@ -43,7 +41,6 @@ def send_message(filepath, connection):
     conn = stomp.Connection(host_and_ports=[(connection['server'],
                                             int(connection['port']))])
     conn.set_listener('mylistener', MyListener(conn))
-    conn.start()
 
     if 'key' in connection and 'cert' in connection:
         conn.set_ssl(for_hosts=[connection['server']],
@@ -70,7 +67,6 @@ def send_message(filepath, connection):
     if conn.get_listener('mylistener').status is False:
         raise Exception("ERROR: {}".format(
             conn.get_listener('mylistener').message))
-    conn.stop()
     conn.disconnect()
 
     _log.info("Results sent to AMQ topic")

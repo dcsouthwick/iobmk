@@ -14,7 +14,6 @@ import socket
 import os
 import yaml
 import textwrap
-
 try:
     import importlib.resources as pkg_resources
 except ImportError:

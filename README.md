@@ -1,19 +1,12 @@
 # HEP Benchmark Suite
 
-|   QA | Master |
+|   qa-v2.0 | master |
 | --------- | -------- |
-|   [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/qa/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/commits/qa)     |  [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/master/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/commits/master)     |
+|   [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/qa/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/pipelines?ref=qa-v2.0)     |  [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/master/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/pipelines?ref=master)     |
+[![coverage report](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/qa-v2.0/coverage.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/commits/qa-v2.0)|[![coverage report](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/master/coverage.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/commits/master)|
 
+[[_TOC_]]
 
-- [About](#about)
-- [Benchmark suite architecture](#benchmark-suite-architecture)
-  * [Available benchmarks](#available-benchmarks)
-  * [Example of a sparse deployment of HEP Benchmark Suite](#Example-of-a-sparse-deployment-of-HEP-Benchmark-Suite)
-- [Installation](#installation)
-- [How to run](#how-to-run)
-  * [Description of major arguments](#description-of-major-arguments)
-  * [ActiveMQ reporting](#advanced-message-queuing-amq)
-- [Complete arguments description](#description-of-all-arguments)
 
 ## About
 The HEP Benchmark Suite is a toolkit which aggregates several different benchmarks
@@ -32,8 +25,6 @@ It is built in a modular approach to target the following use cases in HEP compu
 1. Probe randomly assigned slots in a cloud environment
    * In production can suggest deletion and re-provisioning of underperforming resources
 
-* Benchmark modules are made available both as Singularity and Docker containers for deployment on datacenter resources.
-
 ## Benchmark suite architecture
 
 *The figure shows the high level architecture of the benchmark suite.*
@@ -47,7 +38,7 @@ A configurable sequence of benchmarks may be launched by the HEP Benchmark Suite
 
 Benchmark results are aggregated into a single JSON document, together with the hardware metadata (CPU model, host name, Data Centre name, kernel version, etc.)
 
-Optionally, the final report can be sent to a transport layer, to be further digested and analysed by applications that are subscribed as consumer to the transport layer.
+Optionally, the final report can be sent to a transport layer, to be further digested and analysed by broker consumers.
 
 Users may also execute the suite in stand-alone mode without result reporting. (see [How to run](#how-to-run) for further details).
 
@@ -57,20 +48,20 @@ The current Hep-Benchmark-Suite integration status.
 
 - Benchmarks
 
-Benchmark | Docker | Singularity
-:---:| :---:| :---: |
-HEPSpec06_32| :heavy_check_mark: | :heavy_check_mark: |
-HEPSpec06_64| :heavy_check_mark: | :heavy_check_mark: |
-SPEC2017    | :heavy_check_mark: | :heavy_check_mark: |
-HEP-Score   | :heavy_check_mark: | :heavy_check_mark: |
+Benchmark   | Docker             | Singularity
+:---:       | :---:              | :---:              
+HEPSpec06_32| :white_check_mark: | :white_check_mark: 
+HEPSpec06_64| :white_check_mark: | :white_check_mark: 
+SPEC2017    | :white_check_mark: | :white_check_mark: 
+HEP-Score   | :white_check_mark: | :white_check_mark:
 
 - Plugins
 
-Plugin          | Status             |
-:--------------:| :-----------------:|
-HW-Metadata     | :heavy_check_mark: |
-ActiveMQ        | :heavy_check_mark: |
-Elastic Search  | :x:                |
+Plugin        | Status |
+:---:         | :--:               |
+HW-Metadata   | :white_check_mark: |
+ActiveMQ      | :white_check_mark: |
+Elastic Search|:x:        |
 
 
 ### Available benchmarks
@@ -127,10 +118,20 @@ Multiple benchmarks can be executed in sequence via a single call to the hep-ben
 
 In the case of running HS06, and/or SPEC CPU2017, the benchmark will look for the install at the specified `hepspec_volume:`, and if it does not exist, it will attempt to install it via tarball argument `url_tarball:`, as defined in the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml)).
 
-#### Advanced Message Queuing (AMQ)
+### Advanced Message Queuing (AMQ)
 
-If publication to an AMQ broker is needed, replace the variable in the `activemq` tree of the [config yaml](hepbenchmarksuite/config/benchmarks.yml). with the expected AMQ authentication parameters (host, port, username, password, topic, etc). You can then pass the argument `--publish` to the suite, or set the value in the yaml.
+AMQ publishing is implemented using the [STOMP protocol](https://stomp.github.io/). Users must provide either a valid username/password or key/cert pair, in addition to the server and topic. The relevant section of the [config yaml](hepbenchmarksuite/config/benchmarks.yml) is given below. You can then pass the argument `--publish` to the suite.
 
+```yaml
+activemq:
+  server: your-AMQ-server.com
+  port: 61613
+  topic: hepscore-topic
+  username: user
+  password: secret
+  key: /path/key-file.key
+  cert: /path/cert-file.pem
+```
 
 
 ### Description of all arguments
@@ -163,9 +164,8 @@ optional arguments:
                         Number of cpus to run the benchmarks
   -t [TAGS], --tags [TAGS]
                         Custom user tags
-  -u [UID], --uid [UID]
-                        UID
-  -p, --publish         Enable reporting via AMQ credentials in YAML file
+  -u [UID], --uid [UID] UID
+  -p, --publish         enable reporting via AMQ credentials in YAML file
   -v, --verbose         Enables verbose mode. Display debug messages.
 
 -----------------------------------------------
