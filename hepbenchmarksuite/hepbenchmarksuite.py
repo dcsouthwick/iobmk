@@ -73,8 +73,10 @@ class HepBenchmarkSuite(object):
 
         _log.info(" - Checking provided work dirs exist...")
         os.makedirs(self._config['rundir'], exist_ok=True)
-        if 'hepspec06' in self._config_full:
+        if 'hepspec06' in self.selected_benchmarks:
             os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
+        if 'hepscore' in self.selected_benchmarks:
+            os.makedirs(os.path.join(self._config['rundir'], "HEPSCORE"), exist_ok=True)
 
         _log.info(" - Checking for a valid configuration...")
         for bench in self.selected_benchmarks:
@@ -111,7 +113,7 @@ class HepBenchmarkSuite(object):
             _log.info("Benchmarks left to run: {}".format(self._bench_queue))
             bench2run = self._bench_queue.pop(0)
             _log.info("Running benchmark: {}".format(bench2run))
-            
+
             if bench2run == 'db12':
                 # returns a dict{'DB12':{ 'value': float(), 'unit': string() }}
                 returncode = db12.run_db12(rundir=self._config['rundir'], cpu_num=2)

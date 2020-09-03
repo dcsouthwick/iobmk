@@ -1,5 +1,5 @@
-setuptools
-pyyaml
+#setuptools
+importlib-resources
 pytest
 flake8-docstrings
 stomp.py
