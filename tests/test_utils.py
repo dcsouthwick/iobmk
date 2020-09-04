@@ -9,6 +9,10 @@ import unittest
 from unittest.mock import patch, mock_open, MagicMock
 from hepbenchmarksuite import utils
 from hepscore import HEPscore
+import contextlib
+import difflib
+import json
+import sys
 
 
 class TestHepscore(unittest.TestCase):
@@ -58,6 +62,37 @@ class TestHepscore(unittest.TestCase):
         self.assertEqual(ret, 1)
         mock_gen.assert_called()
         mock_write.assert_called_once_with('json', '/tmp/HEPSCORE/hepscore_result.json')
+
+
+def test_print_results():
+    """Test the print results from utils"""
+
+    # Temporary file
+    TEMP_FILE = 'result_dump'
+
+    # Create a context to redirect the stdout output
+    # from utils.print_results_from_file to a file
+    # that can be later accessed for comparison
+    with open(TEMP_FILE, 'w') as tmp_file:
+        with contextlib.redirect_stdout(tmp_file):
+            utils.print_results_from_file('tests/data/result_profile_sample.json')
+
+    # Open a valid print results sample file
+    with open('tests/data/valid_print_results_sample', 'r') as print_sample:
+        # Open the file with the output generated from previous call
+        with open(TEMP_FILE, "r") as gen_out:
+            sample_output = print_sample.readlines()
+            utils_output  = gen_out.readlines()
+
+            # Compare differences between sample print message
+            # and the one resulting from utils print function
+            diff = difflib.Differ().compare(sample_output, utils_output)
+
+            # Dump the printout for easier identification of issues
+            sys.stdout.writelines(diff)
+
+            assert sample_output == utils_output
+
 
 
 if __name__ == '__main__':

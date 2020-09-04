@@ -11,6 +11,7 @@ try:
 except ImportError:
     # Try backported to PY<37 `importlib_resources`.
     from importlib_resources import files
+
 import os
 import socket
 import subprocess
@@ -279,8 +280,9 @@ def exec_cmd(cmd_str):
 
 
 def get_version():
-    # TODO
-    # Version of metadata to be used in ElasticSearch tagging
+    """
+    Version of metadata to be used in ElasticSearch tagging
+    """
     return "v2.1-dev"
 
 
@@ -362,12 +364,11 @@ def print_results(results):
     print("=========================================================")
     print("Suite start: {}".format(results['_timestamp']))
     print("Suite end:   {}".format(results['_timestamp_end']))
-    print("Machine CPU Model: {}".format(
-        results['host']['HW']['CPU']['CPU_Model']))
+    print("Machine CPU Model: {}".format(results['host']['HW']['CPU']['CPU_Model']))
 
     p = results['profiles']
     bmk_print_action = {
-        "db12"    : lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(p[x]['value']), p[x]['unit']),
+        "DB12"    : lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(p[x]['value']), p[x]['unit']),
         "hs06_32" : lambda x: "HS06 32 bit Benchmark = %s" % p[x]['score'],
         "hs06_64" : lambda x: "HS06 64 bit Benchmark = %s" % p[x]['score'],
         "spec2017": lambda x: "SPEC2017 64 bit Benchmark = %s" % p[x]['score'],
