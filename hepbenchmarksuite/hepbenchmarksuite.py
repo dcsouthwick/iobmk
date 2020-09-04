@@ -76,7 +76,7 @@ class HepBenchmarkSuite(object):
         if 'hs06_32' in self.selected_benchmarks or 'hs06_64' in self.selected_benchmarks:
             os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
         if 'spec2017' in self.selected_benchmarks:
-            os.makedirs(self._config_full['soec2017']['hepspec_volume'], exist_ok=True)
+            os.makedirs(self._config_full['spec2017']['hepspec_volume'], exist_ok=True)
         if 'hepscore' in self.selected_benchmarks:
             os.makedirs(os.path.join(self._config['rundir'], "HEPSCORE"), exist_ok=True)
 
