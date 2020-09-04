@@ -281,7 +281,7 @@ def exec_cmd(cmd_str):
 def get_version():
     # TODO
     # Version of metadata to be used in ElasticSearch tagging
-    return "v2.0-dev"
+    return "v2.1-dev"
 
 
 def get_host_ips():
