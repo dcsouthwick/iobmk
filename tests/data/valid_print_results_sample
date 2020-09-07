@@ -1,0 +1,13 @@
+
+
+=========================================================
+BENCHMARK RESULTS FOR olivb-21.cern.ch
+=========================================================
+Suite start: 2020-08-31T09:20:21Z
+Suite end:   2020-08-31T09:20:21Z
+Machine CPU Model: Intel(R) Xeon(R) CPU E5-2695 v2 @ 2.40GHz
+DIRAC Benchmark = 20.815 (est. HS06)
+HEPSCORE Benchmark = 875.89 over benchmarks dict_keys(['atlas-gen-bmk', 'cms-gen-sim-bmk', 'cms-digi-bmk', 'cms-reco-bmk', 'lhcb-gen-sim-bmk'])
+HS06 32 bit Benchmark = 520.69
+HS06 64 bit Benchmark = 684.89
+SPEC2017 64 bit Benchmark = 64.15
