@@ -150,7 +150,7 @@ test_db12_benchmark:
   artifacts:
     untracked: true
     paths:
-      - ./*.json
+      - ./run_*/*.json
     exclude:
       - singularity_cachedir
     expire_in: 1 week
@@ -218,7 +218,7 @@ test_sing_spec2017:
       - $CI_COMMIT_BRANCH =~ /^v2.*/
   artifacts:
     paths:
-      - ./*.json
+      - ./run_*/*.json
     expire_in: 1 week
     when: always
 
