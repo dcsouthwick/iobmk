@@ -73,10 +73,13 @@ class HepBenchmarkSuite(object):
 
         _log.info(" - Checking provided work dirs exist...")
         os.makedirs(self._config['rundir'], exist_ok=True)
+
         if 'hs06_32' in self.selected_benchmarks or 'hs06_64' in self.selected_benchmarks:
             os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
+
         if 'spec2017' in self.selected_benchmarks:
             os.makedirs(self._config_full['spec2017']['hepspec_volume'], exist_ok=True)
+
         if 'hepscore' in self.selected_benchmarks:
             os.makedirs(os.path.join(self._config['rundir'], "HEPSCORE"), exist_ok=True)
 
@@ -86,7 +89,7 @@ class HepBenchmarkSuite(object):
                 checks.append(utils.validate_spec(self._config_full, bench))
 
         _log.info(" - Checking if rundir has enough space...")
-        disk_stats = shutil.disk_usage(self._config['rundir'])
+        disk_stats    = shutil.disk_usage(self._config['rundir'])
         disk_space_gb = round(disk_stats.free * (10 ** -9), 2)
 
         _log.debug("Calculated disk space: {}".format(disk_space_gb))
@@ -117,9 +120,9 @@ class HepBenchmarkSuite(object):
             _log.info("Running benchmark: {}".format(bench2run))
 
             if bench2run == 'db12':
-                # returns a dict{'DB12':{ 'value': float(), 'unit': string() }}
+                # TO FIX returns a dict{'DB12':{ 'value': float(), 'unit': string() }}
                 returncode = db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
-                # TODO: fix with x in y
+
                 if not returncode['DB12']['value']:
                     self.failures.append(bench2run)
 
@@ -144,8 +147,7 @@ class HepBenchmarkSuite(object):
         self.run()
 
     def cleanup(self):
-        #
-        # TODO: Check logs
+        """Run the cleanup phase - collect the results from each benchmark"""
 
         # compile metadata
         self._result = utils.prepare_metadata(self._config, self._extra)
@@ -154,8 +156,8 @@ class HepBenchmarkSuite(object):
         # Get results from each benchmark
         for bench in self.selected_benchmarks:
             try:
-                result_path = os.path.join(
-                    self._config['rundir'], self.RESULT_FILES[bench])
+                result_path = os.path.join(self._config['rundir'], self.RESULT_FILES[bench])
+
                 with open(result_path, "r") as result_file:
                     _log.info("Reading result file: {}".format(result_path))
 
@@ -177,7 +179,6 @@ class HepBenchmarkSuite(object):
             raise BenchmarkFullFailure
 
         elif len(self.failures) > 0:
-            # something failed, response?
             _log.error("{} Failed. Please check logs".format(*self.failures))
             raise BenchmarkFailure
 

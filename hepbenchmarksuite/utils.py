@@ -179,8 +179,9 @@ def run_hepspec(conf, bench):
                     spec['hepspec_volume'],
                     spec['image'],
                     _run_args),
-        'singularity': "SINGULARITY_CACHEDIR={0}/singularity_cachedir singularity run -B {0}:{0} -B {1}:{1} docker://{2} {3}"
-            .format(conf['global']['rundir'],
+        'singularity': "SINGULARITY_CACHEDIR={0}/singularity_cachedir singularity run -B {1}:{1} -B {2}:{2} docker://{3} {4}"
+            .format(conf['global']['parent_dir'],
+                    conf['global']['rundir'],
                     spec['hepspec_volume'],
                     spec['image'],
                     _run_args)

@@ -2,12 +2,14 @@
 global:
   mode: "singularity"
   file: "result_profile.json"
-  rundir: "/tmp/hep-spec_wd3"
+  rundir: "/tmp/hep-benchmark-suite"
   # mp_num: "48"
   benchmarks:
     - "db12"
     - "hs06_32"
     - "hs06_64"
+    - "spec2017"
+    - "hepscore"
   tags:
     cloud: "Suite CI"
     vo: "Some VM"

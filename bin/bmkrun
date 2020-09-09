@@ -14,6 +14,7 @@ import socket
 import os
 import yaml
 import textwrap
+import time
 try:
     import importlib.resources as pkg_resources
 except ImportError:
@@ -129,7 +130,14 @@ def main():
     if not isinstance(active_config['global']['mp_num'], int):
         sys.exit("CPU number is not an integer.")
 
-    # Create rundir if not present
+    # Create another dict key to mark the user specified rundir as parent_dir
+    # Append the date to the rundir in order to group the results per date
+    # Create parent_dir, example: /tmp/hep-benchmark-suite
+    active_config['global']['parent_dir'] = active_config['global']['rundir']
+    os.makedirs(active_config['global']['parent_dir'], exist_ok=True)
+
+    # Create rundir, example: /tmp/hep-benchmark-suite/run_date
+    active_config['global']['rundir'] = os.path.join(active_config['global']['rundir'], 'run_{}'.format(time.strftime('%Y-%m-%d_%H%M', time.gmtime())))
     os.makedirs(active_config['global']['rundir'], exist_ok=True)
 
     # Configure logging
