@@ -117,7 +117,7 @@ def run_hepscore(conf):
     returncode = hs.run()
     if returncode >= 0:
         hs.gen_score()
-        hs.write_output("json", os.path.join(conf['global']['rundir'], 'HEPSCORE/hepscore_result.json'))
+    hs.write_output("json", os.path.join(conf['global']['rundir'], 'HEPSCORE/hepscore_result.json'))
     return returncode
 
 
