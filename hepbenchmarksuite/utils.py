@@ -22,6 +22,7 @@ import yaml
 from hepbenchmarksuite.plugins.extractor import Extractor
 
 _log = logging.getLogger(__name__)
+bmk_env = os.environ.copy()
 
 
 def export(result_dir, outfile):
@@ -48,6 +49,7 @@ def export(result_dir, outfile):
     _log.info("Files compressed! The resulting file was created: {}".format(outfile))
 
     return 0
+
 
 def validate_spec(conf, bench):
     """
@@ -179,7 +181,7 @@ def run_hepspec(conf, bench):
                     spec['hepspec_volume'],
                     spec['image'],
                     _run_args),
-        'singularity': "SINGULARITY_CACHEDIR={0}/singularity_cachedir singularity run -B {1}:{1} -B {2}:{2} docker://{3} {4}"
+        'singularity': "singularity run -B {1}:{1} -B {2}:{2} docker://{3} {4}"
             .format(conf['global']['parent_dir'],
                     conf['global']['rundir'],
                     spec['hepspec_volume'],
@@ -187,13 +189,15 @@ def run_hepspec(conf, bench):
                     _run_args)
     }
 
+    bmk_env = ["SINGULARITY_CACHEDIR"] = "{}/singuality_cachedir".format(conf['global']['parent_dir'])
+
     # Start benchmark
     _log.debug(cmd[run_mode])
     returncode = exec_wait_benchmark(cmd[run_mode])
     return returncode
 
 
-def exec_wait_benchmark(cmd_str):
+def exec_wait_benchmark(cmd_str, env):
     """
     Accepts command string to execute and waits for process to finish
 
@@ -206,16 +210,13 @@ def exec_wait_benchmark(cmd_str):
 
     _log.debug("Excuting command: {}".format(cmd_str))
 
-    cmd = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    cmd = subprocess.run(cmd_str.split(), env=host_env, capture_output=True, encoding='utf-8')
 
     # Output stdout from child process
     line = cmd.stdout.readline()
     while line:
         sys.stdout.write(line.decode('utf-8'))
         line = cmd.stdout.readline()
-
-    # Wait until process is complete
-    cmd.wait()
 
     # Check for errors
     if cmd.returncode != 0:
@@ -249,7 +250,7 @@ def convert_tags_to_json(tag_str):
     return tags
 
 
-def exec_cmd(cmd_str):
+def exec_cmd(cmd_str, env=bmk_env):
     """
     Executes a command string and returns its output
 
@@ -262,7 +263,11 @@ def exec_cmd(cmd_str):
 
     _log.debug("Excuting command: {}".format(cmd_str))
 
-    cmd = subprocess.Popen(cmd_str, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if not isinstance(cmd_str, str):
+        # convert string to array of args
+        cmd_str = cmd_str.split()
+
+    cmd = subprocess.run(cmd_str.split(), shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     cmd_reply, cmd_error = cmd.communicate()
 
     # Check for errors
