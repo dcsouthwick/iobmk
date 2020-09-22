@@ -13,6 +13,7 @@ except ImportError:
     from importlib_resources import files
 
 import os
+import shlex
 import socket
 import subprocess
 import sys
@@ -193,36 +194,10 @@ def run_hepspec(conf, bench):
 
     # Start benchmark
     _log.debug(cmd[run_mode])
-    returncode = exec_wait_benchmark(cmd[run_mode])
+    _, returncode = exec_cmd(cmd[run_mode], env)
+    if returncode != 0:
+        _log.error("Benchmark execution failed; returncode = {}.".format(returncode))
     return returncode
-
-
-def exec_wait_benchmark(cmd_str, env):
-    """
-    Accepts command string to execute and waits for process to finish
-
-    Args:
-      cmd_str: Command to execute.
-
-    Returns:
-      An POSIX exit code (0 through 255)
-    """
-
-    _log.debug("Excuting command: {}".format(cmd_str))
-
-    cmd = subprocess.run(cmd_str.split(), env=host_env, capture_output=True, encoding='utf-8')
-
-    # Output stdout from child process
-    line = cmd.stdout.readline()
-    while line:
-        sys.stdout.write(line.decode('utf-8'))
-        line = cmd.stdout.readline()
-
-    # Check for errors
-    if cmd.returncode != 0:
-        _log.error("Benchmark execution failed; returncode = {}.".format(cmd.returncode))
-
-    return cmd.returncode
 
 
 def convert_tags_to_json(tag_str):
@@ -250,9 +225,8 @@ def convert_tags_to_json(tag_str):
     return tags
 
 
-def exec_cmd(cmd_str, env=bmk_env):
-    """
-    Executes a command string and returns its output
+def exec_cmd(cmd_str, env=None):
+    """Execute a command string and returns its output.
 
     Args:
       cmd_str: A string with the command to execute.
@@ -263,26 +237,27 @@ def exec_cmd(cmd_str, env=bmk_env):
 
     _log.debug("Excuting command: {}".format(cmd_str))
 
-    if not isinstance(cmd_str, str):
-        # convert string to array of args
-        cmd_str = cmd_str.split()
-
-    cmd = subprocess.run(cmd_str.split(), shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    cmd_reply, cmd_error = cmd.communicate()
-
-    # Check for errors
-    if cmd.returncode != 0:
-        cmd_reply = "not_available"
-        _log.error(cmd_error.decode('utf-8').rstrip())
-
+    if "|" in cmd_str:
+        cmds = cmd_str.split('|')
     else:
-        # Convert bytes to text and remove \n
-        try:
-            cmd_reply = cmd_reply.decode('utf-8').rstrip()
-        except UnicodeDecodeError:
-            _log.error("Failed to decode to utf-8.")
+        cmds = [cmd_str]
 
-    return cmd_reply, cmd.returncode
+    p = dict()
+    for i, cmd in enumerate(cmds):
+        if i == 0:
+            p[i] = Popen(shlex.split(cmd), stdin=None,
+                         stdout=PIPE, stderr=PIPE, encoding='utf-8')
+        else:
+            p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout,
+                         stdout=PIPE, stderr=PIPE, encoding='utf-8')
+    output, error = p[len(cmds) - 1].communicate()
+    returncode = p[len(cmds) - 1].wait()
+    # Check for errors
+    if returncode != 0:
+        cmd_reply = "not_available"
+        _log.error(error)
+
+    return output, returncode
 
 
 def get_version():
