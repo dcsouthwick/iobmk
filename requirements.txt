@@ -1,5 +1,5 @@
 #setuptools
 importlib-resources
-pyyaml
+pyyaml>=5.1
 stomp.py
 git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0
