@@ -27,8 +27,7 @@ bmk_env = os.environ.copy()
 
 
 def export(result_dir, outfile):
-    """
-    Export all json and log files from a given dir.
+    """Export all json and log files from a given dir.
 
     Args:
       result_dir: String with the directory to compress the files.
@@ -37,7 +36,6 @@ def export(result_dir, outfile):
     Returns:
       Error code: 0 OK , 1 Not OK
     """
-
     _log.info("Exporting *.json, *.log from {}...".format(result_dir))
 
     with tarfile.open(outfile, 'w:gz') as archive:
@@ -53,8 +51,7 @@ def export(result_dir, outfile):
 
 
 def validate_spec(conf, bench):
-    """
-    Check if the configuration is valid for hepspec06.
+    """Check if the configuration is valid for hepspec06.
 
     Args:
       conf:  A dict containing configuration.
@@ -62,7 +59,6 @@ def validate_spec(conf, bench):
     Returns:
       Error code: 0 OK , 1 Not OK
     """
-
     _log.debug("Configuration to apply validation: {}".format(conf))
 
     # Config section to use
@@ -91,9 +87,7 @@ def validate_spec(conf, bench):
 
 
 def run_hepscore(conf):
-    """
-    Import and run hepscore
-    """
+    """Import and run hepscore."""
     try:
         import hepscore
     except ImportError:
@@ -125,8 +119,7 @@ def run_hepscore(conf):
 
 
 def run_hepspec(conf, bench):
-    """
-    Run HEPSpec benchmark.
+    """Run HEPSpec benchmark.
 
     Args:
       conf:  A dict containing configuration.
@@ -135,7 +128,6 @@ def run_hepspec(conf, bench):
     Return:
       POSIX exit code from subprocess
     """
-
     _log.debug("Configuration in use for benchmark {}: {}".format(bench, conf))
 
     # Config section to use
@@ -190,7 +182,7 @@ def run_hepspec(conf, bench):
                     _run_args)
     }
 
-    bmk_env = ["SINGULARITY_CACHEDIR"] = "{}/singuality_cachedir".format(conf['global']['parent_dir'])
+    bmk_env["SINGULARITY_CACHEDIR"] = "{}/singuality_cachedir".format(conf['global']['parent_dir'])
 
     # Start benchmark
     _log.debug(cmd[run_mode])
@@ -201,8 +193,7 @@ def run_hepspec(conf, bench):
 
 
 def convert_tags_to_json(tag_str):
-    """
-    Convert tags string to json
+    """Convert tags string to json.
 
     Args:
       tag_str: String to be converted to json.
@@ -210,7 +201,6 @@ def convert_tags_to_json(tag_str):
     Returns:
       A dict containing the tags.
     """
-
     _log.info("User specified tags: {}".format(tag_str))
 
     # Check if user provided a valid tag string to be converted to json
@@ -234,7 +224,6 @@ def exec_cmd(cmd_str, env=None):
     Returns:
       A string with the output.
     """
-
     _log.debug("Excuting command: {}".format(cmd_str))
 
     if "|" in cmd_str:
@@ -250,38 +239,33 @@ def exec_cmd(cmd_str, env=None):
         else:
             p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout,
                          stdout=PIPE, stderr=PIPE, encoding='utf-8')
-    output, error = p[len(cmds) - 1].communicate()
+    stdout, stderr = p[len(cmds) - 1].communicate()
     returncode = p[len(cmds) - 1].wait()
     # Check for errors
     if returncode != 0:
-        cmd_reply = "not_available"
-        _log.error(error)
+        stdout = "not_available"
+        _log.error(stderr)
 
-    return output, returncode
+    return stdout, returncode
 
 
 def get_version():
-    """
-    Version of metadata to be used in ElasticSearch tagging
-    """
+    """Version of metadata to be used in ElasticSearch tagging."""
     return "v2.1-dev"
 
 
 def get_host_ips():
-    """
-    Get external facing system IP from default route, do not rely on hostname
+    """Get external facing system IP from default route, do not rely on hostname.
 
     Returns:
       A string containing the ip
     """
-
     ip_address, _ = exec_cmd("ip route get 1 | awk '{print $NF;exit}'")
     return ip_address
 
 
 def prepare_metadata(params, extra):
-    """
-    Constructs a json with cli inputs and extra fields
+    """Construct a json with cli inputs and extra fields.
 
     Args:
       cli_inputs: Arguments that were passed directly with cli
@@ -290,7 +274,6 @@ def prepare_metadata(params, extra):
     Returns:
       A dict containing hardware metadata, tags, flags & extra fields
     """
-
     # Create output metadata
     result = {'host': {}}
     result.update({
@@ -332,14 +315,11 @@ def prepare_metadata(params, extra):
 
 
 def print_results(results):
-    """
-    Prints the results in a human-readable format
+    """Print the results in a human-readable format.
 
     Args:
       results: A dict containing the results['profiles']
-
     """
-
     print("\n\n=========================================================")
     print("BENCHMARK RESULTS FOR {}".format(results['host']['hostname']))
     print("=========================================================")
@@ -365,12 +345,10 @@ def print_results(results):
 
 
 def print_results_from_file(json_file):
-    """
-    Prints the results from a json file
+    """Print the results from a json file.
 
     Args:
       json_file: A json file with results
-
     """
     with open(json_file, 'r') as jfile:
         print_results(json.loads(jfile.read()))
