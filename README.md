@@ -177,3 +177,9 @@ optional arguments:
 
 -----------------------------------------------
 ```
+
+## Common Issues
+
+1.  `pip3 install` fails due to problems with hep-score:\
+    `No matching distribution found for hep-score@ git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git (from hep-benchmark-suite==2.0.0)`\
+    Solution: HEP Benchmark suite requires pip3 19.1 or newer. Upgrade pip with `pip3 install --user --upgrade pip`
