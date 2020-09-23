@@ -92,6 +92,7 @@ test_db12_benchmark:
   dependencies: []
   script:
     - yum install -y -q singularity python3-pip
+    - python3 -m pip install --user --upgrade pip
     - python3 -m pip install --user .
     - export PATH=~/.local/bin:$PATH
     - bmkrun --rundir . --benchmarks db12
@@ -128,6 +129,7 @@ test_db12_benchmark:
     - su - unprivUser
     - set -e
     # install the benchmark suite python package
+    - python3 -m pip install --user --upgrade pip
     - python3 -m pip install --user .
     - export PATH=$PATH:~/.local/bin
     #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
@@ -160,9 +162,6 @@ test_sing_hepscore:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hepscore"
-    # ugly way to install hep-score...
-    - yum install -y -q singularity python3-pip git
-    - python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0
 test_sing_hs06:
   extends: .test_qa_singularity
   before_script:
@@ -202,6 +201,7 @@ test_sing_spec2017:
     #- su - unprivUser
     #- set -e
     # install the benchmark suite python package
+    - python3 -m pip install --user --upgrade pip
     - python3 -m pip install .
     - export PATH=$PATH:~/.local/bin
     #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
@@ -250,7 +250,7 @@ build_hep-benchmark-suite:
     url: https://staging.example.com
   script:
     - yum install -y -q python3-pip
-    - python3 -m pip install --upgrade setuptools wheel
+    - python3 -m pip install --upgrade setuptools wheel pip
     - python3 setup.py sdist bdist_wheel
     # some package publish step here
   artifacts:
@@ -272,7 +272,7 @@ job_build_wheels:
     url: https://staging.example.com
   script:
     - yum install -y -q python3-pip
-    - python3 -m pip install wheel --user
+    - python3 -m pip install --user --upgrade wheel pip
     - python3 -m pip wheel -r requirements.txt --wheel-dir=whl .
     - tar -cvf package_wheels.tar whl/
   artifacts:
