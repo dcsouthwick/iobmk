@@ -1,0 +1,19 @@
+{
+	"query": {
+		"bool": {
+			"filter": [{
+				"match_all": {}
+			}],
+			"should": [],
+			"must": [{
+				"range": {
+					"message._timestamp_end": {
+						"lte": "now",
+						"format": "strict_date_optional_time"
+					}
+				}
+			}]
+		}
+	},
+	"size": 1
+}

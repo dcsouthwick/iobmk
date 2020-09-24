@@ -1,0 +1,100 @@
+# docker-compose pipeline that mimics
+# the pipeline to send json data to 
+# AMQ -> logstash -> ES 
+# The pipeline starts
+# elasticsearch
+# kibana
+# logstash
+# 
+
+
+version: '3.8'
+
+services:
+  # Elasticsearch requires your vm.max_map_count set to 262144
+  # Default will be 65530
+  # sysctl -w vm.max_map_count=262144
+  # Add this to /etc/sysctl.conf for making it permanent
+  srv_elasticsearch:
+    #image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    container_name: srv_elasticsearch_${CI_COMMIT_SHORT_SHA}
+    environment:
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+      - ELASTICSEARCH_USERNAME=myelastic
+      - ELASTICSEARCH_PASSWORD=mypass
+      - xpack.security.enabled=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata66:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+
+  srv_activemq:
+    image: webcenter/activemq:5.14.3
+    container_name: srv_activemq_${CI_COMMIT_SHORT_SHA}
+    environment:
+      - 'ACTIVEMQ_NAME=amqp-srv1'
+      - 'ACTIVEMQ_REMOVE_DEFAULT_ACCOUNT=true'
+      - 'ACTIVEMQ_ADMIN_LOGIN=admin' 
+      - 'ACTIVEMQ_ADMIN_PASSWORD=your_password'
+      - 'ACTIVEMQ_WRITE_LOGIN=producer_login' 
+      - 'ACTIVEMQ_WRITE_PASSWORD=producer_password'
+      - 'ACTIVEMQ_READ_LOGIN=consumer_login' 
+      - 'ACTIVEMQ_READ_PASSWORD=consumer_password'
+      - 'ACTIVEMQ_JMX_LOGIN=jmx_login' 
+      - 'ACTIVEMQ_JMX_PASSWORD=jmx_password'
+      - 'ACTIVEMQ_STATIC_TOPICS=bmktopic'
+      - 'ACTIVEMQ_STATIC_QUEUES=bmkqueue'
+      - 'ACTIVEMQ_MIN_MEMORY=1024' 
+      -  'ACTIVEMQ_MAX_MEMORY=4096'
+      - 'ACTIVEMQ_ENABLED_SCHEDULER=true'
+      - 'ACTIVEMQ_ENABLED_AUTH=true'
+    volumes:
+      - ./tmp/activemq_data:/data
+      - ./tmp/activemq_varlog:/var/log/activemq
+    ports:
+      - 8161:8161
+      - 61616:61616
+      - 61613:61613
+
+  srv_logstash:
+    image: gitlab-registry.cern.ch/hep-benchmarks/hep-benchmark-suite/logstash:qa
+    container_name: srv_logstash_${CI_COMMIT_SHORT_SHA}
+    privileged: true
+    links:
+      - "srv_elasticsearch:localelasticsearch"      
+      - "srv_activemq:localactivemq"
+    volumes:
+#      - ./logstash_conf/generator.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./logstash_conf/test-amq-logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+     # - ./tmp/logstash_varlog:/var/log/
+     #- ./tmp/logstash_tmp:/tmp
+    depends_on:
+      - srv_elasticsearch
+      - srv_activemq
+
+  srv_kibana:
+    #image: docker.elastic.co/kibana/kibana:7.7.0
+    image: docker.elastic.co/kibana/kibana:6.5.4
+    container_name: srv_kibana_$CI_COMMIT_SHORT_SHA
+    environment:
+      - ELASTICSEARCH_URL="http://localelasticsearch:9200"
+      #- ELASTICSEARCH_USERNAME=myelastic
+      #- ELASTICSEARCH_PASSWORD=mypass
+    links:
+      - "srv_elasticsearch:localelasticsearch"      
+    ports:
+      - 5601:5601
+    depends_on:
+      - srv_elasticsearch
+
+volumes:
+  esdata66:
+    driver: local
