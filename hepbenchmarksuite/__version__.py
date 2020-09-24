@@ -4,5 +4,10 @@
 # the top-level directory of this distribution.
 ###############################################################################
 
-from .__version__ import __title__, __description__, __url__, __version__
-from .__version__ import __author__, __author_email__, __license__
+__title__        = 'hep-benchmark-suite'
+__description__  = 'Benchmark Orchestrator Tool to run several benchmarks.'
+__url__          = "https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite"
+__version__      = '2.0.rc0'
+__author__       = 'Benchmarking Working Group'
+__author_email__ = 'benchmark-suite-wg-devel@cern.ch'
+__license__      = 'GPLv3'
