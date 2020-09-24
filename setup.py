@@ -26,7 +26,7 @@ setup(
     long_description=LONG_DESC,
     long_description_content_type="text/markdown",
     url=about['__url__'],
-    license=['__license__'],
+    license=about['__license__'],
     scripts=['bin/bmkrun', 'bin/bmk_show_metadata'],
     packages=['hepbenchmarksuite', 'hepbenchmarksuite.plugins', 'hepbenchmarksuite.config'],
     package_data={'hepbenchmarksuite': ['config/*.yml']},
