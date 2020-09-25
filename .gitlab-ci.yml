@@ -79,7 +79,7 @@ test_python_coverage:
   allow_failure: true
   script:
     - yum install -y -q python3-pip
-    - python3 -m pip install tox
+    - python3 -m pip install -U pip tox
     - tox
   except:
     refs:
@@ -87,7 +87,7 @@ test_python_coverage:
       - qa
   artifacts:
     reports:
-      cobertura: coverage.xml
+      junit: report.xml
     paths:
       - htmlcov/*
     expire_in: 1 week
