@@ -4,7 +4,7 @@
 # the top-level directory of this distribution.
 ###############################################################################
 
-from hepbenchmarksuite.utils import exec_cmd
+from hepbenchmarksuite import utils
 import json
 import logging
 import os
@@ -13,6 +13,7 @@ import sys
 import time
 
 _log = logging.getLogger(__name__)
+exec_cmd = utils.exec_cmd
 
 
 class Extractor(object):
