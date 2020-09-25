@@ -76,7 +76,6 @@ test_python_support:
 test_python_coverage:
   stage: test-components
   dependencies: []
-  allow_failure: true
   script:
     - yum install -y -q python3-pip
     - python3 -m pip install -U pip tox
@@ -109,7 +108,6 @@ test_python_pep8:
 test_python_security:
   stage: test-components
   dependencies: []
-  allow_failure: true
   script:
     - yum install -y -q python3-pip
     - python3 -m pip install tox
@@ -126,7 +124,6 @@ test_yaml_files:
     - yum install -y -q yamllint
     - cd hepbenchmarksuite/config
     - yamllint benchmarks.yml
-  allow_failure: true
   only:
     changes:
       - "*.yaml"
