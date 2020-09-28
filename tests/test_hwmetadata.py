@@ -5,10 +5,9 @@
 # the top-level directory of this distribution.
 ###############################################################################
 
-import json
-import unittest
 from hepbenchmarksuite.plugins.extractor import Extractor
-from schema import Schema, And, Use, Optional
+import unittest
+
 
 class TestHWExtractor(unittest.TestCase):
     """********************************************************
@@ -33,8 +32,8 @@ class TestHWExtractor(unittest.TestCase):
         """
 
         hw = Extractor()
-        result = hw.exec_cmd('echofail 1')
-        self.assertEqual(result, 'not_available')
+        with self.assertRaises(FileNotFoundError):
+            hw.exec_cmd('echofail 1')
 
     def test_parser_bios(self):
         """
