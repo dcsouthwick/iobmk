@@ -39,10 +39,10 @@ def export(result_dir, outfile):
 
     with tarfile.open(outfile, 'w:gz') as archive:
         # Respect the tree hierarchy on compressing
-        for root, dirs, files in os.walk(result_dir):
-            for name in files:
+        for root, dirs, files_ in os.walk(result_dir):
+            for name in files_:
                 if name.endswith('.json') or name.endswith('.log'):
-                    archive.add(os.path.join(root,name))
+                    archive.add(os.path.join(root, name))
 
     _log.info("Files compressed! The resulting file was created: {}".format(outfile))
 
@@ -233,17 +233,17 @@ def exec_cmd(cmd_str, env=None):
     p = dict()
     for i, cmd in enumerate(cmds):
         if i == 0:
-            p[i] = Popen(shlex.split(cmd), stdin=None,
-                         stdout=PIPE, stderr=PIPE, encoding='utf-8')
+            p[i] = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
         else:
-            p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout,
-                         stdout=PIPE, stderr=PIPE, encoding='utf-8')
+            p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout, stdout=PIPE, stderr=PIPE)
     stdout, stderr = p[len(cmds) - 1].communicate()
     returncode = p[len(cmds) - 1].wait()
     # Check for errors
     if returncode != 0:
         stdout = "not_available"
         _log.error(stderr)
+    else:
+        stdout = stdout.decode('utf-8').rstrip()
 
     return stdout, returncode
 
@@ -276,10 +276,10 @@ def prepare_metadata(params, extra):
     # Create output metadata
     result = {'host': {}}
     result.update({
-        '_id'            : "{}_{}".format(params['uid'], extra['start_time']),
-        '_timestamp'     : extra['start_time'],
-        '_timestamp_end' : extra['end_time'],
-        'json_version'   : get_version()
+        '_id'           : "{}_{}".format(params['uid'], extra['start_time']),
+        '_timestamp'    : extra['start_time'],
+        '_timestamp_end': extra['end_time'],
+        'json_version'  : get_version()
     })
 
     result['host'].update({
