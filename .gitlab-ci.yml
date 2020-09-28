@@ -108,6 +108,7 @@ test_python_pep8:
 test_python_security:
   stage: test-components
   dependencies: []
+  allow_failure: true
   script:
     - yum install -y -q python3-pip
     - python3 -m pip install tox
