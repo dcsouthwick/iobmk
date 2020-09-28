@@ -11,11 +11,10 @@ try:
 except ImportError:
     # Try backported to PY<37 `importlib_resources`.
     from importlib_resources import files
-
 import os
 import shlex
 import socket
-import subprocess
+from subprocess import Popen, PIPE
 import sys
 import tarfile
 import yaml
@@ -142,13 +141,13 @@ def run_hepspec(conf, bench):
 
     # Possible hepspec06 arguments
     spec_args = {
-      'bench'          : ' -b {}'.format(bench),
-      'iterations'     : ' -i {}'.format(spec.get('iterations')),
-      'mp_num'         : ' -n {}'.format(conf['global'].get('mp_num')),
-      'hepspec_volume' : ' -p {}'.format(spec.get('hepspec_volume')),
-      'bmk_set'        : ' -s {}'.format(spec.get('bmk_set')),
-      'url_tarball'    : ' -u {}'.format(spec.get('url_tarball')),
-      'workdir'        : ' -w {}'.format(conf['global'].get('rundir')),
+        'bench'         : ' -b {}'.format(bench),
+        'iterations'    : ' -i {}'.format(spec.get('iterations')),
+        'mp_num'        : ' -n {}'.format(conf['global'].get('mp_num')),
+        'hepspec_volume': ' -p {}'.format(spec.get('hepspec_volume')),
+        'bmk_set'       : ' -s {}'.format(spec.get('bmk_set')),
+        'url_tarball'   : ' -u {}'.format(spec.get('url_tarball')),
+        'workdir'       : ' -w {}'.format(conf['global'].get('rundir'))
     }
     _log.debug("spec arguments: {}". format(spec_args))
 
@@ -186,7 +185,7 @@ def run_hepspec(conf, bench):
 
     # Start benchmark
     _log.debug(cmd[run_mode])
-    _, returncode = exec_cmd(cmd[run_mode], env)
+    _, returncode = exec_cmd(cmd[run_mode], bmk_env)
     if returncode != 0:
         _log.error("Benchmark execution failed; returncode = {}.".format(returncode))
     return returncode
