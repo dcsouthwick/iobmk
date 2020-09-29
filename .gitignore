@@ -14,10 +14,12 @@ develop-eggs
 
 # Unit test / coverage reports
 .coverage*
-coverage.xml
+report.xml
 .tox
 .venv
 htmlcov*
+result_dump
+run_*
 
 # Editors
 *~

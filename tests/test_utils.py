@@ -27,11 +27,13 @@ class TestHepscore(unittest.TestCase):
         ret = utils.run_hepscore(self.conf)
         self.assertEqual(ret, -1)
 
+    @patch.object(HEPscore, 'write_output')
     @patch.object(HEPscore, 'run', return_value=-1)
-    def test_hepscore_loadconf(self, mock_hepscore):
+    def test_hepscore_loadconf(self, mock_hepscore, mock_writer):
         test_conf = self.conf.copy()
         ret = utils.run_hepscore(test_conf)
         mock_hepscore.assert_called()
+        mock_writer.assert_called()
         self.assertIn('hepscore_benchmark', test_conf)
         self.assertEqual(ret, -1)
         self.assertEqual('singularity', test_conf['hepscore_benchmark']['settings']['container_exec'])
@@ -45,8 +47,9 @@ class TestHepscore(unittest.TestCase):
             self.assertEqual(ret, -1)
             self.assertIn('Unable to load default config yaml', *log.output)
 
+    @patch.object(HEPscore, 'write_output')
     @patch.object(HEPscore, 'run', return_value=-1)
-    def test_hepscore_override_conf(self, mock_hepscore):
+    def test_hepscore_override_conf(self, mock_hepscore, mock_writer):
         test_conf = self.conf.copy()
         test_conf.update({'hepscore_benchmark': {'settings': {}}})
         with self.assertRaises(SystemExit):
@@ -65,8 +68,7 @@ class TestHepscore(unittest.TestCase):
 
 
 def test_print_results():
-    """Test the print results from utils"""
-
+    """Test the print results from utils."""
     # Temporary file
     TEMP_FILE = 'result_dump'
 

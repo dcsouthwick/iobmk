@@ -76,10 +76,9 @@ test_python_support:
 test_python_coverage:
   stage: test-components
   dependencies: []
-  allow_failure: true
   script:
     - yum install -y -q python3-pip
-    - python3 -m pip install tox
+    - python3 -m pip install -U pip tox
     - tox
   except:
     refs:
@@ -87,7 +86,7 @@ test_python_coverage:
       - qa
   artifacts:
     reports:
-      cobertura: coverage.xml
+      junit: report.xml
     paths:
       - htmlcov/*
     expire_in: 1 week
@@ -126,7 +125,6 @@ test_yaml_files:
     - yum install -y -q yamllint
     - cd hepbenchmarksuite/config
     - yamllint benchmarks.yml
-  allow_failure: true
   only:
     changes:
       - "*.yaml"

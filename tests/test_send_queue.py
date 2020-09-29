@@ -14,10 +14,11 @@ from hepbenchmarksuite.plugins import send_queue
 
 
 class TestAMQ(unittest.TestCase):
-    """
-    AMQ send_queue functionality
+    """AMQ send_queue functionality.
+
     Reads a minimal test json format2.0 from data/
     """
+
     # get CI environment args.
     # currently unused
     # TODO(anyone): fix for testing without gitlab CI vars
@@ -32,7 +33,7 @@ class TestAMQ(unittest.TestCase):
     }
 
     def genJSON(self, message="None"):
-        """Generate JSON with passed message, return its path"""
+        """Generate JSON with passed message, return its path."""
         # Currently unused
         self.assertTrue(isinstance(message, str),
                         'Message is not a string')
@@ -44,7 +45,7 @@ class TestAMQ(unittest.TestCase):
         return (self.test_json)
 
     def setUp(self):
-        """Collect CI env and setup testing objects"""
+        """Collect CI env and setup testing objects."""
         # currently unused
 
         self.test_dir = os.path.join(os.getcwd(), "tests/")
@@ -67,7 +68,7 @@ class TestAMQ(unittest.TestCase):
         self.assertEqual(ret['host']['freetext'], "testString")
 
     def test_parse_args(self):
-        """Command-line arguments test"""
+        """Command-line arguments test."""
         parser = send_queue.parse_args(
             ['-p', '1',
              '-s', 'google.com',
@@ -110,7 +111,7 @@ class TestAMQ(unittest.TestCase):
 
     @patch('hepbenchmarksuite.plugins.send_queue.send_message')
     def test_main(self, mock_send_message):
-        """Pass command line arguments to send_queue"""
+        """Pass command line arguments to send_queue."""
         mock_result = send_queue.argparse.Namespace(
             cert=None, file='test.json',
             key=None, password=None,
