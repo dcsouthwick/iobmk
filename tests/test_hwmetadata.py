@@ -5,9 +5,10 @@
 # the top-level directory of this distribution.
 ###############################################################################
 
+import json
 import unittest
 from hepbenchmarksuite.plugins.extractor import Extractor
-
+from schema import Schema, And, Use, Optional
 
 class TestHWExtractor(unittest.TestCase):
     """********************************************************
@@ -55,14 +56,14 @@ class TestHWExtractor(unittest.TestCase):
         self.assertEqual(parser('Release Date'), '08/22/2013',
                          'BIOS parser mismatch!')
 
-    def test_parser_cpu(self):
+    def test_parser_cpu_Intel(self):
         """
-        Test the parser for a BIOS output.
+        Test the parser for an Intel CPU output.
         """
 
         hw = Extractor()
 
-        with open('tests/data/CPU.sample', 'r') as cpu_file:
+        with open('tests/data/CPU_Intel.sample', 'r') as cpu_file:
             cpu_text = cpu_file.read()
 
         CPU_OK = {
@@ -76,11 +77,13 @@ class TestHWExtractor(unittest.TestCase):
             "Sockets": "2",
             "Vendor_ID": "GenuineIntel",
             "Stepping": "4",
+            "CPU_MHz": "1255.664",
             "CPU_Max_Speed_MHz": "3200.0000",
             "CPU_Min_Speed_MHz": "1200.0000",
             "BogoMIPS": "4788.43",
             "L2_cache": "256K",
             "L3_cache": "30720K",
+            'NUMA_nodes': '2',
             "NUMA_node0_CPUs": "0-11,24-35",
             "NUMA_node1_CPUs": "12-23,36-47",
         }
@@ -88,6 +91,51 @@ class TestHWExtractor(unittest.TestCase):
         cpu_output = hw.get_cpu_parser(cpu_text)
 
         self.assertEqual(cpu_output, CPU_OK, "CPU parser mismatch!")
+
+    def test_parser_cpu_AMD(self):
+        """
+        Test the parser for an AMD CPU output.
+        """
+
+        hw = Extractor()
+
+        with open('tests/data/CPU_AMD.sample', 'r') as cpu_file:
+            cpu_text = cpu_file.read()
+
+        CPU_OK = {
+            "Architecture": "x86_64",
+            "CPU_Model": "AMD EPYC 7742 64-Core Processor",
+            "CPU_Family": "23",
+            "CPU": "128",
+            "Online_CPUs_list": "0-127",
+            "Threads_per_core": "1",
+            "Cores_per_socket": "64",
+            "Sockets": "2",
+            "Vendor_ID": "AuthenticAMD",
+            "Stepping": "0",
+            "CPU_MHz": "2245.758",
+            "CPU_Max_Speed_MHz": "not_available",
+            "CPU_Min_Speed_MHz": "not_available",
+            "BogoMIPS": "4491.51",
+            "L2_cache": "512K",
+            "L3_cache": "16384K",
+            'NUMA_nodes': '8',
+            "NUMA_node0_CPUs": "0-15",
+            "NUMA_node1_CPUs": "16-31",
+            "NUMA_node2_CPUs": "32-47",
+            "NUMA_node3_CPUs": "48-63",
+            "NUMA_node4_CPUs": "64-79",
+            "NUMA_node5_CPUs": "80-95",
+            "NUMA_node6_CPUs": "96-111",
+            "NUMA_node7_CPUs": "112-127",
+        }
+
+        cpu_output = hw.get_cpu_parser(cpu_text)
+        # If difference in output is found, dump all lines
+        self.maxDiff = None
+        self.assertEqual(cpu_output, CPU_OK, "CPU parser mismatch!")
+
+
 
     def test_parser_memory(self):
         """
@@ -134,6 +182,37 @@ class TestHWExtractor(unittest.TestCase):
 
         self.assertEqual(storage_output, STORAGE_OK,
                          "Storage parser mismatch!")
+
+    def test_full_metadata(self):
+        """
+        Test the metadata schema
+        """
+        # Collect data
+        hw=Extractor()
+        hw.collect()
+
+        # Print the output to stdout and save metadata to json file
+        TMP_FILE='metadata.tmp'
+        hw.dump(stdout=True, outfile=TMP_FILE)
+
+        # Define Hardware metadata schema
+        metadata_schema = Schema(And(Use(json.loads),
+                                {
+                                 "HW": { "BIOS"   : { str : str },
+                                         "SYSTEM" : { str : str },
+                                         "MEMORY" : { str : str },
+                                         "STORAGE": { Optional(str) : Optional(str) },
+                                         "CPU"    : { str : str,
+                                                      "SMT_Enabled?" : bool
+                                                    }
+                                 },
+                                 "SW" : { str : str },
+                                 "Hostname" : str,
+                                }))
+
+        # Validate schema from extractor
+        with open(TMP_FILE, 'r') as fin:
+            metadata_schema.validate(fin.read())
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -147,14 +147,18 @@ class Extractor(object):
             'Sockets'            : parse_lscpu("Socket\(s\)"),
             'Vendor_ID'          : parse_lscpu("Vendor ID"),
             'Stepping'           : parse_lscpu("Stepping"),
+            'CPU_MHz'            : parse_lscpu("CPU MHz"),
             'CPU_Max_Speed_MHz'  : parse_lscpu("CPU max MHz"),
             'CPU_Min_Speed_MHz'  : parse_lscpu("CPU min MHz"),
             'BogoMIPS'           : parse_lscpu("BogoMIPS"),
             'L2_cache'           : parse_lscpu("L2 cache"),
             'L3_cache'           : parse_lscpu("L3 cache"),
-            'NUMA_node0_CPUs'    : parse_lscpu("NUMA node0 CPU\(s\)"),
-            'NUMA_node1_CPUs'    : parse_lscpu("NUMA node1 CPU\(s\)"),
+            'NUMA_nodes'         : parse_lscpu("NUMA node\(s\)"),
     }
+    # Populate NUMA nodes
+    for i in range(0, int(CPU['NUMA_nodes'])):
+        CPU['NUMA_node{}_CPUs'.format(i)] = parse_lscpu("NUMA node{} CPU\(s\)".format(i))
+
     return CPU
 
   def collect_bios(self):
