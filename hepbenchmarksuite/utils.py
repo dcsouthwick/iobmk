@@ -231,13 +231,18 @@ def exec_cmd(cmd_str, env=None):
         cmds = [cmd_str]
 
     p = dict()
-    for i, cmd in enumerate(cmds):
-        if i == 0:
-            p[i] = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
-        else:
-            p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout, stdout=PIPE, stderr=PIPE)
-    stdout, stderr = p[len(cmds) - 1].communicate()
-    returncode = p[len(cmds) - 1].wait()
+    try:
+        for i, cmd in enumerate(cmds):
+            if i == 0:
+                p[i] = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+            else:
+                p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout, stdout=PIPE, stderr=PIPE)
+        stdout, stderr = p[len(cmds) - 1].communicate()
+        returncode = p[len(cmds) - 1].wait()
+    except FileNotFoundError as e:
+        returncode = 1
+        stderr = e
+        pass
     # Check for errors
     if returncode != 0:
         stdout = "not_available"

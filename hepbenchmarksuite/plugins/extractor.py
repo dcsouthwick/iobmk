@@ -70,22 +70,27 @@ class Extractor(object):
             cmds = [cmd_str]
 
         p = dict()
-        for i, cmd in enumerate(cmds):
-            if i == 0:
-                p[i] = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
-            else:
-                p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout, stdout=PIPE, stderr=PIPE)
-        cmd_reply, stderr = p[len(cmds) - 1].communicate()
-        returncode = p[len(cmds) - 1].wait()
+        try:
+            for i, cmd in enumerate(cmds):
+                if i == 0:
+                    p[i] = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+                else:
+                    p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = p[len(cmds) - 1].communicate()
+            returncode = p[len(cmds) - 1].wait()
+        except FileNotFoundError as e:
+            returncode = 1
+            stderr = e
+            pass
 
         # Check for errors
         if returncode != 0:
-            cmd_reply = "not_available"
+            stdout = "not_available"
             _log.error(stderr)
         else:
-            cmd_reply = cmd_reply.decode('utf-8').rstrip()
+            stdout = stdout.decode('utf-8').rstrip()
 
-        return cmd_reply
+        return stdout
 
     def collect_base(self):
         """Collect base information of the system."""
@@ -150,8 +155,7 @@ class Extractor(object):
             'BogoMIPS'         : parse_lscpu("BogoMIPS"),
             'L2_cache'         : parse_lscpu("L2 cache"),
             'L3_cache'         : parse_lscpu("L3 cache"),
-            'NUMA_node0_CPUs'  : parse_lscpu("NUMA node0 CPU\(s\)"),
-            'NUMA_node1_CPUs'  : parse_lscpu("NUMA node1 CPU\(s\)"),
+            'NUMA_nodes'       : parse_lscpu("NUMA node\(s\)"),
         }
         return CPU
 

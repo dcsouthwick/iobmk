@@ -32,8 +32,8 @@ class TestHWExtractor(unittest.TestCase):
         """
 
         hw = Extractor()
-        with self.assertRaises(FileNotFoundError):
-            hw.exec_cmd('echofail 1')
+        result = hw.exec_cmd('echofail 1')
+        self.assertEqual(result, 'not_available')
 
     def test_parser_bios(self):
         """
