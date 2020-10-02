@@ -10,7 +10,7 @@ import logging
 import os
 import re
 import shlex
-from subprocess import run, Popen, PIPE
+from subprocess import Popen, PIPE
 import sys
 import time
 
@@ -49,13 +49,13 @@ class Extractor(object):
         req_packages = ['lshw', 'ipmitool', 'dmidecode']
 
         for rp in req_packages:
-            cmd = run(shlex.split("rpm -q {}".format(rp)), encoding='utf-8', stdout=PIPE)
-
+            cmd = Popen(shlex.split("rpm -q {}".format(rp)), stdout=PIPE, stderr=PIPE)
+            stdout, _ = cmd.communicate()
             if cmd.returncode != 0:
-                _log.warning(cmd.stdout.rstrip())
+                _log.warning(stdout.decode('utf-8').rstrip())
                 self.pkg[rp] = False
             else:
-                _log.debug("Package installed: {}".format(cmd.stdout))
+                _log.debug("Package installed: {}".format(stdout.decode('utf-8').rstrip))
                 self.pkg[rp] = True
 
         _log.debug("Installed packages: {}".format(self.pkg))
