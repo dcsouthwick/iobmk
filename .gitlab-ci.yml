@@ -66,7 +66,7 @@ test_python_support:
   dependencies: []
   script:
     - yum install -y -q python3-pip
-    - python3 -m pip install vermin
+    - python3 -m pip install -U pip vermin
     - vermin -vv .
   only:
     changes:
@@ -98,7 +98,7 @@ test_python_pep8:
   allow_failure: true
   script:
     - yum install -y -q python3-pip
-    - python3 -m pip install tox
+    - python3 -m pip install -U pip tox
     - tox -e pep8
   except:
     refs:
@@ -111,7 +111,7 @@ test_python_security:
   allow_failure: true
   script:
     - yum install -y -q python3-pip
-    - python3 -m pip install tox
+    - python3 -m pip install -U pip tox
     - tox -e bandit
   except:
     refs:
@@ -201,7 +201,7 @@ bats_test_docker_dompose_qa:
   # use image that has singularity.cern repo
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   script:
-    - yum install -y -q singularity python3-pip
+    - yum install -y -q git singularity python3-pip
     # non-root user
     - useradd -d $(pwd) -g users -M -N unprivUser
     - chown -R unprivUser:users ..
@@ -272,7 +272,7 @@ test_sing_spec2017:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375/
   script:
-    - yum install -y -q python3-pip docker-client
+    - yum install -y -q git python3-pip docker-client
     # non-root user
     #- useradd -d $(pwd) -g users -M -N unprivUser
     #- chown -R unprivUser:users ..
@@ -350,8 +350,8 @@ job_build_wheels:
     name: production
     url: https://staging.example.com
   script:
-    - yum install -y -q python3-pip
-    - python3 -m pip install --user --upgrade wheel pip
+    - yum install -y -q git python3-pip
+    - python3 -m pip install --user --upgrade setuptools wheel pip
     - python3 -m pip wheel -r requirements.txt --wheel-dir=whl .
     - tar -cvf package_wheels.tar whl/
   artifacts:

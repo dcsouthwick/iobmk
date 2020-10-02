@@ -55,6 +55,7 @@ spec2017:
   # Run only a benchmark set
   # bmk_set: '508.namd_r'
 
+# from hepscore20_0_2.yaml
 hepscore_benchmark:
   benchmarks:
     atlas-gen-bmk:
@@ -112,11 +113,11 @@ hepscore_benchmark:
         # events
         -e: 5
   app_info:
-    name: HEPscore19
+    name: HEPscore20
     reference_machine: "CPU Intel(R) Xeon(R) CPU E5-2630 v3 @ 2.40GHz"
-    registry: gitlab-registry.cern.ch/hep-benchmarks/hep-workloads
+    registry: docker://gitlab-registry.cern.ch/hep-benchmarks/hep-workloads
   settings:
     method: geometric_mean
     repetitions: 3
     scaling: 355
-    container_exec: docker
+    container_exec: singularity
