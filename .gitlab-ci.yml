@@ -27,7 +27,7 @@ variables:
     # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
     - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE $DESTINATIONS 
 
-build_logstash_image:
+job_build_logstash_image:
     stage: build-base-image
     before_script:
         - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/logstash/Dockerfile
@@ -41,7 +41,7 @@ build_logstash_image:
         changes:
           - docker-images/logstash/*
 
-build_elasticsearch_image:
+job_build_elasticsearch_image:
   stage: build-base-image
   before_script:
       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/es-extractor/Dockerfile
@@ -60,7 +60,7 @@ build_elasticsearch_image:
 #####              TEST COMPONENTS                     #####
 ############################################################
 
-python_supported_versions:
+test_python_support:
   # determine minimum supported python version
   stage: test-components
   dependencies: []
@@ -73,7 +73,7 @@ python_supported_versions:
       - "*.py"
       - bin/*
 
-coverage:
+test_python_coverage:
   stage: test-components
   dependencies: []
   script:
@@ -92,7 +92,7 @@ coverage:
     expire_in: 1 week
     when: always
 
-pep8_stylecheck:
+test_python_pep8:
   stage: test-components
   dependencies: []
   allow_failure: true
@@ -105,7 +105,7 @@ pep8_stylecheck:
       - master
       - qa
 
-Security:
+test_python_security:
   stage: test-components
   dependencies: []
   allow_failure: true
@@ -118,7 +118,7 @@ Security:
       - master
       - qa
 
-YAML_lint:
+test_yaml_files:
   stage: test-components
   dependencies: []
   script:
@@ -134,7 +134,7 @@ YAML_lint:
       - master
       - qa
 
-db12_benchmark:
+test_db12_benchmark:
   stage: test-components
   dependencies: []
   script:
@@ -237,19 +237,18 @@ bats_test_docker_dompose_qa:
     expire_in: 1 week
     when: always
 
-sing_hepscore:
+test_sing_hepscore:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hepscore"
-
-sing_hs06:
+test_sing_hs06:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hs06_32"
     - export HS06URL=$HS06URL
     - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/benchmarks_ci_test.yml
 
-sing_spec2017:
+test_sing_spec2017:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="spec2017"
@@ -302,19 +301,14 @@ sing_spec2017:
     expire_in: 1 week
     when: always
 
-.docker_hepscore:
-  extends: .test_qa_docker
-  before_script:
-    - export BMKLIST="hepscore"
-
-docker_hs06:
+test_docker_hs06:
   extends: .test_qa_docker
   before_script:
     - export BMKLIST="hs06_32"
     - export HS06URL=$HS06URL
     - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/benchmarks_ci_test.yml
 
-docker_spec2017:
+test_docker_spec2017:
   extends: .test_qa_docker
   before_script:
     - export BMKLIST="spec2017"
@@ -325,7 +319,7 @@ docker_spec2017:
 #####           BUILD & PUBLISH PACKAGE                #####
 ############################################################
 
-dist_hep-benchmark-suite:
+build_hep-benchmark-suite:
   stage: deploy
   dependencies: []
   when: manual
@@ -346,7 +340,7 @@ dist_hep-benchmark-suite:
       - master
       - qa
 
-build_wheels:
+job_build_wheels:
   # is this job needed? it performs the same step as bdist_wheel (above)
   stage: deploy
   dependencies: []
