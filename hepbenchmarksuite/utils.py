@@ -14,7 +14,7 @@ except ImportError:
 import os
 import shlex
 import socket
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, STDOUT
 import sys
 import tarfile
 import yaml
@@ -234,9 +234,9 @@ def exec_cmd(cmd_str, env=None):
     try:
         for i, cmd in enumerate(cmds):
             if i == 0:
-                p[i] = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+                p[i] = Popen(shlex.split(cmd), stdout=PIPE, stderr=STDOUT)
             else:
-                p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout, stdout=PIPE, stderr=PIPE)
+                p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout, stdout=PIPE, stderr=STDOUT)
         stdout, stderr = p[len(cmds) - 1].communicate()
         returncode = p[len(cmds) - 1].wait()
     except FileNotFoundError as e:
