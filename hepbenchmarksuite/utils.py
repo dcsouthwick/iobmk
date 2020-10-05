@@ -11,10 +11,10 @@ try:
 except ImportError:
     # Try backported to PY<37 `importlib_resources`.
     from importlib_resources import files
+
 import os
-import shlex
 import socket
-from subprocess import Popen, PIPE
+import subprocess
 import sys
 import tarfile
 import yaml
@@ -22,11 +22,11 @@ import yaml
 from hepbenchmarksuite.plugins.extractor import Extractor
 
 _log = logging.getLogger(__name__)
-bmk_env = os.environ.copy()
 
 
 def export(result_dir, outfile):
-    """Export all json and log files from a given dir.
+    """
+    Export all json and log files from a given dir.
 
     Args:
       result_dir: String with the directory to compress the files.
@@ -35,22 +35,23 @@ def export(result_dir, outfile):
     Returns:
       Error code: 0 OK , 1 Not OK
     """
+
     _log.info("Exporting *.json, *.log from {}...".format(result_dir))
 
     with tarfile.open(outfile, 'w:gz') as archive:
         # Respect the tree hierarchy on compressing
-        for root, dirs, files_ in os.walk(result_dir):
-            for name in files_:
+        for root, dirs, files in os.walk(result_dir):
+            for name in files:
                 if name.endswith('.json') or name.endswith('.log'):
-                    archive.add(os.path.join(root, name))
+                    archive.add(os.path.join(root,name))
 
     _log.info("Files compressed! The resulting file was created: {}".format(outfile))
 
     return 0
 
-
 def validate_spec(conf, bench):
-    """Check if the configuration is valid for hepspec06.
+    """
+    Check if the configuration is valid for hepspec06.
 
     Args:
       conf:  A dict containing configuration.
@@ -58,6 +59,7 @@ def validate_spec(conf, bench):
     Returns:
       Error code: 0 OK , 1 Not OK
     """
+
     _log.debug("Configuration to apply validation: {}".format(conf))
 
     # Config section to use
@@ -86,7 +88,9 @@ def validate_spec(conf, bench):
 
 
 def run_hepscore(conf):
-    """Import and run hepscore."""
+    """
+    Import and run hepscore
+    """
     try:
         import hepscore
     except ImportError:
@@ -118,7 +122,8 @@ def run_hepscore(conf):
 
 
 def run_hepspec(conf, bench):
-    """Run HEPSpec benchmark.
+    """
+    Run HEPSpec benchmark.
 
     Args:
       conf:  A dict containing configuration.
@@ -127,6 +132,7 @@ def run_hepspec(conf, bench):
     Return:
       POSIX exit code from subprocess
     """
+
     _log.debug("Configuration in use for benchmark {}: {}".format(bench, conf))
 
     # Config section to use
@@ -141,13 +147,13 @@ def run_hepspec(conf, bench):
 
     # Possible hepspec06 arguments
     spec_args = {
-        'bench'         : ' -b {}'.format(bench),
-        'iterations'    : ' -i {}'.format(spec.get('iterations')),
-        'mp_num'        : ' -n {}'.format(conf['global'].get('mp_num')),
-        'hepspec_volume': ' -p {}'.format(spec.get('hepspec_volume')),
-        'bmk_set'       : ' -s {}'.format(spec.get('bmk_set')),
-        'url_tarball'   : ' -u {}'.format(spec.get('url_tarball')),
-        'workdir'       : ' -w {}'.format(conf['global'].get('rundir'))
+      'bench'          : ' -b {}'.format(bench),
+      'iterations'     : ' -i {}'.format(spec.get('iterations')),
+      'mp_num'         : ' -n {}'.format(conf['global'].get('mp_num')),
+      'hepspec_volume' : ' -p {}'.format(spec.get('hepspec_volume')),
+      'bmk_set'        : ' -s {}'.format(spec.get('bmk_set')),
+      'url_tarball'    : ' -u {}'.format(spec.get('url_tarball')),
+      'workdir'        : ' -w {}'.format(conf['global'].get('rundir')),
     }
     _log.debug("spec arguments: {}". format(spec_args))
 
@@ -173,7 +179,7 @@ def run_hepspec(conf, bench):
                     spec['hepspec_volume'],
                     spec['image'],
                     _run_args),
-        'singularity': "singularity run -B {1}:{1} -B {2}:{2} docker://{3} {4}"
+        'singularity': "SINGULARITY_CACHEDIR={0}/singularity_cachedir singularity run -B {1}:{1} -B {2}:{2} docker://{3} {4}"
             .format(conf['global']['parent_dir'],
                     conf['global']['rundir'],
                     spec['hepspec_volume'],
@@ -181,18 +187,46 @@ def run_hepspec(conf, bench):
                     _run_args)
     }
 
-    bmk_env["SINGULARITY_CACHEDIR"] = "{}/singuality_cachedir".format(conf['global']['parent_dir'])
-
     # Start benchmark
     _log.debug(cmd[run_mode])
-    _, returncode = exec_cmd(cmd[run_mode], bmk_env)
-    if returncode != 0:
-        _log.error("Benchmark execution failed; returncode = {}.".format(returncode))
+    returncode = exec_wait_benchmark(cmd[run_mode])
     return returncode
 
 
+def exec_wait_benchmark(cmd_str):
+    """
+    Accepts command string to execute and waits for process to finish
+
+    Args:
+      cmd_str: Command to execute.
+
+    Returns:
+      An POSIX exit code (0 through 255)
+    """
+
+    _log.debug("Excuting command: {}".format(cmd_str))
+
+    cmd = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    # Output stdout from child process
+    line = cmd.stdout.readline()
+    while line:
+        sys.stdout.write(line.decode('utf-8'))
+        line = cmd.stdout.readline()
+
+    # Wait until process is complete
+    cmd.wait()
+
+    # Check for errors
+    if cmd.returncode != 0:
+        _log.error("Benchmark execution failed; returncode = {}.".format(cmd.returncode))
+
+    return cmd.returncode
+
+
 def convert_tags_to_json(tag_str):
-    """Convert tags string to json.
+    """
+    Convert tags string to json
 
     Args:
       tag_str: String to be converted to json.
@@ -200,6 +234,7 @@ def convert_tags_to_json(tag_str):
     Returns:
       A dict containing the tags.
     """
+
     _log.info("User specified tags: {}".format(tag_str))
 
     # Check if user provided a valid tag string to be converted to json
@@ -214,8 +249,9 @@ def convert_tags_to_json(tag_str):
     return tags
 
 
-def exec_cmd(cmd_str, env=None):
-    """Execute a command string and returns its output.
+def exec_cmd(cmd_str):
+    """
+    Executes a command string and returns its output
 
     Args:
       cmd_str: A string with the command to execute.
@@ -223,53 +259,49 @@ def exec_cmd(cmd_str, env=None):
     Returns:
       A string with the output.
     """
+
     _log.debug("Excuting command: {}".format(cmd_str))
 
-    if "|" in cmd_str:
-        cmds = cmd_str.split('|')
-    else:
-        cmds = [cmd_str]
+    cmd = subprocess.Popen(cmd_str, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd_reply, cmd_error = cmd.communicate()
 
-    p = dict()
-    try:
-        for i, cmd in enumerate(cmds):
-            if i == 0:
-                p[i] = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
-            else:
-                p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = p[len(cmds) - 1].communicate()
-        returncode = p[len(cmds) - 1].wait()
-    except FileNotFoundError as e:
-        returncode = 1
-        stderr = e
-        pass
     # Check for errors
-    if returncode != 0:
-        stdout = "not_available"
-        _log.error(stderr)
-    else:
-        stdout = stdout.decode('utf-8').rstrip()
+    if cmd.returncode != 0:
+        cmd_reply = "not_available"
+        _log.error(cmd_error.decode('utf-8').rstrip())
 
-    return stdout, returncode
+    else:
+        # Convert bytes to text and remove \n
+        try:
+            cmd_reply = cmd_reply.decode('utf-8').rstrip()
+        except UnicodeDecodeError:
+            _log.error("Failed to decode to utf-8.")
+
+    return cmd_reply, cmd.returncode
 
 
 def get_version():
-    """Version of metadata to be used in ElasticSearch tagging."""
+    """
+    Version of metadata to be used in ElasticSearch tagging
+    """
     return "v2.1-dev"
 
 
 def get_host_ips():
-    """Get external facing system IP from default route, do not rely on hostname.
+    """
+    Get external facing system IP from default route, do not rely on hostname
 
     Returns:
       A string containing the ip
     """
+
     ip_address, _ = exec_cmd("ip route get 1 | awk '{print $NF;exit}'")
     return ip_address
 
 
 def prepare_metadata(params, extra):
-    """Construct a json with cli inputs and extra fields.
+    """
+    Constructs a json with cli inputs and extra fields
 
     Args:
       cli_inputs: Arguments that were passed directly with cli
@@ -278,13 +310,14 @@ def prepare_metadata(params, extra):
     Returns:
       A dict containing hardware metadata, tags, flags & extra fields
     """
+
     # Create output metadata
     result = {'host': {}}
     result.update({
-        '_id'           : "{}_{}".format(params['uid'], extra['start_time']),
-        '_timestamp'    : extra['start_time'],
-        '_timestamp_end': extra['end_time'],
-        'json_version'  : get_version()
+        '_id'            : "{}_{}".format(params['uid'], extra['start_time']),
+        '_timestamp'     : extra['start_time'],
+        '_timestamp_end' : extra['end_time'],
+        'json_version'   : get_version()
     })
 
     result['host'].update({
@@ -319,11 +352,14 @@ def prepare_metadata(params, extra):
 
 
 def print_results(results):
-    """Print the results in a human-readable format.
+    """
+    Prints the results in a human-readable format
 
     Args:
       results: A dict containing the results['profiles']
+
     """
+
     print("\n\n=========================================================")
     print("BENCHMARK RESULTS FOR {}".format(results['host']['hostname']))
     print("=========================================================")
@@ -349,10 +385,12 @@ def print_results(results):
 
 
 def print_results_from_file(json_file):
-    """Print the results from a json file.
+    """
+    Prints the results from a json file
 
     Args:
       json_file: A json file with results
+
     """
     with open(json_file, 'r') as jfile:
         print_results(json.loads(jfile.read()))

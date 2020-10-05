@@ -5,25 +5,25 @@
 # the top-level directory of this distribution.
 ###############################################################################
 
-import contextlib
-import difflib
-import json
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
 from hepbenchmarksuite import utils
 from hepscore import HEPscore
+import contextlib
+import difflib
+import json
 import sys
 
 
 class TestHepscore(unittest.TestCase):
-    """Test extra utility methods."""
+    """Test extra utility methods"""
 
     def setUp(self):
         self.conf = {'global': {'mode': 'singularity', 'rundir': '/tmp'}}
 
     @patch.dict(utils.sys.modules, {'hepscore': None})
     def test_hepscore_import(self):
-        """Test hepscore missing reports failure."""
+        """Test hepscore missing reports failure"""
         ret = utils.run_hepscore(self.conf)
         self.assertEqual(ret, -1)
 
