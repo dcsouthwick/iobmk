@@ -145,8 +145,8 @@ db12_benchmark:
     - bmkrun --rundir . --benchmarks db12
   artifacts:
     paths:
-      - result_profile.json
-      - run_config.yaml
+      - ./run_*/result_profile.json
+      - ./run_*/run_config.yaml
     expire_in: 1 week
     when: always
   except:
@@ -207,7 +207,6 @@ bats_test_docker_dompose_qa:
   # use image that has singularity.cern repo
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   variables:
-    PATH: '~/.local/bin:$PATH'
     BMK_VOLUME: '/tmp/${CI_JOB_NAME}_${CI_JOB_ID}'
     RESULTS_FILE: '$CI_JOB_NAME.json'
     SINGULARITY_CACHEDIR: '$CI_PROJECT_DIR/singularity_cachedir'
@@ -216,6 +215,7 @@ bats_test_docker_dompose_qa:
     # non-root user
     - useradd -d $(pwd) -g users -M -N unprivUser
     - chown -R unprivUser:users ..
+    - export PATH='~/.local/bin:$PATH'
     # install the benchmark suite python package
     - python3 -m pip install -U pip
     - su unprivUser -c "python3 -m pip install --user . && \
@@ -277,11 +277,11 @@ sing_spec2017:
     # This will result in a warning that the docker-in-docker service may not have started successfully
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375/
-    PATH: '~/.local/bin:$PATH'
     BMK_VOLUME: /tmp/${CI_JOB_NAME}_${CI_JOB_ID}
     RESULTS_FILE: $CI_JOB_NAME.json
   script:
     - yum install -y -q git python3-pip docker-client
+    - export PATH='~/.local/bin:$PATH'
     # non-root user
     #- useradd -d $(pwd) -g users -M -N unprivUser
     #- chown -R unprivUser:users ..
