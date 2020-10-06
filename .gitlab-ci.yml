@@ -217,15 +217,12 @@ bats_test_docker_dompose_qa:
     - python3 -m pip install --user --upgrade pip
     - python3 -m pip install --user .
     - export PATH=$PATH:~/.local/bin
-    #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
     - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
     - export RESULTS_FILE=$CI_JOB_NAME.json
-    # if .sif was already built, then use it!
-    - if [ -d singularity_cachedir ]; then mkdir -p $BMK_VOLUME/singularity_cachedir; mv singularity_cachedir/ $BMK_VOLUME/; fi
+    - export SINGULARITY_CACHEDIR=$CI_PROJECT_DIR/singularity_cachedir
     # run $BMKLIST as singularity
     - bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/run_*/$RESULTS_FILE $CI_PROJECT_DIR
-    - mv $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
   only:
     variables:
       - $CI_COMMIT_BRANCH =~ /^qa-.*$/
@@ -233,7 +230,7 @@ bats_test_docker_dompose_qa:
   cache:
     key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
     paths:
-      - singularity_cachedir/cache/**/*
+      - singularity_cachedir/**/*
   artifacts:
     untracked: true
     paths:
