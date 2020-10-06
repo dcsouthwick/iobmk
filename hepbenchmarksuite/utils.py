@@ -185,7 +185,7 @@ def run_hepspec(conf, bench):
 
     # Start benchmark
     _log.debug(cmd[run_mode])
-    _, returncode = exec_cmd(cmd[run_mode], bmk_env)
+    _, returncode = exec_cmd(cmd[run_mode], bmk_env, output=True)
     if returncode != 0:
         _log.error("Benchmark execution failed; returncode = {}.".format(returncode))
     return returncode
@@ -214,7 +214,7 @@ def convert_tags_to_json(tag_str):
     return tags
 
 
-def exec_cmd(cmd_str, env=None):
+def exec_cmd(cmd_str, env=None, output=False):
     """Execute a command string and returns its output.
 
     Args:
@@ -234,10 +234,15 @@ def exec_cmd(cmd_str, env=None):
     try:
         for i, cmd in enumerate(cmds):
             if i == 0:
-                p[i] = Popen(shlex.split(cmd), stdout=PIPE, stderr=STDOUT)
+                p[i] = Popen(shlex.split(cmd), encoding='utf-8', stdout=PIPE, stderr=STDOUT)
             else:
-                p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout, stdout=PIPE, stderr=STDOUT)
-        stdout, stderr = p[len(cmds) - 1].communicate()
+                p[i] = Popen(shlex.split(cmd), encoding='utf-8', stdin=p[i - 1].stdout, stdout=PIPE, stderr=STDOUT)
+        
+        stdout=''
+        for line in p[len(cmds) - 1].stdout:
+            if output:
+                sys.stdout.write(line)
+            stdout += line
         returncode = p[len(cmds) - 1].wait()
     except FileNotFoundError as e:
         returncode = 1
@@ -246,9 +251,9 @@ def exec_cmd(cmd_str, env=None):
     # Check for errors
     if returncode != 0:
         stdout = "not_available"
-        _log.error(stderr)
+        _log.error(stdout)
     else:
-        stdout = stdout.decode('utf-8').rstrip()
+        stdout = stdout.rstrip()
 
     return stdout, returncode
 

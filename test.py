@@ -4,7 +4,7 @@ import sys
 import shlex
 from subprocess import run, Popen, PIPE, STDOUT
 
-def exec_cmd(cmd_str, env=None):
+def exec_cmd(cmd_str, env=None, output=False):
     """Execute a command string and returns its output.
 
     Args:
@@ -29,13 +29,11 @@ def exec_cmd(cmd_str, env=None):
                 p[i] = Popen(shlex.split(cmd), encoding='utf-8', stdin=p[i - 1].stdout, stdout=PIPE, stderr=STDOUT)
         
         stdout=''
-        line = p[len(cmds) - 1].stdout.readline()
-        while line:
-            sys.stdout.write(line)
+        for line in p[len(cmds) - 1].stdout:
+            if output:
+                sys.stdout.write(line)
             stdout += line
-        #stdout, _ = p[len(cmds) - 1].communicate()
         returncode = p[len(cmds) - 1].wait()
-        stdout
     except FileNotFoundError as e:
         returncode = 1
         stderr = e
@@ -50,4 +48,4 @@ def exec_cmd(cmd_str, env=None):
     return stdout, returncode
 
 while True:
-    print(exec_cmd(input("CMD to run: ")))
+    print(exec_cmd(input("CMD to run: "), output=True))
