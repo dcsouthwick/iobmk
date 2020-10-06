@@ -218,8 +218,9 @@ bats_test_docker_dompose_qa:
     - export PATH='~/.local/bin:$PATH'
     # install the benchmark suite python package
     - python3 -m pip install -U pip
-    - su unprivUser -c "python3 -m pip install --user . && \
-      bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE"
+    #- su unprivUser -c "python3 -m pip install --user . && \
+    - python3 -m pip install .
+    - bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/run_*/$RESULTS_FILE $CI_PROJECT_DIR
     # cleanup
     - rm -rf $BMK_VOLUME
