@@ -1,7 +1,7 @@
 #setuptools
 importlib-resources
 pytest
-flake8-docstrings
+pylint
 stomp.py
 coverage
 bandit

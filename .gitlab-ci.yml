@@ -6,8 +6,14 @@ stages:
   - test-docker
   - deploy
 
+# Auto-security testing - requires gitlab 13.3 (expected October 2020)
+# include:
+# - template: Security/SAST.gitlab-ci.yml
+
 variables:
   GIT_DEPTH: "3"
+  # perhaps SAST_EXCLUDED_PATHS from include works for Bandit? 
+  # SAST_BANDIT_EXCLUDED_PATHS: '*/tests/*'
 
 
 ############################################################
@@ -28,18 +34,16 @@ variables:
     - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE $DESTINATIONS 
 
 job_build_logstash_image:
-    stage: build-base-image
-    before_script:
-        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/logstash/Dockerfile
-        - export CONTEXT=$CI_PROJECT_DIR/
-        - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/logstash:${CI_COMMIT_BRANCH} --destination $CI_REGISTRY_IMAGE/logstash:${CI_COMMIT_SHA:0:8}"
-    <<: *template_build_image
-    only:
-        variables:
-        - $CI_COMMIT_BRANCH =~ /^qa-.*$/
-        - $CI_COMMIT_BRANCH =~ /^qa$/
-        changes:
-          - docker-images/logstash/*
+  stage: build-base-image
+  before_script:
+      - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/logstash/Dockerfile
+      - export CONTEXT=$CI_PROJECT_DIR/
+      - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/logstash:${CI_COMMIT_BRANCH} --destination $CI_REGISTRY_IMAGE/logstash:${CI_COMMIT_SHA:0:8}"
+  <<: *template_build_image
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/'
+      changes:
+        - docker-images/logstash/*
 
 job_build_elasticsearch_image:
   stage: build-base-image
@@ -48,10 +52,8 @@ job_build_elasticsearch_image:
       - export CONTEXT=$CI_PROJECT_DIR/docker-images/es-extractor
       - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/es-extractor:${CI_COMMIT_BRANCH} --destination $CI_REGISTRY_IMAGE/es-extractor:${CI_COMMIT_SHA:0:8} --destination $CI_REGISTRY_IMAGE/es-extractor:latest"
   <<: *template_build_image
-  only:
-      variables:
-        - $CI_COMMIT_BRANCH =~ /^qa-.*$/
-        - $CI_COMMIT_BRANCH =~ /^qa$/
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/'
       changes:
         - docker-images/es-extractor/*
 
@@ -59,6 +61,31 @@ job_build_elasticsearch_image:
 ############################################################
 #####              TEST COMPONENTS                     #####
 ############################################################
+
+code_quality:
+  stage: test-components
+  script:
+    - mkdir -p public/badges public/lint
+    - echo undefined > public/badges/$CI_JOB_NAME.score
+    - yum install -y -q python3-pip
+    - python3 -m pip install -U pip tox pylint_gitlab
+    - tox -e pep8 | tee /tmp/pylint.txt
+    - sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p' /tmp/pylint.txt > public/badges/$CI_JOB_NAME.score
+    - tox -e pep8 -- --output-format=pylint_gitlab.GitlabCodeClimateReporter > codeclimate.json
+  after_script:
+    - anybadge --overwrite --label $CI_JOB_NAME --value=$(cat public/badges/$CI_JOB_NAME.score) --file=public/badges/$CI_JOB_NAME.svg 4=red 6=orange 8=yellow 10=green
+    - echo "Your score is $(cat public/badges/$CI_JOB_NAME.score)"
+  artifacts:
+    paths:
+      - public
+    reports:
+      codequality: codeclimate.json
+    when: always
+  dependencies: []
+  rules:
+    - if: '$CODE_QUALITY_DISABLED'
+      when: never
+    - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
 
 test_python_support:
   # determine minimum supported python version
@@ -68,10 +95,10 @@ test_python_support:
     - yum install -y -q python3-pip
     - python3 -m pip install -U pip vermin
     - vermin -vv .
-  only:
-    changes:
-      - "*.py"
-      - bin/*
+  rules:
+    - changes:
+      - "**/*.py"
+      - "bin/*"
 
 test_python_coverage:
   stage: test-components
@@ -80,10 +107,10 @@ test_python_coverage:
     - yum install -y -q python3-pip
     - python3 -m pip install -U pip tox
     - tox
-  except:
-    refs:
-      - master
-      - qa
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
+      when: never
+    - when: always
   artifacts:
     reports:
       junit: report.xml
@@ -100,23 +127,10 @@ test_python_pep8:
     - yum install -y -q python3-pip
     - python3 -m pip install -U pip tox
     - tox -e pep8
-  except:
-    refs:
-      - master
-      - qa
-
-test_python_security:
-  stage: test-components
-  dependencies: []
-  allow_failure: true
-  script:
-    - yum install -y -q python3-pip
-    - python3 -m pip install -U pip tox
-    - tox -e bandit
-  except:
-    refs:
-      - master
-      - qa
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
+      when: never
+    - when: always
 
 test_yaml_files:
   stage: test-components
@@ -125,14 +139,12 @@ test_yaml_files:
     - yum install -y -q yamllint
     - cd hepbenchmarksuite/config
     - yamllint benchmarks.yml
-  only:
-    changes:
-      - "*.yaml"
-      - "*.yml"
-  except:
-    refs:
-      - master
-      - qa
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
+      when: never
+    - changes:
+      - "**/*.yaml"
+      - "**/*.yml"
 
 test_db12_benchmark:
   stage: test-components
@@ -149,10 +161,10 @@ test_db12_benchmark:
       - run_config.yaml
     expire_in: 1 week
     when: always
-  except:
-    refs:
-      - master
-      - qa
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
+      when: never
+    - when: always
 
 test_hepscore_config_mismatch:
   stage: test-components
@@ -173,9 +185,8 @@ bats_test_docker_dompose_qa:
     entrypoint: [""]
   tags:
     -  hep-benchmark-suite-docker-runner
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH =~ /^qa.*$/
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/'
   before_script:
     - . $CI_PROJECT_DIR/tests/docker_compose_amq_to_es/ci_run_script.sh
     - start_docker_compose
@@ -226,10 +237,8 @@ bats_test_docker_dompose_qa:
     - bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/run_*/$RESULTS_FILE $CI_PROJECT_DIR
     - mv $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH =~ /^qa-.*$/
-      - $CI_COMMIT_BRANCH =~ /^qa$/
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/'
   cache:
     key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
     paths:
@@ -296,11 +305,9 @@ test_sing_spec2017:
     - bmkrun --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/run_*/$RESULTS_FILE .
     - rm -rf $BMK_VOLUME
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH =~ /^qa-.*$/
-      - $CI_COMMIT_BRANCH =~ /^qa$/
-      - $CI_COMMIT_BRANCH =~ /^v2.*/
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/'
+    - if: '$CI_COMMIT_BRANCH =~ /^v2.*$/'
   artifacts:
     paths:
       - ./*.json
@@ -328,7 +335,6 @@ test_docker_spec2017:
 build_hep-benchmark-suite:
   stage: deploy
   dependencies: []
-  when: manual
   environment:
     # production keyword for gitlab value tracking
     name: production
@@ -341,16 +347,15 @@ build_hep-benchmark-suite:
   artifacts:
     paths:
       - dist/
-  except:
-    refs:
-      - master
-      - qa
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
+      when: never
+    - when: manual
 
 job_build_wheels:
   # is this job needed? it performs the same step as bdist_wheel (above)
   stage: deploy
   dependencies: []
-  when: manual
   environment:
     # production keyword for gitlab value tracking
     name: production
@@ -365,7 +370,7 @@ job_build_wheels:
       - package_wheels.tar
     expire_in: 1 week
     when: always
-  except:
-    refs:
-      - master
-      - qa
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
+      when: never
+    - when: manual
