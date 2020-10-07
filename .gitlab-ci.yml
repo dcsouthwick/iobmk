@@ -154,7 +154,7 @@ test_db12_benchmark:
       - master
       - qa
 
-test_hepscore_config_missmatch:
+test_hepscore_config_mismatch:
   stage: test-components
   script:
     - yum install -y -q curl
