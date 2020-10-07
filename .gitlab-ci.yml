@@ -154,11 +154,11 @@ test_db12_benchmark:
       - master
       - qa
 
-test_config_missmatch:
+test_hepscore_config_missmatch:
   stage: test-components
   script:
     - yum install -y -q curl
-    - curl -o hepscore_cfg https://gitlab.cern.ch/hep-benchmarks/hep-score/-/raw/v1.0rc5/hepscore/etc/hepscore20_0.2.yaml
+    - curl --silent -o hepscore_cfg https://gitlab.cern.ch/hep-benchmarks/hep-score/-/raw/v1.0rc5/hepscore/etc/hepscore20_0.2.yaml
     - grep -A1000 hepscore_benchmark $CI_PROJECT_DIR/hepbenchmarksuite/config/benchmarks.yml > suite_cfg_hepscore
     - diff hepscore_cfg suite_cfg_hepscore
 
