@@ -103,7 +103,7 @@ This will install the suite to the user's home directory:
 You can additionally add the executible to you $PATH:
 ```sh
 export PATH=$PATH:~/.local/bin
-
+```
 
 ## How to run
 
@@ -174,7 +174,7 @@ optional arguments:
   -u [UID], --uid [UID] UID
   -p, --publish         enable reporting via AMQ credentials in YAML file
   -v, --verbose         Enables verbose mode. Display debug messages.
-
+  --version             Show program's version number and exit
 -----------------------------------------------
 ```
 
