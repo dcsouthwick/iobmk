@@ -202,7 +202,7 @@ bats_test_docker_dompose_qa:
   stage: test-singularity
   dependencies: []
   tags: 
-    - docker-privileged-xl
+    - docker-privileged
     #- hep-benchmark-suite-docker-runner
   # use image that has singularity.cern repo
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
