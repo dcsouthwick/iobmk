@@ -271,7 +271,7 @@ sing_spec2017:
     # This job tests the hep-benchmark-suite
     # running a configurable set of benchmarks defined in $BMKLIST
   extends: .test_qa_singularity
-  cache: []
+  cache:
   stage: test-docker
   services:
     - docker:19.03.1-dind
@@ -309,7 +309,7 @@ sing_spec2017:
     expire_in: 1 week
     when: always
 
-    .docker_hepscore:
+.docker_hepscore:
   extends: .test_qa_docker
   before_script:
     - export BMKLIST="hepscore"
