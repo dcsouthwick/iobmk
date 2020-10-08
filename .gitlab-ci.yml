@@ -33,7 +33,7 @@ variables:
     # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
     - /kaniko/executor --context $CONTEXT --dockerfile $DOCKERFILE $DESTINATIONS 
 
-job_build_logstash_image:
+build_logstash_image:
   stage: build-base-image
   before_script:
       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/logstash/Dockerfile
@@ -45,7 +45,7 @@ job_build_logstash_image:
       changes:
         - docker-images/logstash/*
 
-job_build_elasticsearch_image:
+build_elasticsearch_image:
   stage: build-base-image
   before_script:
       - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/es-extractor/Dockerfile
@@ -87,7 +87,7 @@ code_quality:
       when: never
     - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
 
-test_python_support:
+python_supported_versions:
   # determine minimum supported python version
   stage: test-components
   dependencies: []
@@ -100,7 +100,7 @@ test_python_support:
       - "**/*.py"
       - "bin/*"
 
-test_python_coverage:
+coverage:
   stage: test-components
   dependencies: []
   script:
@@ -119,7 +119,33 @@ test_python_coverage:
     expire_in: 1 week
     when: always
 
-test_yaml_files:
+pep8_stylecheck:
+  stage: test-components
+  dependencies: []
+  allow_failure: true
+  script:
+    - yum install -y -q python3-pip
+    - python3 -m pip install -U pip tox
+    - tox -e pep8
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
+      when: never
+    - when: always
+
+Security:
+  stage: test-components
+  dependencies: []
+  allow_failure: true
+  script:
+    - yum install -y -q python3-pip
+    - python3 -m pip install -U pip tox
+    - tox -e bandit
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
+      when: never
+    - when: always
+
+YAML_lint:
   stage: test-components
   dependencies: []
   script:
@@ -133,7 +159,7 @@ test_yaml_files:
       - "**/*.yaml"
       - "**/*.yml"
 
-test_db12_benchmark:
+db12_benchmark:
   stage: test-components
   dependencies: []
   script:
@@ -144,8 +170,8 @@ test_db12_benchmark:
     - bmkrun --rundir . --benchmarks db12
   artifacts:
     paths:
-      - result_profile.json
-      - run_config.yaml
+      - ./run_*/result_profile.json
+      - ./run_*/run_config.yaml
     expire_in: 1 week
     when: always
   rules:
@@ -200,57 +226,59 @@ bats_test_docker_dompose_qa:
   stage: test-singularity
   dependencies: []
   tags: 
+    # Currently restricted to XL as we hard-code 20GB free requirement
     - docker-privileged-xl
     #- hep-benchmark-suite-docker-runner
   # use image that has singularity.cern repo
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
+  variables:
+    BMK_VOLUME: /tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+    RESULTS_FILE: $CI_JOB_NAME.json
+    SINGULARITY_CACHEDIR: $CI_PROJECT_DIR/singularity_cachedir
   script:
     - yum install -y -q git singularity python3-pip
+    - python3 -m pip install -U pip
+    # Gitlab cannot modify $PATH in variables section
+    #- export PATH=$PATH:$(pwd)/.local/bin
+    - export PATH=$PATH:$HOME/.local/bin
     # non-root user
     - useradd -d $(pwd) -g users -M -N unprivUser
     - chown -R unprivUser:users ..
-    - su - unprivUser
-    - set -e
-    # install the benchmark suite python package
-    - python3 -m pip install --user --upgrade pip
+    # install the benchmark suite python package & run unprivileged
+    #- su unprivUser -c "python3 -m pip install --user ."
+    #- su unprivUser -c "bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE"
     - python3 -m pip install --user .
-    - export PATH=$PATH:~/.local/bin
-    #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
-    - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
-    - export RESULTS_FILE=$CI_JOB_NAME.json
-    # if .sif was already built, then use it!
-    - if [ -d singularity_cachedir ]; then mkdir -p $BMK_VOLUME/singularity_cachedir; mv singularity_cachedir/ $BMK_VOLUME/; fi
-    # run $BMKLIST as singularity
     - bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    # cleanup
     - mv $BMK_VOLUME/run_*/$RESULTS_FILE $CI_PROJECT_DIR
-    - mv $BMK_VOLUME/singularity_cachedir $CI_PROJECT_DIR
+    - rm -rf $BMK_VOLUME
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/'
   cache:
     key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
     paths:
-      - singularity_cachedir/cache/**/*
+      - singularity_cachedir/**/*
   artifacts:
-    untracked: true
     paths:
-      - ./*.json
+      - $RESULTS_FILE
     exclude:
       - singularity_cachedir
     expire_in: 1 week
     when: always
 
-test_sing_hepscore:
+sing_hepscore:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hepscore"
-test_sing_hs06:
+
+sing_hs06:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hs06_32"
     - export HS06URL=$HS06URL
     - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/benchmarks_ci_test.yml
 
-test_sing_spec2017:
+sing_spec2017:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="spec2017"
@@ -265,6 +293,7 @@ test_sing_spec2017:
     # This job tests the hep-benchmark-suite
     # running a configurable set of benchmarks defined in $BMKLIST
   extends: .test_qa_singularity
+  cache:
   stage: test-docker
   services:
     - docker:19.03.1-dind
@@ -273,8 +302,11 @@ test_sing_spec2017:
     # This will result in a warning that the docker-in-docker service may not have started successfully
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375/
+    BMK_VOLUME: /tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+    RESULTS_FILE: $CI_JOB_NAME.json
   script:
     - yum install -y -q git python3-pip docker-client
+    - export PATH=$PATH:$HOME/.local/bin
     # non-root user
     #- useradd -d $(pwd) -g users -M -N unprivUser
     #- chown -R unprivUser:users ..
@@ -284,10 +316,6 @@ test_sing_spec2017:
     # install the benchmark suite python package
     - python3 -m pip install --user --upgrade pip
     - python3 -m pip install .
-    - export PATH=$PATH:~/.local/bin
-    #- export AMQ_ARGUMENTS="--queue_host=$QUEUE_HOST --queue_port=$QUEUE_PORT --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD --topic=$QUEUE_TOPIC"
-    - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
-    - export RESULTS_FILE=$CI_JOB_NAME.json
     # run $BMKLIST as docker
     - bmkrun --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/run_*/$RESULTS_FILE .
@@ -301,14 +329,19 @@ test_sing_spec2017:
     expire_in: 1 week
     when: always
 
-test_docker_hs06:
+.docker_hepscore:
+  extends: .test_qa_docker
+  before_script:
+    - export BMKLIST="hepscore"
+
+docker_hs06:
   extends: .test_qa_docker
   before_script:
     - export BMKLIST="hs06_32"
     - export HS06URL=$HS06URL
     - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/benchmarks_ci_test.yml
 
-test_docker_spec2017:
+docker_spec2017:
   extends: .test_qa_docker
   before_script:
     - export BMKLIST="spec2017"
@@ -319,7 +352,7 @@ test_docker_spec2017:
 #####           BUILD & PUBLISH PACKAGE                #####
 ############################################################
 
-build_hep-benchmark-suite:
+dist_hep-benchmark-suite:
   stage: deploy
   dependencies: []
   environment:
@@ -339,7 +372,7 @@ build_hep-benchmark-suite:
       when: never
     - when: manual
 
-job_build_wheels:
+build_wheels:
   # is this job needed? it performs the same step as bdist_wheel (above)
   stage: deploy
   dependencies: []
