@@ -5,9 +5,10 @@
 # the top-level directory of this distribution.
 ###############################################################################
 
-from hepbenchmarksuite.plugins.extractor import Extractor
+import json
 import unittest
-
+from hepbenchmarksuite.plugins.extractor import Extractor
+from schema import Schema, And, Use, Optional
 
 class TestHWExtractor(unittest.TestCase):
     """********************************************************

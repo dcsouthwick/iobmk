@@ -18,8 +18,8 @@ report.xml
 .tox
 .venv
 htmlcov*
-run_*
 result_dump
+run_*
 
 # Editors
 *~

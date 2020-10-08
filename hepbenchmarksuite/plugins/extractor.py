@@ -14,7 +14,6 @@ from subprocess import Popen, PIPE
 import sys
 import time
 
-
 _log = logging.getLogger(__name__)
 
 
@@ -150,6 +149,7 @@ class Extractor(object):
             'Sockets'          : parse_lscpu("Socket\(s\)"),
             'Vendor_ID'        : parse_lscpu("Vendor ID"),
             'Stepping'         : parse_lscpu("Stepping"),
+            'CPU_MHz'          : parse_lscpu("CPU MHz"),
             'CPU_Max_Speed_MHz': parse_lscpu("CPU max MHz"),
             'CPU_Min_Speed_MHz': parse_lscpu("CPU min MHz"),
             'BogoMIPS'         : parse_lscpu("BogoMIPS"),
@@ -157,6 +157,10 @@ class Extractor(object):
             'L3_cache'         : parse_lscpu("L3 cache"),
             'NUMA_nodes'       : parse_lscpu("NUMA node\(s\)"),
         }
+        # Populate NUMA nodes
+    for i in range(0, int(CPU['NUMA_nodes'])):
+        CPU['NUMA_node{}_CPUs'.format(i)] = parse_lscpu("NUMA node{} CPU\(s\)".format(i))
+
         return CPU
 
     def collect_bios(self):

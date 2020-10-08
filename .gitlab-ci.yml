@@ -248,9 +248,7 @@ sing_hepscore:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="hepscore"
-    # ugly way to install hep-score...
-    - yum install -y -q singularity python3-pip git
-    - python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0
+
 sing_hs06:
   extends: .test_qa_singularity
   before_script:
@@ -310,6 +308,11 @@ sing_spec2017:
       - ./*.json
     expire_in: 1 week
     when: always
+
+    .docker_hepscore:
+  extends: .test_qa_docker
+  before_script:
+    - export BMKLIST="hepscore"
 
 docker_hs06:
   extends: .test_qa_docker

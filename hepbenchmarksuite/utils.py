@@ -39,7 +39,7 @@ def export(result_dir, outfile):
 
     with tarfile.open(outfile, 'w:gz') as archive:
         # Respect the tree hierarchy on compressing
-        for root, dirs, files_ in os.walk(result_dir):
+        for root, _, files_ in os.walk(result_dir):
             for name in files_:
                 if name.endswith('.json') or name.endswith('.log'):
                     archive.add(os.path.join(root, name))

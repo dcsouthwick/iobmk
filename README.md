@@ -24,8 +24,6 @@ You can additionally add the executible to you $PATH:
 export PATH=$PATH:~/.local/bin
 ```
 
-
-
 ## About
 The HEP Benchmark Suite is a toolkit which aggregates several different benchmarks
 in one single application for characterizing the perfomance of individual and clustered heterogeneous hardware.
@@ -104,24 +102,6 @@ Servers belonging to different data centres (or cloud providers) are benchmarked
 In this example, an AMQ consumer may then digest the messages from the broker, and insert them in an Elasticsearch cluster so that the benchmark results can be aggregated and visualized in dashboards. Metadata (such as UID, CPU architecture, OS, Cloud name, IP address, etc.) are also included into the searchable results.
 
 Users are free to build/use transport and aggregation/visualization tools of their choice to ingest the generated JSON results.
-
-## Installation
-
-**NB: This package requires pip3 >= 19.1**\
-If your `pip3 --version` is older, please update with:\
-`pip3 install --user --upgrade pip`
-
-```sh
-python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@qa-v2.0
-```
-This will install the suite to the user's home directory:
-```sh
-~/.local/bin/bmkrun
-```
-You can additionally add the executible to you $PATH:
-```sh
-export PATH=$PATH:~/.local/bin
-```
 
 ## How to run
 
