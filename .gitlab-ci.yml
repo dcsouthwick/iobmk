@@ -208,26 +208,24 @@ bats_test_docker_dompose_qa:
   # use image that has singularity.cern repo
   image: gitlab-registry.cern.ch/linuxsupport/cc7-base
   variables:
-    TEST: '/tmp/${CI_JOB_NAME}_${CI_JOB_ID}'
-    PATH2: /tmp/:$PATH
+    BMK_VOLUME: /tmp/${CI_JOB_NAME}_${CI_JOB_ID}
+    RESULTS_FILE: $CI_JOB_NAME.json
+    SINGULARITY_CACHEDIR: $CI_PROJECT_DIR/singularity_cachedir
   script:
-    - echo $TEST
-    - echo $PATH2
-    - yum install -y git singularity python3-pip
-    - export PATH=$PATH:~/.local/bin
-    - export BMK_VOLUME=/tmp/${CI_JOB_NAME}_${CI_JOB_ID}
-    - export RESULTS_FILE=$CI_JOB_NAME.json
-    - export SINGULARITY_CACHEDIR=$CI_PROJECT_DIR/singularity_cachedir
+    - yum install -y -q git singularity python3-pip
+    - python3 -m pip install -U pip
+    # Gitlab cannot modify $PATH in variables section
+    - export PATH=$PATH:$(pwd)/.local/bin
     # non-root user
     - useradd -d $(pwd) -g users -M -N unprivUser
     - chown -R unprivUser:users ..
-    # install the benchmark suite python package
-    - python3 -m pip install -U pip
-    #- su unprivUser -c "python3 -m pip install --user . && \
-    - python3 -m pip install .
+    # install the benchmark suite python package & run unprivileged
+    #- su unprivUser -c "python3 -m pip install --user ."
+    #- su unprivUser -c "bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE"
+    - python3 -m pip install --user .
     - bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
-    - mv $BMK_VOLUME/run_*/$RESULTS_FILE $CI_PROJECT_DIR
     # cleanup
+    - mv $BMK_VOLUME/run_*/$RESULTS_FILE $CI_PROJECT_DIR
     - rm -rf $BMK_VOLUME
   only:
     variables:
@@ -238,9 +236,8 @@ bats_test_docker_dompose_qa:
     paths:
       - singularity_cachedir/**/*
   artifacts:
-    untracked: true
     paths:
-      - ./*.json
+      - $RESULTS_FILE
     exclude:
       - singularity_cachedir
     expire_in: 1 week
