@@ -158,8 +158,8 @@ class Extractor(object):
             'NUMA_nodes'       : parse_lscpu("NUMA node\(s\)"),
         }
         # Populate NUMA nodes
-    for i in range(0, int(CPU['NUMA_nodes'])):
-        CPU['NUMA_node{}_CPUs'.format(i)] = parse_lscpu("NUMA node{} CPU\(s\)".format(i))
+        for i in range(0, int(CPU['NUMA_nodes'])):
+            CPU['NUMA_node{}_CPUs'.format(i)] = parse_lscpu("NUMA node{} CPU\(s\)".format(i))
 
         return CPU
 
