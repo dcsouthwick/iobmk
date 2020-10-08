@@ -18,6 +18,7 @@ global:
   # enable AMQ reporting using credentials in activemq
   publish: False
 
+# Section to configure ActiveMQ
 activemq:
   server: 'your-AMQ-server.com'
   port: 61613
@@ -27,8 +28,9 @@ activemq:
   key: 'key-file.key'
   cert: 'cert-file.pem'
 
+# Section to configure HEPSpec06 benchmark
 hepspec06:
-  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
+  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
   # URL to fetch the hepspec06. It will only be used if the software
   # is  not found under hepspec_volume.
   url_tarball: "https://www.example.com/"
@@ -41,8 +43,9 @@ hepspec06:
   # Run only a benchmark set
   # bmk_set: '453.povray'
 
+# Section to configure Spec2017 benchmark
 spec2017:
-  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
+  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
   # URL to fetch the spec2017. It will only be used if the software
   # is not found under hepspec_volume.
   url_tarball: "https://www.example.com/"
@@ -55,7 +58,8 @@ spec2017:
   # Run only a benchmark set
   # bmk_set: '508.namd_r'
 
-# from hepscore20_0_2.yaml
+# Section to configure HepScore benchmark
+# config taken from hepscore20_0_2.yaml
 hepscore_benchmark:
   benchmarks:
     atlas-gen-bmk:
