@@ -119,19 +119,6 @@ coverage:
     expire_in: 1 week
     when: always
 
-pep8_stylecheck:
-  stage: test-components
-  dependencies: []
-  allow_failure: true
-  script:
-    - yum install -y -q python3-pip
-    - python3 -m pip install -U pip tox
-    - tox -e pep8
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
-      when: never
-    - when: always
-
 Security:
   stage: test-components
   dependencies: []
