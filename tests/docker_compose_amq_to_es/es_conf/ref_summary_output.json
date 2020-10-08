@@ -120,6 +120,7 @@
         "hs06_32": {
             "start": "Mon Sep 7 13:24:10 CEST 2020",
             "end": "Mon Sep 7 13:33:52 CEST 2020",
+            "copies": 48,
             "runcpu_args": "1 runspec: runspec --config=linux32-gcc_cern.cfg --action=build 453.povray;48 runspec: runspec --config=linux32-gcc_cern.cfg --nobuild --noreportable --iterations=1 453.povray;",
             "bset": "453.povray",
             "LINK": "1 g++ -m32-O2 -fPIC -pthread <objects> -o options;",
@@ -182,6 +183,7 @@
         "hs06_64": {
             "start": "Fri Sep 4 16:56:21 CEST 2020",
             "end": "Fri Sep 4 17:03:56 CEST 2020",
+            "copies": 48,
             "runcpu_args": "1 runspec: runspec --config=linux64-gcc_cern.cfg --action=build 453.povray;48 runspec: runspec --config=linux64-gcc_cern.cfg --nobuild --noreportable --iterations=1 453.povray;",
             "bset": "453.povray",
             "LINK": "1 g++-O2 -fPIC -pthread -DSPEC_CPU_LP64 <objects> -o options;",
@@ -244,6 +246,7 @@
         "spec2017": {
             "start": "Fri Sep 4 17:06:05 CEST 2020",
             "end": "Fri Sep 4 17:20:11 CEST 2020",
+            "copies": 48,
             "compiler": " C/C++/Fortran: Version 6.2.0 of GCC, the GNU Compiler Collection ",
             "optimize": " -g -O3 -fPIC -pthread",
             "extra_coptimize": "",
