@@ -215,7 +215,8 @@ bats_test_docker_dompose_qa:
     - yum install -y -q git singularity python3-pip
     - python3 -m pip install -U pip
     # Gitlab cannot modify $PATH in variables section
-    - export PATH=$PATH:$(pwd)/.local/bin
+    #- export PATH=$PATH:$(pwd)/.local/bin
+    - export PATH=$PATH:$HOME/.local/bin
     # non-root user
     - useradd -d $(pwd) -g users -M -N unprivUser
     - chown -R unprivUser:users ..
