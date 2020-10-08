@@ -285,7 +285,7 @@ sing_spec2017:
     RESULTS_FILE: $CI_JOB_NAME.json
   script:
     - yum install -y -q git python3-pip docker-client
-    - export PATH='~/.local/bin:$PATH'
+    - export PATH=$PATH:$HOME/.local/bin
     # non-root user
     #- useradd -d $(pwd) -g users -M -N unprivUser
     #- chown -R unprivUser:users ..
