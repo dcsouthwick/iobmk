@@ -12,7 +12,6 @@ except ImportError:
     # Try backported to PY<37 `importlib_resources`.
     from importlib_resources import files
 import os
-import shlex
 import socket
 from subprocess import Popen, PIPE, STDOUT
 import sys
@@ -22,7 +21,6 @@ import yaml
 from hepbenchmarksuite.plugins.extractor import Extractor
 
 _log = logging.getLogger(__name__)
-bmk_env = os.environ.copy()
 
 
 def export(result_dir, outfile):
@@ -39,7 +37,7 @@ def export(result_dir, outfile):
 
     with tarfile.open(outfile, 'w:gz') as archive:
         # Respect the tree hierarchy on compressing
-        for root, _, files_ in os.walk(result_dir):
+        for root, dirs, files_ in os.walk(result_dir):
             for name in files_:
                 if name.endswith('.json') or name.endswith('.log'):
                     archive.add(os.path.join(root, name))
@@ -173,7 +171,7 @@ def run_hepspec(conf, bench):
                     spec['hepspec_volume'],
                     spec['image'],
                     _run_args),
-        'singularity': "singularity run -B {1}:{1} -B {2}:{2} docker://{3} {4}"
+        'singularity': "SINGULARITY_CACHEDIR={0}/singularity_cachedir singularity run -B {1}:{1} -B {2}:{2} docker://{3} {4}"
             .format(conf['global']['parent_dir'],
                     conf['global']['rundir'],
                     spec['hepspec_volume'],
@@ -181,14 +179,40 @@ def run_hepspec(conf, bench):
                     _run_args)
     }
 
-    bmk_env["SINGULARITY_CACHEDIR"] = "{}/singuality_cachedir".format(conf['global']['parent_dir'])
-
     # Start benchmark
     _log.debug(cmd[run_mode])
-    _, returncode = exec_cmd(cmd[run_mode], bmk_env, output=True)
-    if returncode != 0:
-        _log.error("Benchmark execution failed; returncode = {}.".format(returncode))
+    returncode = exec_wait_benchmark(cmd[run_mode])
     return returncode
+
+
+def exec_wait_benchmark(cmd_str):
+    """Accept command string to execute and waits for process to finish.
+
+    Args:
+      cmd_str: Command to execute.
+
+    Returns:
+      An POSIX exit code (0 through 255)
+    """
+
+    _log.debug("Excuting command: {}".format(cmd_str))
+
+    cmd = Popen(cmd_str, shell=True, stdout=PIPE, stderr=STDOUT)
+
+    # Output stdout from child process
+    line = cmd.stdout.readline()
+    while line:
+        sys.stdout.write(line.decode('utf-8'))
+        line = cmd.stdout.readline()
+
+    # Wait until process is complete
+    cmd.wait()
+
+    # Check for errors
+    if cmd.returncode != 0:
+        _log.error("Benchmark execution failed; returncode = {}.".format(cmd.returncode))
+
+    return cmd.returncode
 
 
 def convert_tags_to_json(tag_str):
@@ -225,37 +249,22 @@ def exec_cmd(cmd_str, env=None, output=False):
     """
     _log.debug("Excuting command: {}".format(cmd_str))
 
-    if "|" in cmd_str:
-        cmds = cmd_str.split('|')
-    else:
-        cmds = [cmd_str]
+    cmd = Popen(cmd_str, shell=True, executable='/bin/bash', stdout=PIPE, stderr=PIPE)
+    cmd_reply, cmd_error = cmd.communicate()
 
-    p = dict()
-    try:
-        for i, cmd in enumerate(cmds):
-            if i == 0:
-                p[i] = Popen(shlex.split(cmd), encoding='utf-8', stdout=PIPE, stderr=STDOUT)
-            else:
-                p[i] = Popen(shlex.split(cmd), encoding='utf-8', stdin=p[i - 1].stdout, stdout=PIPE, stderr=STDOUT)
-        
-        stdout=''
-        for line in p[len(cmds) - 1].stdout:
-            if output:
-                sys.stdout.write(line)
-            stdout += line
-        returncode = p[len(cmds) - 1].wait()
-    except FileNotFoundError as e:
-        returncode = 1
-        stderr = e
-        pass
     # Check for errors
-    if returncode != 0:
-        stdout = "not_available"
-        _log.error(stdout)
-    else:
-        stdout = stdout.rstrip()
+    if cmd.returncode != 0:
+        cmd_reply = "not_available"
+        _log.error(cmd_error.decode('utf-8').rstrip())
 
-    return stdout, returncode
+    else:
+        # Convert bytes to text and remove \n
+        try:
+            cmd_reply = cmd_reply.decode('utf-8').rstrip()
+        except UnicodeDecodeError:
+            _log.error("Failed to decode to utf-8.")
+
+    return cmd_reply, cmd.returncode
 
 
 def get_version():

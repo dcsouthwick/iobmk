@@ -7,24 +7,9 @@
 
 [[_TOC_]]
 
-## Installation
-
-> **This package requires `pip3` >= 19.1, `python3.4+` and `git`**\
-  If your `pip3 --version` is older, please update with: `pip3 install --user --upgrade pip` before installing!
-
-```sh
-python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@qa-v2.0
-```
-This will install the suite to the user's home directory:
-```sh
-~/.local/bin/bmkrun
-```
-You can additionally add the executible to you $PATH:
-```sh
-export PATH=$PATH:~/.local/bin
-```
 
 ## About
+
 The HEP Benchmark Suite is a toolkit which aggregates several different benchmarks
 in one single application for characterizing the perfomance of individual and clustered heterogeneous hardware.
 
@@ -45,7 +30,6 @@ It is built in a modular approach to target the following use cases in HEP compu
 
 *The figure shows the high level architecture of the benchmark suite.*
 
-
 <div align="center">
 ![Benchmark Suite architectural view](doc/images/HEP-Benchmark-Suite.png)
 </div>
@@ -65,10 +49,10 @@ The current Hep-Benchmark-Suite integration status.
 - Benchmarks
 
 Benchmark   | Docker             | Singularity
-:---:       | :---:              | :---:              
-HEPSpec06_32| :white_check_mark: | :white_check_mark: 
-HEPSpec06_64| :white_check_mark: | :white_check_mark: 
-SPEC2017    | :white_check_mark: | :white_check_mark: 
+:---:       | :---:              | :---:
+HEPSpec06_32| :white_check_mark: | :white_check_mark:
+HEPSpec06_64| :white_check_mark: | :white_check_mark:
+SPEC2017    | :white_check_mark: | :white_check_mark:
 HEP-Score   | :white_check_mark: | :white_check_mark:
 
 - Plugins
@@ -79,15 +63,16 @@ HW-Metadata   | :white_check_mark: |
 ActiveMQ      | :white_check_mark: |
 Elastic Search|:x:        |
 
-
 ### Available benchmarks
+
 The HEP Benchmark Suite is delivered **ready-to-run** with a [default yaml](hepbenchmarksuite/config/benchmarks.yml) configuration file (see [How to run](#how-to-run)). The  currently available benchmarks are:
+
 - [HEP-score](https://gitlab.cern.ch/hep-benchmarks/hep-score)
 - [HS06](https://w3.hepix.org/benchmarking.html)
 - [SPEC CPU2017](https://www.spec.org/cpu2017/)
 - Fast benchmarks (should not be used for performance measurments):
-    - DIRAC Benchmark (DB12)
-    - [ATLAS Kit Validation](https://gitlab.cern.ch/hep-benchmarks/hep-workloads/blob/master/atlas/kv/atlas-kv/DESCRIPTION)
+  - DIRAC Benchmark (DB12)
+  - [ATLAS Kit Validation](https://gitlab.cern.ch/hep-benchmarks/hep-workloads/blob/master/atlas/kv/atlas-kv/DESCRIPTION)
 
 **Due to proprietary license requirements, HS06 and SPEC CPU 2017 must be provided by the end user.** This tool will work with either a pre-installed or tarball archive of SPEC software.
 
@@ -103,6 +88,27 @@ In this example, an AMQ consumer may then digest the messages from the broker, a
 
 Users are free to build/use transport and aggregation/visualization tools of their choice to ingest the generated JSON results.
 
+## Installation
+
+> **This package requires `pip3` >= 19.1, `python3.4+` and `git`**\
+  If your `pip3 --version` is older, please update with: `pip3 install --user --upgrade pip` before installing!
+
+```sh
+python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@qa-v2.0
+```
+
+This will install the suite to the user's home directory:
+
+```sh
+~/.local/bin/bmkrun
+```
+
+You can additionally add the executible to you $PATH:
+
+```sh
+export PATH=$PATH:~/.local/bin
+```
+
 ## How to run
 
 The python executable (*bmkrun*) can be added to the user's `$PATH`, and launched directly.
@@ -110,9 +116,9 @@ Without argument, this will execute the distributed defaults as defined in `benc
 Users are free to provide [command-line arguments](#description-of-all-arguments), or edit the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml) file directly.
 
 - Running the HEP Benchmark Suite using Docker containers (default)
-	- `./bmkrun`
+  - `./bmkrun`
 - Running using Singularity containers
-	- `./bmkrun --mode=singularity`
+  - `./bmkrun --mode=singularity`
 
 The aggregated results of the selected benchmarks are written to the location and file defined by the `--rundir=` & `--file=` argument (defined as `/tmp/hep-spec_wd3/result_profile.json` in [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml)).
 
@@ -137,7 +143,6 @@ activemq:
   key: /path/key-file.key
   cert: /path/cert-file.pem
 ```
-
 
 ### Description of all arguments
 
@@ -178,6 +183,6 @@ optional arguments:
 
 ## Common Issues
 
-1.  `pip3 install` fails due to problems with hep-score:\
+1. `pip3 install` fails due to problems with hep-score:\
     `No matching distribution found for hep-score@ git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git (from hep-benchmark-suite==2.0.0)`\
     Solution: HEP Benchmark suite requires pip3 19.1 or newer. Upgrade pip with `pip3 install --user --upgrade pip`

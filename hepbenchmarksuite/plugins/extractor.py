@@ -9,7 +9,6 @@ import json
 import logging
 import os
 import re
-import shlex
 from subprocess import Popen, PIPE
 import sys
 import time
@@ -48,14 +47,16 @@ class Extractor(object):
         req_packages = ['lshw', 'ipmitool', 'dmidecode']
 
         for rp in req_packages:
-            cmd = Popen(shlex.split("rpm -q {}".format(rp)), stdout=PIPE, stderr=PIPE)
-            stdout, _ = cmd.communicate()
+            cmd = Popen("rpm -q {}".format(rp), shell=True, executable='/bin/bash', stdout=PIPE, stderr=PIPE)
+            cmd_reply, cmd_error = cmd.communicate()
+
             if cmd.returncode != 0:
-                _log.warning(stdout.decode('utf-8').rstrip())
+                _log.error(cmd_reply.decode('utf-8').rstrip())
                 self.pkg[rp] = False
             else:
-                _log.debug("Package installed: {}".format(stdout.decode('utf-8').rstrip))
+                _log.debug("Package installed: {}".format(cmd_reply.decode('utf-8').rstrip()))
                 self.pkg[rp] = True
+
 
         _log.debug("Installed packages: {}".format(self.pkg))
 
@@ -63,33 +64,21 @@ class Extractor(object):
         """Accept command string and returns output."""
         _log.debug("Excuting command: {}".format(cmd_str))
 
-        if "|" in cmd_str:
-            cmds = cmd_str.split('|')
-        else:
-            cmds = [cmd_str]
-
-        p = dict()
-        try:
-            for i, cmd in enumerate(cmds):
-                if i == 0:
-                    p[i] = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
-                else:
-                    p[i] = Popen(shlex.split(cmd), stdin=p[i - 1].stdout, stdout=PIPE, stderr=PIPE)
-            stdout, stderr = p[len(cmds) - 1].communicate()
-            returncode = p[len(cmds) - 1].wait()
-        except FileNotFoundError as e:
-            returncode = 1
-            stderr = e
-            pass
+        cmd = Popen(cmd_str, shell=True, executable='/bin/bash',  stdout=PIPE, stderr=PIPE)
+        cmd_reply, cmd_error = cmd.communicate()
 
         # Check for errors
-        if returncode != 0:
-            stdout = "not_available"
-            _log.error(stderr)
+        if cmd.returncode != 0:
+            cmd_reply = "not_available"
+            _log.error(cmd_error)
         else:
-            stdout = stdout.decode('utf-8').rstrip()
+            # Convert bytes to text and remove \n
+            try:
+                cmd_reply = cmd_reply.decode('utf-8').rstrip()
+            except UnicodeDecodeError:
+                _log.error("Failed to decode to utf-8.")
 
-        return stdout
+        return cmd_reply
 
     def collect_base(self):
         """Collect base information of the system."""
