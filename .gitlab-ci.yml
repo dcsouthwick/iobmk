@@ -169,7 +169,8 @@ db12_benchmark:
 test_hepscore_config_mismatch:
   stage: test-components
   script:
-    - curl --silent -o hepscore_cfg https://gitlab.cern.ch/hep-benchmarks/hep-score/-/raw/v1.0rc5/hepscore/etc/hepscore20_0.2.yaml
+    - curl --silent -o hepscore_cfg_pointer https://gitlab.cern.ch/hep-benchmarks/hep-score/-/raw/qa-v1.0/hepscore/etc/hepscore-default.yaml
+    - curl --silent -o hepscore_cfg https://gitlab.cern.ch/hep-benchmarks/hep-score/-/raw/qa-v1.0/hepscore/etc/$(cat hepscore_cfg_pointer)
     - grep -A1000 hepscore_benchmark $CI_PROJECT_DIR/hepbenchmarksuite/config/benchmarks.yml > suite_cfg_hepscore
     - diff hepscore_cfg suite_cfg_hepscore
 
