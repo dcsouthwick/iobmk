@@ -73,7 +73,7 @@ code_quality:
     - sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p' /tmp/pylint.txt > public/badges/$CI_JOB_NAME.score
     - pylint -j 0 --exit-zero --output-format=pylint_gitlab.GitlabCodeClimateReporter $(find . \( -path ./.tox -o -path ./tests \) -prune -false -o -name "*.py") bin/bmkrun bin/bmk_show_metadata > codeclimate.json
   after_script:
-    - anybadge --overwrite --label $CI_JOB_NAME --value=$(cat public/badges/$CI_JOB_NAME.score) --file=public/badges/$CI_JOB_NAME.svg 4=red 6=orange 8=yellow 10=green
+    - anybadge --overwrite --label "code quality" --value=$(cat public/badges/$CI_JOB_NAME.score) --file=public/badges/$CI_JOB_NAME.svg 4=red 6=orange 8=yellow 10=green
     - echo "Your score is $(cat public/badges/$CI_JOB_NAME.score)"
   artifacts:
     paths:
@@ -85,6 +85,7 @@ code_quality:
   rules:
     - if: '$CODE_QUALITY_DISABLED'
       when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
 
 python_supported_versions:
@@ -169,7 +170,8 @@ db12_benchmark:
 test_hepscore_config_mismatch:
   stage: test-components
   script:
-    - curl --silent -o hepscore_cfg https://gitlab.cern.ch/hep-benchmarks/hep-score/-/raw/v1.0rc5/hepscore/etc/hepscore20_0.2.yaml
+    - curl --silent -o hepscore_cfg_pointer https://gitlab.cern.ch/hep-benchmarks/hep-score/-/raw/qa-v1.0/hepscore/etc/hepscore-default.yaml
+    - curl --silent -o hepscore_cfg https://gitlab.cern.ch/hep-benchmarks/hep-score/-/raw/qa-v1.0/hepscore/etc/$(cat hepscore_cfg_pointer)
     - grep -A1000 hepscore_benchmark $CI_PROJECT_DIR/hepbenchmarksuite/config/benchmarks.yml > suite_cfg_hepscore
     - diff hepscore_cfg suite_cfg_hepscore
 

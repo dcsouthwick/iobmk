@@ -4,9 +4,9 @@
 | --------- | -------- |
 |   [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/qa-v2.0/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/pipelines?ref=qa-v2.0)     |  [![pipeline status](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/master/pipeline.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/pipelines?ref=master)     |
 [![coverage report](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/qa-v2.0/coverage.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/commits/qa-v2.0)|[![coverage report](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/badges/master/coverage.svg)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/commits/master)|
+|[![code quality](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/jobs/artifacts/qa-v2.0/raw/public/badges/code_quality.svg?job=code_quality)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/pipelines?ref=qa-v2.0)| [![code quality](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/jobs/artifacts/master/raw/public/badges/code_quality.svg?job=code_quality)](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/pipelines?ref=master)|
 
 [[_TOC_]]
-
 
 ## About
 
@@ -46,7 +46,7 @@ Users may also execute the suite in stand-alone mode without result reporting. (
 
 The current Hep-Benchmark-Suite integration status.
 
-- Benchmarks
+* Benchmarks
 
 Benchmark   | Docker             | Singularity
 :---:       | :---:              | :---:
@@ -55,7 +55,7 @@ HEPSpec06_64| :white_check_mark: | :white_check_mark:
 SPEC2017    | :white_check_mark: | :white_check_mark:
 HEP-Score   | :white_check_mark: | :white_check_mark:
 
-- Plugins
+* Plugins
 
 Plugin        | Status |
 :---:         | :--:               |
@@ -67,12 +67,12 @@ Elastic Search|:x:        |
 
 The HEP Benchmark Suite is delivered **ready-to-run** with a [default yaml](hepbenchmarksuite/config/benchmarks.yml) configuration file (see [How to run](#how-to-run)). The  currently available benchmarks are:
 
-- [HEP-score](https://gitlab.cern.ch/hep-benchmarks/hep-score)
-- [HS06](https://w3.hepix.org/benchmarking.html)
-- [SPEC CPU2017](https://www.spec.org/cpu2017/)
-- Fast benchmarks (should not be used for performance measurments):
-  - DIRAC Benchmark (DB12)
-  - [ATLAS Kit Validation](https://gitlab.cern.ch/hep-benchmarks/hep-workloads/blob/master/atlas/kv/atlas-kv/DESCRIPTION)
+* [HEP-score](https://gitlab.cern.ch/hep-benchmarks/hep-score)
+* [HS06](https://w3.hepix.org/benchmarking.html)
+* [SPEC CPU2017](https://www.spec.org/cpu2017/)
+* Fast benchmarks (should not be used for performance measurments):
+  * DIRAC Benchmark (DB12)
+  * [ATLAS Kit Validation](https://gitlab.cern.ch/hep-benchmarks/hep-workloads/blob/master/atlas/kv/atlas-kv/DESCRIPTION)
 
 **Due to proprietary license requirements, HS06 and SPEC CPU 2017 must be provided by the end user.** This tool will work with either a pre-installed or tarball archive of SPEC software.
 
@@ -115,10 +115,10 @@ The python executable (*bmkrun*) can be added to the user's `$PATH`, and launche
 Without argument, this will execute the distributed defaults as defined in `benchmarks.yml`.
 Users are free to provide [command-line arguments](#description-of-all-arguments), or edit the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml) file directly.
 
-- Running the HEP Benchmark Suite using Docker containers (default)
-  - `./bmkrun`
-- Running using Singularity containers
-  - `./bmkrun --mode=singularity`
+* Running the HEP Benchmark Suite using Docker containers (default)
+  * `./bmkrun`
+* Running using Singularity containers
+  * `./bmkrun --mode=singularity`
 
 The aggregated results of the selected benchmarks are written to the location and file defined by the `--rundir=` & `--file=` argument (defined as `/tmp/hep-spec_wd3/result_profile.json` in [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml)).
 
@@ -148,7 +148,7 @@ activemq:
 
 The `-h` option provides an explanation of all command line arguments
 
-```
+```none
 $ bmkrun --help
 -----------------------------------------------
 High Energy Physics Benchmark Suite
