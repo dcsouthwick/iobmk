@@ -61,6 +61,7 @@ spec2017:
 # Section to configure HepScore benchmark
 # config taken from hepscore20_0_3.yaml
 hepscore_benchmark:
+  version: "v1.0rc8"
   benchmarks:
     atlas-gen-bmk:
       ref_scores:

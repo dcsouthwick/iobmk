@@ -16,3 +16,7 @@ class BenchmarkFailure(Exception):
 class BenchmarkFullFailure(Exception):
     """An exception for when all benchmarks failed."""
     pass
+
+class InstallHEPscoreFailure(Exception):
+    """Could not install hepscore."""
+    pass

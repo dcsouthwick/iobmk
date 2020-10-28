@@ -11,14 +11,18 @@ try:
 except ImportError:
     # Try backported to PY<37 `importlib_resources`.
     from importlib_resources import files
+
+from importlib_metadata import version, PackageNotFoundError
 import os
+from pkg_resources import parse_version
 import socket
-from subprocess import Popen, PIPE, STDOUT
+import subprocess
 import sys
 import tarfile
 import yaml
 
 from hepbenchmarksuite.plugins.extractor import Extractor
+from hepbenchmarksuite.exceptions import InstallHEPscoreFailure
 
 _log = logging.getLogger(__name__)
 
@@ -82,10 +86,92 @@ def validate_spec(conf, bench):
 
     return 0
 
+def install_hepscore(package, force=False):
+    """Install hepscore.
+
+    Args:
+      package: Package to be installed.
+      force: To force installation.
+
+    Raises:
+      InstallHepScoreFailure: If it fails to install
+    """
+
+    runflags=["-m", "pip", "install", "--user"]
+
+    if force:
+        runflags.append("--force-reinstall")
+
+    _log.info('Attempting the installation of hep-score.')
+    _log.debug('Installation flags: '.format(runflags))
+
+    try:
+        subprocess.check_call([sys.executable, *runflags, package])
+
+    except subprocess.CalledProcessError:
+        _log.exception('Failed to install hep-score')
+        raise InstallHEPscoreFailure
+
+    _log.info('Installation of hep-score succeeded.')
+
+def prep_hepscore(conf):
+    """Prepare hepscore installation.
+
+    Args:
+      conf: A dict containing configuration.
+
+    Returns:
+      Error code: 0 OK , 1 Not OK
+    """
+
+    REQ_VERSION   = conf['hepscore_benchmark']['version']
+    HEPSCORE_REPO = 'git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git'
+
+    _log.info("Checking if hep-score is installed.")
+
+    try:
+
+        SYS_VERSION = version('hep-score')
+        _log.info("Found existing installation of hep-score in the system: v{}".format(SYS_VERSION))
+
+        # If the installation matches the one in the config file we can resume.
+        if parse_version(REQ_VERSION) == parse_version(SYS_VERSION):
+            _log.info("Installation matches requested version in the config file: {}".format(REQ_VERSION))
+            return 0
+
+        # Force the re-installation of desired version in the config
+        else:
+            _log.warning("Installed version ({}) differs from config file ({}) - forcing reinstall".format(SYS_VERSION,
+                                                                                                           REQ_VERSION))
+
+            try:
+                install_hepscore(HEPSCORE_REPO+"@{}".format(REQ_VERSION), force=True)
+            except InstallHEPscoreFailure:
+                return 1
+
+    except PackageNotFoundError:
+        _log.info('Installation of hep-score not found in the system.')
+
+        try:
+            install_hepscore(HEPSCORE_REPO+"@{}".format(REQ_VERSION))
+        except InstallHEPscoreFailure:
+            return 1
+
+    # Recursive call for the cases that we perform reinstall
+    # but we want to repeat the same check sequence
+    return prep_hepscore(conf)
 
 def run_hepscore(conf):
     """Import and run hepscore."""
+
+    # Prepare hepscore
+    ret = prep_hepscore(conf)
+    if ret > 0:
+        _log.exception("Failed to install hepscore")
+        return -1
+
     try:
+        _log.info("Attempting to import hepscore")
         import hepscore
     except ImportError:
         _log.exception("Failed to import hepscore!")
@@ -108,6 +194,8 @@ def run_hepscore(conf):
 
     # hepscore flavor of error propagation
     # run() returns score from last workload if successful
+
+    _log.info("Starting hepscore")
     returncode = hs.run()
     if returncode >= 0:
         hs.gen_score()
@@ -197,7 +285,7 @@ def exec_wait_benchmark(cmd_str):
 
     _log.debug("Excuting command: {}".format(cmd_str))
 
-    cmd = Popen(cmd_str, shell=True, stdout=PIPE, stderr=STDOUT)
+    cmd = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     # Output stdout from child process
     line = cmd.stdout.readline()
@@ -249,7 +337,7 @@ def exec_cmd(cmd_str, env=None, output=False):
     """
     _log.debug("Excuting command: {}".format(cmd_str))
 
-    cmd = Popen(cmd_str, shell=True, executable='/bin/bash', stdout=PIPE, stderr=PIPE)
+    cmd = subprocess.Popen(cmd_str, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     cmd_reply, cmd_error = cmd.communicate()
 
     # Check for errors
