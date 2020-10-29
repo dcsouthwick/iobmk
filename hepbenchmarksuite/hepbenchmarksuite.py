@@ -127,9 +127,14 @@ class HepBenchmarkSuite(object):
                     self.failures.append(bench2run)
 
             elif bench2run == 'hepscore':
-                returncode = utils.run_hepscore(self._config_full)
-                if returncode <= 0:
-                    self.failures.append(bench2run)
+                # Prepare hepscore
+                if utils.prep_hepscore(self._config_full) == 0:
+                    # Run hepscore
+                    returncode = utils.run_hepscore(self._config_full)
+                    if returncode <= 0:
+                        self.failures.append(bench2run)
+                else:
+                   _log.error("Skipping hepscore due to failed installation.")
 
             elif bench2run in ['hs06_32', 'hs06_64', 'spec2017']:
                 returncode = utils.run_hepspec(conf=self._config_full, bench=bench2run)

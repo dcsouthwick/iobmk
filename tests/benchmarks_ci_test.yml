@@ -34,27 +34,6 @@ spec2017:
   # Run only a benchmark set
   bmk_set: '508.namd_r'
 
-# copied from upstream hepscore test
-hepscore_benchmark:
-  app_info:
-    name: HEPscore20CI
-    reference_machine: 'Unknown'
-    registry: docker://gitlab-registry.cern.ch/hep-benchmarks/hep-workloads
-  settings:
-    scaling: 10
-    repetitions: 2  #number of repetitions of the same benchmark
-    method: geometric_mean #or any other algorithm
-  benchmarks:
-    atlas-kv-bmk:
-      version: ci1.3
-      ref_scores:
-        sim: 1
-      args:
-        # events
-        -e: 3
-        # threads
-        -t: 1
-        # copies
-        -c: 2
-        # debug
-        -d: true
+hepscore:
+  version: "v1.0rc8"
+  config: 'default'

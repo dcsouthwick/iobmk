@@ -124,7 +124,7 @@ def prep_hepscore(conf):
       Error code: 0 OK , 1 Not OK
     """
 
-    REQ_VERSION   = conf['hepscore_benchmark']['version']
+    REQ_VERSION   = conf['hepscore']['version']
     HEPSCORE_REPO = 'git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git'
 
     _log.info("Checking if hep-score is installed.")
@@ -161,14 +161,8 @@ def prep_hepscore(conf):
     # but we want to repeat the same check sequence
     return prep_hepscore(conf)
 
-def run_hepscore(conf):
+def run_hepscore(suite_conf):
     """Import and run hepscore."""
-
-    # Prepare hepscore
-    ret = prep_hepscore(conf)
-    if ret > 0:
-        _log.exception("Failed to install hepscore")
-        return -1
 
     try:
         _log.info("Attempting to import hepscore")
@@ -177,29 +171,52 @@ def run_hepscore(conf):
         _log.exception("Failed to import hepscore!")
         return -1
 
-    # Use hepscore-distributed config if not provided:
-    if 'hepscore_benchmark' not in conf:
+    # Abort if section is commented
+    if 'hepscore' not in suite_conf:
+        _log.error("The hepscore section was not found in configuration file.")
+        sys.exit(1)
+
+    # Use hepscore-distributed config by default
+    if suite_conf['hepscore']['config'] == 'default':
+        _log.info("Using default config provided by hepscore.")
         try:
-            cfgString = files(hepscore).joinpath('etc/hepscore-default.yaml').read_text()
-            conf.update(yaml.safe_load(cfgString))
+            cfg_string    = files(hepscore).joinpath('etc/hepscore-default.yaml').read_text()
+            hepscore_conf = yaml.safe_load(cfg_string)
+
         except Exception:
-            _log.exception("Unable to load default config yaml")
+            _log.exception("Unable to load default config yaml.")
+            return -1
+    else:
+        _log.error("Skipping hepscore default config. Loading user provided config: {}".format(suite_conf['hepscore']['config']))
+        try:
+            with open(suite_conf['hepscore']['config'], 'r') as alt_conf_file:
+                hepscore_conf = yaml.safe_load(alt_conf_file)
+
+        except FileNotFoundError:
+            _log.error("Alternative hepscore config file not found: {}".format(suite_conf['hepscore']['config']))
             return -1
 
     # ensure same runmode as suite
-    conf['hepscore_benchmark']['settings']['container_exec'] = conf['global']['mode']
-    hepscore_resultsDir = os.path.join(conf['global']['rundir'], 'HEPSCORE')
+    hepscore_conf['hepscore_benchmark']['settings']['container_exec'] = suite_conf['global']['mode']
 
-    hs = hepscore.HEPscore(conf, hepscore_resultsDir)
+    # Specify directory to output results
+    hepscore_results_dir = os.path.join(suite_conf['global']['rundir'], 'HEPSCORE')
+
+    # Initiate hepscore
+    hs = hepscore.HEPscore(hepscore_conf, hepscore_results_dir)
 
     # hepscore flavor of error propagation
     # run() returns score from last workload if successful
-
     _log.info("Starting hepscore")
+    _log.debug("Config in use: {}".format(hepscore_conf))
+
     returncode = hs.run()
+
     if returncode >= 0:
         hs.gen_score()
-    hs.write_output("json", os.path.join(conf['global']['rundir'], 'HEPSCORE/hepscore_result.json'))
+
+    hs.write_output("json", os.path.join(suite_conf['global']['rundir'], 'HEPSCORE/hepscore_result.json'))
+
     return returncode
 
 
