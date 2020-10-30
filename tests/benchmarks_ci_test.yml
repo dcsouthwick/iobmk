@@ -36,4 +36,4 @@ spec2017:
 
 hepscore:
   version: "v1.0rc8"
-  config: 'default'
+  config: "tests/hepscore_ci.yaml"

@@ -19,7 +19,7 @@ from hepbenchmarksuite.exceptions import BenchmarkFullFailure
 _log = logging.getLogger(__name__)
 
 
-class HepBenchmarkSuite(object):
+class HepBenchmarkSuite():
     """********************************************************
                   *** HEP-BENCHMARK-SUITE ***
      *********************************************************"""
