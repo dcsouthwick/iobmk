@@ -92,7 +92,7 @@ class HepBenchmarkSuite():
         disk_stats    = shutil.disk_usage(self._config['rundir'])
         disk_space_gb = round(disk_stats.free * (10 ** -9), 2)
 
-        _log.debug("Calculated disk space: {}".format(disk_space_gb))
+        _log.debug("Calculated disk space: {} GB".format(disk_space_gb))
 
         if disk_space_gb <= self.DISK_THRESHOLD:
             _log.error("Not enough disk space on {}, free: {} GB, required: {} GB".format(self._config['rundir'], disk_space_gb, self.DISK_THRESHOLD))
