@@ -11,12 +11,11 @@ import os
 import re
 from subprocess import Popen, PIPE
 import sys
-import time
 
 _log = logging.getLogger(__name__)
 
 
-class Extractor(object):
+class Extractor():
     """********************************************************
                     *** HEP-BENCHMARK-SUITE ***
         This class allows you to extract Hardware Metadata.
@@ -54,15 +53,15 @@ class Extractor(object):
                 _log.error(cmd_reply.decode('utf-8').rstrip())
                 self.pkg[rp] = False
             else:
-                _log.debug("Package installed: {}".format(cmd_reply.decode('utf-8').rstrip()))
+                _log.debug("Package installed: %s", cmd_reply.decode('utf-8').rstrip())
                 self.pkg[rp] = True
 
 
-        _log.debug("Installed packages: {}".format(self.pkg))
+        _log.debug("Installed packages: %s", self.pkg)
 
     def exec_cmd(self, cmd_str):
         """Accept command string and returns output."""
-        _log.debug("Excuting command: {}".format(cmd_str))
+        _log.debug("Excuting command: %s", cmd_str)
 
         cmd = Popen(cmd_str, shell=True, executable='/bin/bash',  stdout=PIPE, stderr=PIPE)
         cmd_reply, cmd_error = cmd.communicate()
@@ -87,7 +86,7 @@ class Extractor(object):
         # Extract and save data
         self._extract(BASE)
 
-    def collect_SW(self):
+    def collect_sw(self):
         """Collect Software specific metadata."""
         _log.info("Collecting SW information.")
 
@@ -127,24 +126,31 @@ class Extractor(object):
         """Collect all CPU data from lscpu."""
         parse_lscpu = self.get_parser(cmd_output, "lscpu")
 
+        def conv(func, typ):
+            """Convert to a given type"""
+            try:
+                return typ(func)
+            except ValueError:
+                return func
+
         CPU = {
             'Architecture'     : parse_lscpu("Architecture"),
             'CPU_Model'        : parse_lscpu("Model name"),
             'CPU_Family'       : parse_lscpu("CPU family"),
-            'CPU'              : parse_lscpu("CPU\(s\)"),
+            'CPU_num'          : int(parse_lscpu("CPU\(s\)")),
             'Online_CPUs_list' : parse_lscpu("On-line CPU\(s\) list"),
-            'Threads_per_core' : parse_lscpu("Thread\(s\) per core"),
-            'Cores_per_socket' : parse_lscpu("Core\(s\) per socket"),
-            'Sockets'          : parse_lscpu("Socket\(s\)"),
+            'Threads_per_core' : int(parse_lscpu("Thread\(s\) per core")),
+            'Cores_per_socket' : int(parse_lscpu("Core\(s\) per socket")),
+            'Sockets'          : int(parse_lscpu("Socket\(s\)")),
             'Vendor_ID'        : parse_lscpu("Vendor ID"),
-            'Stepping'         : parse_lscpu("Stepping"),
-            'CPU_MHz'          : parse_lscpu("CPU MHz"),
-            'CPU_Max_Speed_MHz': parse_lscpu("CPU max MHz"),
-            'CPU_Min_Speed_MHz': parse_lscpu("CPU min MHz"),
-            'BogoMIPS'         : parse_lscpu("BogoMIPS"),
+            'Stepping'         : int(parse_lscpu("Stepping")),
+            'CPU_MHz'          : conv(parse_lscpu("CPU MHz"), float),
+            'CPU_Max_Speed_MHz': conv(parse_lscpu("CPU max MHz"), float),
+            'CPU_Min_Speed_MHz': conv(parse_lscpu("CPU min MHz"), float),
+            'BogoMIPS'         : conv(parse_lscpu("BogoMIPS"), float),
             'L2_cache'         : parse_lscpu("L2 cache"),
             'L3_cache'         : parse_lscpu("L3 cache"),
-            'NUMA_nodes'       : parse_lscpu("NUMA node\(s\)"),
+            'NUMA_nodes'       : int(parse_lscpu("NUMA node\(s\)")),
         }
         # Populate NUMA nodes
         for i in range(0, int(CPU['NUMA_nodes'])):
@@ -181,16 +187,16 @@ class Extractor(object):
             parse_system = lambda x: "not_available"
 
         if self.pkg['ipmitool'] and self._permission:
-            parse_BMC_FRU = self.get_parser(self.exec_cmd("ipmitool fru"), "BMC")
+            parse_bmc_fru = self.get_parser(self.exec_cmd("ipmitool fru"), "BMC")
         else:
-            parse_BMC_FRU = lambda x: "not_available"
+            parse_bmc_fru = lambda x: "not_available"
 
         SYSTEM = {
             'Manufacturer'     : parse_system("Manufacturer"),
             'Product_Name'     : parse_system("Product Name"),
             'Version'          : parse_system("Version"),
-            'Product_Serial'   : parse_BMC_FRU("Product Serial"),
-            'Product_Asset_Tag': parse_BMC_FRU("Product Asset Tag")
+            'Product_Serial'   : parse_bmc_fru("Product Serial"),
+            'Product_Asset_Tag': parse_bmc_fru("Product Asset Tag")
         }
 
         return SYSTEM
@@ -204,40 +210,43 @@ class Extractor(object):
             cmd_output = self.exec_cmd("dmidecode -t 17")
 
             # Get memory parser for memory listing
-            MEM = self.get_mem_parser(cmd_output)
+            MEM = Extractor.get_mem_parser(cmd_output)
 
         else:
             MEM = {}
 
         MEM.update({
-            'Mem_Total'    : self.exec_cmd("free | awk 'NR==2{print $2}'"),
-            'Mem_Available': self.exec_cmd("free | awk 'NR==2{print $7}'"),
-            'Mem_Swap'     : self.exec_cmd("free | awk 'NR==3{print $2}'")
+            'Mem_Total'    : int(self.exec_cmd("free | awk 'NR==2{print $2}'")),
+            'Mem_Available': int(self.exec_cmd("free | awk 'NR==2{print $7}'")),
+            'Mem_Swap'     : int(self.exec_cmd("free | awk 'NR==3{print $2}'"))
         })
 
         return MEM
 
-    def get_mem_parser(self, cmd_output):
+    @staticmethod
+    def get_mem_parser(cmd_output):
         """Memory parser for dmidecode."""
         # Regex for matches
-        regSize = re.compile(r'(?P<Field>Size:\s*\s)(?P<value>(?!No Module Installed).*\S)')
-        regPart = re.compile(r'(?P<Field>Part Number:\s*\s)(?P<value>(?!NO DIMM).*\S)')
-        regMan  = re.compile(r'(?P<Field>Manufacturer:\s*\s)(?P<value>(?!NO DIMM).*\S)')
-        regType = re.compile(r'(?P<Field>Type:\s*\s)(?P<value>(?!Unknown).*\S)')
+        reg_size = re.compile(r'(?P<Field>Size:\s*\s)(?P<value>(?!No Module Installed).*\S)')
+        reg_part = re.compile(r'(?P<Field>Part Number:\s*\s)(?P<value>(?!NO DIMM).*\S)')
+        reg_man  = re.compile(r'(?P<Field>Manufacturer:\s*\s)(?P<value>(?!NO DIMM).*\S)')
+        reg_type = re.compile(r'(?P<Field>Type:\s*\s)(?P<value>(?!Unknown).*\S)')
 
         # Return iterators containing matches
-        result_Size = re.finditer(regSize, cmd_output)
-        result_Part = re.finditer(regPart, cmd_output)
-        result_Man  = re.finditer(regMan,  cmd_output)
-        result_Type = re.finditer(regType, cmd_output)
+        result_size = re.finditer(reg_size, cmd_output)
+        result_part = re.finditer(reg_part, cmd_output)
+        result_man  = re.finditer(reg_man,  cmd_output)
+        result_type = re.finditer(reg_type, cmd_output)
 
         n = 1
         MEM = {}
 
         # Loop at same time each iterator
-        for size, part, man, typ in zip(result_Size, result_Part, result_Man, result_Type):
-            # print(n,":",size.group('value'), typ.group('value'),"|" , man.group('value'), "|" , part.group('value'))
-            MEM["dimm" + str(n)] = "{0} {1} | {2} | {3}".format(size.group('value'), typ.group('value'), man.group('value'), part.group('value'))
+        for size, part, man, typ in zip(result_size, result_part, result_man, result_type):
+            MEM["dimm" + str(n)] = "{0} {1} | {2} | {3}".format(size.group('value'),
+                                                                typ.group('value'),
+                                                                man.group('value'),
+                                                                part.group('value'))
             n += 1
 
         return MEM
@@ -260,19 +269,21 @@ class Extractor(object):
     def get_storage_parser(self, cmd_output):
         """Storage parser for lshw -c disk."""
         # Regex for matches
-        regLogic   = re.compile(r'(?P<Field>logical name:\s*\s)(?P<value>.*)')
-        regProduct = re.compile(r'(?P<Field>product:\s*\s)(?P<value>.*)')
-        regSize    = re.compile(r'(?P<Field>size:\s*\s)(?P<value>.*)')
+        reg_logic   = re.compile(r'(?P<Field>logical name:\s*\s)(?P<value>.*)')
+        reg_product = re.compile(r'(?P<Field>product:\s*\s)(?P<value>.*)')
+        reg_size    = re.compile(r'(?P<Field>size:\s*\s)(?P<value>.*)')
 
         # Return iterators containing matches
-        result_logic   = re.finditer(regLogic,   cmd_output)
-        result_product = re.finditer(regProduct, cmd_output)
-        result_size    = re.finditer(regSize,    cmd_output)
+        result_logic   = re.finditer(reg_logic,   cmd_output)
+        result_product = re.finditer(reg_product, cmd_output)
+        result_size    = re.finditer(reg_size,    cmd_output)
 
         n = 1
         STORAGE = {}
         for log, prod, siz in zip(result_logic, result_product, result_size):
-            STORAGE["disk" + str(n)] = "{0} | {1} | {2}".format(log.group('value'), prod.group('value'), siz.group('value'))
+            STORAGE["disk" + str(n)] = "{0} | {1} | {2}".format(log.group('value'),
+                                                                prod.group('value'),
+                                                                siz.group('value'))
             n += 1
 
         return STORAGE
@@ -290,11 +301,11 @@ class Extractor(object):
             # Search pattern in output
             result = re.search(exp, cmd_output)
             try:
-                _log.debug("Parsing = {} | Field = {} | Value = {}".format(reg, pattern, result.group('Value')))
+                _log.debug("Parsing = %s | Field = %s | Value = %s", reg, pattern, result.group('Value'))
                 return result.group('Value')
 
             except AttributeError:
-                _log.debug("Parsing = {} | Field = {} | Value = {}".format(reg, pattern, "None"))
+                _log.debug("Parsing = %s | Field = %s | Value = %s", reg, pattern, "None")
                 return "not_available"
 
         return parser
@@ -304,10 +315,10 @@ class Extractor(object):
         _log.info("Collecting the full metadata information.")
 
         self.collect_base()
-        self._save("SW", self.collect_SW())
-        self._save("HW", self.collect_HW())
+        self._save("SW", self.collect_sw())
+        self._save("HW", self.collect_hw())
 
-    def collect_HW(self):
+    def collect_hw(self):
         """Collect Hardware specific metadata."""
         _log.info("Collecting HW information.")
 
