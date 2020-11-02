@@ -31,5 +31,5 @@ setup(
     packages=['hepbenchmarksuite', 'hepbenchmarksuite.plugins', 'hepbenchmarksuite.config'],
     package_data={'hepbenchmarksuite': ['config/*.yml']},
     python_requires='~=3.4',
-    install_requires=['pyyaml>=5.1', 'importlib-resources', 'stomp.py', 'hep-score @ git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0#egg=hep-score']
+    install_requires=['pyyaml>=5.1', 'importlib-resources', 'stomp.py', 'importlib-metadata']
 )

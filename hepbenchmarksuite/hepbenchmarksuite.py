@@ -19,7 +19,7 @@ from hepbenchmarksuite.exceptions import BenchmarkFullFailure
 _log = logging.getLogger(__name__)
 
 
-class HepBenchmarkSuite(object):
+class HepBenchmarkSuite():
     """********************************************************
                   *** HEP-BENCHMARK-SUITE ***
      *********************************************************"""
@@ -92,7 +92,7 @@ class HepBenchmarkSuite(object):
         disk_stats    = shutil.disk_usage(self._config['rundir'])
         disk_space_gb = round(disk_stats.free * (10 ** -9), 2)
 
-        _log.debug("Calculated disk space: {}".format(disk_space_gb))
+        _log.debug("Calculated disk space: {} GB".format(disk_space_gb))
 
         if disk_space_gb <= self.DISK_THRESHOLD:
             _log.error("Not enough disk space on {}, free: {} GB, required: {} GB".format(self._config['rundir'], disk_space_gb, self.DISK_THRESHOLD))
@@ -127,9 +127,14 @@ class HepBenchmarkSuite(object):
                     self.failures.append(bench2run)
 
             elif bench2run == 'hepscore':
-                returncode = utils.run_hepscore(self._config_full)
-                if returncode <= 0:
-                    self.failures.append(bench2run)
+                # Prepare hepscore
+                if utils.prep_hepscore(self._config_full) == 0:
+                    # Run hepscore
+                    returncode = utils.run_hepscore(self._config_full)
+                    if returncode <= 0:
+                        self.failures.append(bench2run)
+                else:
+                   _log.error("Skipping hepscore due to failed installation.")
 
             elif bench2run in ['hs06_32', 'hs06_64', 'spec2017']:
                 returncode = utils.run_hepspec(conf=self._config_full, bench=bench2run)
