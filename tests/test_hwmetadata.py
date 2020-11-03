@@ -213,8 +213,6 @@ class TestHWExtractor(unittest.TestCase):
                                                       "Sockets"          : int,
                                                       "BogoMIPS"         : float,
                                                       "CPU_MHz"          : float,
-                                                      "CPU_Max_Speed_MHz": float,
-                                                      "CPU_Min_Speed_MHz": float,
                                                       "NUMA_nodes"       : int,
                                                       "Stepping"         : int,
                                                     }
