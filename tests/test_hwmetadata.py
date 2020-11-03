@@ -8,7 +8,7 @@
 import json
 import unittest
 from hepbenchmarksuite.plugins.extractor import Extractor
-from schema import Schema, And, Use, Optional
+from schema import Schema, And, Use, Optional, Or
 
 class TestHWExtractor(unittest.TestCase):
     """********************************************************
@@ -213,6 +213,8 @@ class TestHWExtractor(unittest.TestCase):
                                                       "Sockets"          : int,
                                                       "BogoMIPS"         : float,
                                                       "CPU_MHz"          : float,
+                                                      "CPU_Max_Speed_MHz": Or(str, float),
+                                                      "CPU_Min_Speed_MHz": Or(str, float),
                                                       "NUMA_nodes"       : int,
                                                       "Stepping"         : int,
                                                     }
