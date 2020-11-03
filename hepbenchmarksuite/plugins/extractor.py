@@ -45,16 +45,17 @@ class Extractor():
 
         req_packages = ['lshw', 'ipmitool', 'dmidecode']
 
-        for rp in req_packages:
-            cmd = Popen("rpm -q {}".format(rp), shell=True, executable='/bin/bash', stdout=PIPE, stderr=PIPE)
+        for pkg_name in req_packages:
+            cmd = Popen("rpm -q {}".format(pkg_name), shell=True, executable='/bin/bash', stdout=PIPE, stderr=PIPE)
             cmd_reply, cmd_error = cmd.communicate()
 
             if cmd.returncode != 0:
                 _log.error(cmd_reply.decode('utf-8').rstrip())
-                self.pkg[rp] = False
+                _log.error(cmd_error)
+                self.pkg[pkg_name] = False
             else:
                 _log.debug("Package installed: %s", cmd_reply.decode('utf-8').rstrip())
-                self.pkg[rp] = True
+                self.pkg[pkg_name] = True
 
 
         _log.debug("Installed packages: %s", self.pkg)
@@ -81,10 +82,10 @@ class Extractor():
 
     def collect_base(self):
         """Collect base information of the system."""
-        BASE = {'Hostname': "hostname -f"}
+        base = {'Hostname': "hostname -f"}
 
         # Extract and save data
-        self._extract(BASE)
+        self._extract(base)
 
     def collect_sw(self):
         """Collect Software specific metadata."""
@@ -97,30 +98,30 @@ class Extractor():
             'glibc_version' : "yum list installed | grep glibc.x86_64 | awk '{print $2}'",
         }
 
-        SW = {"python_version": sys.version.split()[0]}
+        software = {"python_version": sys.version.split()[0]}
 
         # Execute commands and append result to a dict
         for key, val in SW_CMD.items():
-            SW[key] = self.exec_cmd(val)
+            software[key] = self.exec_cmd(val)
 
-        return SW
+        return software
 
     def collect_cpu(self):
         """Collect all relevant CPU information."""
         _log.info("Collecting CPU information.")
 
         # Get the parsing result from lscpu
-        CPU = self.get_cpu_parser(self.exec_cmd("lscpu"))
+        cpu = self.get_cpu_parser(self.exec_cmd("lscpu"))
 
         # Update with additional data
-        CPU.update({
+        cpu.update({
             'Power_Policy': self.exec_cmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor | sort | uniq"),
             'Power_Driver': self.exec_cmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_driver   | sort | uniq"),
             'Microcode'   : self.exec_cmd("grep microcode /proc/cpuinfo | uniq | awk 'NR==1{print $3}'"),
             'SMT_Enabled?': bool(self.exec_cmd("cat /sys/devices/system/cpu/smt/active"))
         })
 
-        return CPU
+        return cpu
 
     def get_cpu_parser(self, cmd_output):
         """Collect all CPU data from lscpu."""
@@ -133,15 +134,15 @@ class Extractor():
             except ValueError:
                 return func
 
-        CPU = {
+        cpu = {
             'Architecture'     : parse_lscpu("Architecture"),
             'CPU_Model'        : parse_lscpu("Model name"),
             'CPU_Family'       : parse_lscpu("CPU family"),
-            'CPU_num'          : int(parse_lscpu("CPU\(s\)")),
-            'Online_CPUs_list' : parse_lscpu("On-line CPU\(s\) list"),
-            'Threads_per_core' : int(parse_lscpu("Thread\(s\) per core")),
-            'Cores_per_socket' : int(parse_lscpu("Core\(s\) per socket")),
-            'Sockets'          : int(parse_lscpu("Socket\(s\)")),
+            'CPU_num'          : int(parse_lscpu(r"CPU\(s\)")),
+            'Online_CPUs_list' : parse_lscpu(r"On-line CPU\(s\) list"),
+            'Threads_per_core' : int(parse_lscpu(r"Thread\(s\) per core")),
+            'Cores_per_socket' : int(parse_lscpu(r"Core\(s\) per socket")),
+            'Sockets'          : int(parse_lscpu(r"Socket\(s\)")),
             'Vendor_ID'        : parse_lscpu("Vendor ID"),
             'Stepping'         : int(parse_lscpu("Stepping")),
             'CPU_MHz'          : conv(parse_lscpu("CPU MHz"), float),
@@ -150,13 +151,13 @@ class Extractor():
             'BogoMIPS'         : conv(parse_lscpu("BogoMIPS"), float),
             'L2_cache'         : parse_lscpu("L2 cache"),
             'L3_cache'         : parse_lscpu("L3 cache"),
-            'NUMA_nodes'       : int(parse_lscpu("NUMA node\(s\)")),
+            'NUMA_nodes'       : int(parse_lscpu(r"NUMA node\(s\)")),
         }
         # Populate NUMA nodes
-        for i in range(0, int(CPU['NUMA_nodes'])):
-            CPU['NUMA_node{}_CPUs'.format(i)] = parse_lscpu("NUMA node{} CPU\(s\)".format(i))
+        for i in range(0, int(cpu['NUMA_nodes'])):
+            cpu['NUMA_node{}_CPUs'.format(i)] = parse_lscpu(r"NUMA node{} CPU\(s\)".format(i))
 
-        return CPU
+        return cpu
 
     def collect_bios(self):
         """Collect all relevant BIOS information."""
@@ -168,13 +169,13 @@ class Extractor():
         else:
             parse_bios = lambda x: "not_available"
 
-        BIOS = {
+        bios = {
             'Vendor'      : parse_bios("Vendor"),
             'Version'     : parse_bios("Version"),
             'Release_data': parse_bios("Release Date"),
         }
 
-        return BIOS
+        return bios
 
     def collect_system(self):
         """Collect relevant BIOS information."""
@@ -191,7 +192,7 @@ class Extractor():
         else:
             parse_bmc_fru = lambda x: "not_available"
 
-        SYSTEM = {
+        system = {
             'Manufacturer'     : parse_system("Manufacturer"),
             'Product_Name'     : parse_system("Product Name"),
             'Version'          : parse_system("Version"),
@@ -199,7 +200,7 @@ class Extractor():
             'Product_Asset_Tag': parse_bmc_fru("Product Asset Tag")
         }
 
-        return SYSTEM
+        return system
 
     def collect_memory(self):
         """Collect system memory."""
@@ -210,18 +211,18 @@ class Extractor():
             cmd_output = self.exec_cmd("dmidecode -t 17")
 
             # Get memory parser for memory listing
-            MEM = Extractor.get_mem_parser(cmd_output)
+            mem = Extractor.get_mem_parser(cmd_output)
 
         else:
-            MEM = {}
+            mem = {}
 
-        MEM.update({
+        mem.update({
             'Mem_Total'    : int(self.exec_cmd("free | awk 'NR==2{print $2}'")),
             'Mem_Available': int(self.exec_cmd("free | awk 'NR==2{print $7}'")),
             'Mem_Swap'     : int(self.exec_cmd("free | awk 'NR==3{print $2}'"))
         })
 
-        return MEM
+        return mem
 
     @staticmethod
     def get_mem_parser(cmd_output):
@@ -238,18 +239,18 @@ class Extractor():
         result_man  = re.finditer(reg_man,  cmd_output)
         result_type = re.finditer(reg_type, cmd_output)
 
-        n = 1
-        MEM = {}
+        count = 1
+        mem = {}
 
         # Loop at same time each iterator
         for size, part, man, typ in zip(result_size, result_part, result_man, result_type):
-            MEM["dimm" + str(n)] = "{0} {1} | {2} | {3}".format(size.group('value'),
+            mem["dimm" + str(count)] = "{0} {1} | {2} | {3}".format(size.group('value'),
                                                                 typ.group('value'),
                                                                 man.group('value'),
                                                                 part.group('value'))
-            n += 1
+            count += 1
 
-        return MEM
+        return mem
 
     def collect_storage(self):
         """Collect system memory."""
@@ -260,13 +261,15 @@ class Extractor():
             cmd_output = self.exec_cmd("lshw -c disk")
 
             # Get storage parser
-            STORAGE = self.get_storage_parser(cmd_output)
+            storage = Extractor.get_storage_parser(cmd_output)
+
         else:
-            STORAGE = {}
+            storage = {}
 
-        return STORAGE
+        return storage
 
-    def get_storage_parser(self, cmd_output):
+    @staticmethod
+    def get_storage_parser(cmd_output):
         """Storage parser for lshw -c disk."""
         # Regex for matches
         reg_logic   = re.compile(r'(?P<Field>logical name:\s*\s)(?P<value>.*)')
@@ -278,15 +281,15 @@ class Extractor():
         result_product = re.finditer(reg_product, cmd_output)
         result_size    = re.finditer(reg_size,    cmd_output)
 
-        n = 1
-        STORAGE = {}
+        count = 1
+        storage = {}
         for log, prod, siz in zip(result_logic, result_product, result_size):
-            STORAGE["disk" + str(n)] = "{0} | {1} | {2}".format(log.group('value'),
+            storage["disk" + str(count)] = "{0} | {1} | {2}".format(log.group('value'),
                                                                 prod.group('value'),
                                                                 siz.group('value'))
-            n += 1
+            count += 1
 
-        return STORAGE
+        return storage
 
     def get_parser(self, cmd_output, reg="common"):
         """Common regex parser."""
@@ -301,7 +304,9 @@ class Extractor():
             # Search pattern in output
             result = re.search(exp, cmd_output)
             try:
-                _log.debug("Parsing = %s | Field = %s | Value = %s", reg, pattern, result.group('Value'))
+                _log.debug("Parsing = %s | Field = %s | Value = %s", reg,
+                                                                     pattern,
+                                                                     result.group('Value'))
                 return result.group('Value')
 
             except AttributeError:
@@ -322,14 +327,14 @@ class Extractor():
         """Collect Hardware specific metadata."""
         _log.info("Collecting HW information.")
 
-        HW = {
+        hardware = {
             "CPU"    : self.collect_cpu(),
             "BIOS"   : self.collect_bios(),
             "SYSTEM" : self.collect_system(),
             "MEMORY" : self.collect_memory(),
             "STORAGE": self.collect_storage()
         }
-        return HW
+        return hardware
 
     def dump(self, stdout=False, outfile=False):
         """Dump data to stdout and json file."""

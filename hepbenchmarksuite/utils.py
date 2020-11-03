@@ -432,8 +432,8 @@ def prepare_metadata(params, extra):
     hw = Extractor()
 
     result['host'].update({
-        'SW': hw.collect_SW(),
-        'HW': hw.collect_HW(),
+        'SW': hw.collect_sw(),
+        'HW': hw.collect_hw(),
     })
 
     return result
