@@ -6,15 +6,6 @@
 
 import json
 import logging
-import os
-import socket
-import subprocess
-import sys
-import tarfile
-import yaml
-
-from pkg_resources import parse_version
-
 try:
     from importlib.resources import files
 except ImportError:
@@ -22,6 +13,13 @@ except ImportError:
     from importlib_resources import files
 
 from importlib_metadata import version, PackageNotFoundError
+import os
+from pkg_resources import parse_version
+import socket
+import subprocess
+import sys
+import tarfile
+import yaml
 
 from hepbenchmarksuite.plugins.extractor import Extractor
 from hepbenchmarksuite.exceptions import InstallHEPscoreFailure
@@ -268,8 +266,8 @@ def run_hepspec(conf, bench):
         try:
             _run_args += spec_args[k]
 
-        except KeyError as e:
-            _log.error("Not a valid HEPSPEC06 key: {}.".format(e))
+        except KeyError as err:
+            _log.error("Not a valid HEPSPEC06 key: {}.".format(err))
 
     # Command specification
     cmd = {
@@ -432,8 +430,8 @@ def prepare_metadata(params, extra):
     hw = Extractor()
 
     result['host'].update({
-        'SW': hw.collect_sw(),
-        'HW': hw.collect_hw(),
+        'SW': hw.collect_SW(),
+        'HW': hw.collect_HW(),
     })
 
     return result
@@ -452,17 +450,28 @@ def print_results(results):
     print("Suite end:   {}".format(results['_timestamp_end']))
     print("Machine CPU Model: {}".format(results['host']['HW']['CPU']['CPU_Model']))
 
-    p = results['profiles']
+    data = results['profiles']
+
+    def parse_hepscore(data):
+        # Attempt to use the new format of hepscore reporting
+        # can be dropped in the future once metadata is standard
+        try:
+            result = round(data['report']['score'], 2)
+        except KeyError:
+            result = round(data['score'], 2)
+        return "HEPSCORE Benchmark = {} over benchmarks {}".format(result, data['benchmarks'].keys())
+
     bmk_print_action = {
-        "DB12"    : lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(p[x]['value']), p[x]['unit']),
-        "hs06_32" : lambda x: "HS06 32 bit Benchmark = %s" % p[x]['score'],
-        "hs06_64" : lambda x: "HS06 64 bit Benchmark = %s" % p[x]['score'],
-        "spec2017": lambda x: "SPEC2017 64 bit Benchmark = %s" % p[x]['score'],
-        "hepscore": lambda x: "HEPSCORE Benchmark = %s over benchmarks %s" % (round(p[x]['score'], 2), p[x]['benchmarks'].keys()),
+        "DB12"    : lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(data[x]['value']), data[x]['unit']),
+        "hs06_32" : lambda x: "HS06 32 bit Benchmark = {}".format(data[x]['score']),
+        "hs06_64" : lambda x: "HS06 64 bit Benchmark = {}".format(data[x]['score']),
+        "spec2017": lambda x: "SPEC2017 64 bit Benchmark = {}".format(data[x]['score']),
+        "hepscore": lambda x: parse_hepscore(data[x]),
     }
 
     for bmk in sorted(results['profiles']):
-        # this try covers two cases: that the expected printout fails or that the item is not know in the print_action
+        # This try covers two cases: that the expected printout fails
+        # or that the item is not know in the print_action
         try:
             print(bmk_print_action[bmk](bmk))
         except:
