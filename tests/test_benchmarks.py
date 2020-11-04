@@ -7,7 +7,7 @@
 
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
-from hepbenchmarksuite import utils
+from hepbenchmarksuite import benchmarks
 from hepscore import HEPscore
 from importlib_metadata import version, PackageNotFoundError
 from pkg_resources import parse_version
@@ -27,14 +27,14 @@ class TestHepscore(unittest.TestCase):
         # Testing this call prep_hepscore works fine with pytest
         # but it fails under tox environment.
         # Hence, the test is based on the logs repporting only
-        with self.assertLogs('hepbenchmarksuite.utils', level='INFO') as log:
-            ret = utils.prep_hepscore(self.conf)
+        with self.assertLogs('hepbenchmarksuite.benchmarks', level='INFO') as log:
+            ret = benchmarks.prep_hepscore(self.conf)
             self.assertIn('Found existing installation of hep-score in the system', " ".join(log.output))
 
-    @patch.dict(utils.sys.modules, {'hepscore': None})
+    @patch.dict(benchmarks.sys.modules, {'hepscore': None})
     def test_hepscore_import(self):
         """Test hepscore missing reports failure."""
-        ret = utils.run_hepscore(self.conf)
+        ret = benchmarks.run_hepscore(self.conf)
         self.assertEqual(ret, -1)
 
     def test_hepscore_missing_conf(self):
@@ -43,7 +43,7 @@ class TestHepscore(unittest.TestCase):
         test_conf = {}
 
         with self.assertRaises(SystemExit) as context:
-            utils.run_hepscore(test_conf)
+            benchmarks.run_hepscore(test_conf)
 
         self.assertEqual(context.exception.code, 1)
 
