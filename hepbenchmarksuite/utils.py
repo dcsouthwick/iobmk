@@ -6,20 +6,22 @@
 
 import json
 import logging
+import os
+import socket
+import subprocess
+import sys
+import tarfile
+import yaml
+
+from importlib_metadata import version, PackageNotFoundError
+from pkg_resources import parse_version
+
 try:
     from importlib.resources import files
 except ImportError:
     # Try backported to PY<37 `importlib_resources`.
     from importlib_resources import files
 
-from importlib_metadata import version, PackageNotFoundError
-import os
-from pkg_resources import parse_version
-import socket
-import subprocess
-import sys
-import tarfile
-import yaml
 
 from hepbenchmarksuite.plugins.extractor import Extractor
 from hepbenchmarksuite.exceptions import InstallHEPscoreFailure
@@ -430,8 +432,8 @@ def prepare_metadata(params, extra):
     hw = Extractor()
 
     result['host'].update({
-        'SW': hw.collect_SW(),
-        'HW': hw.collect_HW(),
+        'SW': hw.collect_sw(),
+        'HW': hw.collect_hw(),
     })
 
     return result
