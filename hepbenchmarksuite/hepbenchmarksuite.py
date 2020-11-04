@@ -39,11 +39,12 @@ class HepBenchmarkSuite():
 
     def __init__(self, config=None):
         """Initialize setup"""
-        self._bench_queue        = config['global']['benchmarks']
+        self._bench_queue        = config['global']['benchmarks'].copy()
         self.selected_benchmarks = config['global']['benchmarks'].copy()
         self._config             = config['global']
         self._config_full        = config
         self._extra              = {}
+        self._result             = {}
         self.failures            = []
 
     def start(self):
@@ -156,7 +157,7 @@ class HepBenchmarkSuite():
         """Run the cleanup phase - collect the results from each benchmark"""
 
         # compile metadata
-        self._result = utils.prepare_metadata(self._config, self._extra)
+        self._result = utils.prepare_metadata(self._config_full, self._extra)
         self._result.update({'profiles': {}})
 
         # Get results from each benchmark

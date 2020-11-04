@@ -13,6 +13,7 @@ import sys
 import tarfile
 
 from hepbenchmarksuite.plugins.extractor import Extractor
+from hepbenchmarksuite import __version__
 
 _log = logging.getLogger(__name__)
 
@@ -27,16 +28,16 @@ def export(result_dir, outfile):
     Returns:
       Error code: 0 OK , 1 Not OK
     """
-    _log.info("Exporting *.json, *.log from {}...".format(result_dir))
+    _log.info("Exporting *.json, *.log from %s...", result_dir)
 
     with tarfile.open(outfile, 'w:gz') as archive:
         # Respect the tree hierarchy on compressing
-        for root, dirs, files_ in os.walk(result_dir):
-            for name in files_:
+        for root, dirs, files in os.walk(result_dir):
+            for name in files:
                 if name.endswith('.json') or name.endswith('.log'):
                     archive.add(os.path.join(root, name))
 
-    _log.info("Files compressed! The resulting file was created: {}".format(outfile))
+    _log.info("Files compressed! The resulting file was created: %s", outfile)
 
     return 0
 
@@ -50,7 +51,7 @@ def exec_wait_benchmark(cmd_str):
       An POSIX exit code (0 through 255)
     """
 
-    _log.debug("Excuting command: {}".format(cmd_str))
+    _log.debug("Excuting command: %s", cmd_str)
 
     cmd = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
@@ -65,7 +66,7 @@ def exec_wait_benchmark(cmd_str):
 
     # Check for errors
     if cmd.returncode != 0:
-        _log.error("Benchmark execution failed; returncode = {}.".format(cmd.returncode))
+        _log.error("Benchmark execution failed; returncode = %s.", cmd.returncode)
 
     return cmd.returncode
 
@@ -79,7 +80,7 @@ def convert_tags_to_json(tag_str):
     Returns:
       A dict containing the tags.
     """
-    _log.info("User specified tags: {}".format(tag_str))
+    _log.info("User specified tags: %s", tag_str)
 
     # Check if user provided a valid tag string to be converted to json
     try:
@@ -87,13 +88,13 @@ def convert_tags_to_json(tag_str):
 
     except Exception:
         # User provided wrong format. Default tags are provided.
-        _log.warning("Not a valid tag json format specified: {}".format(tag_str))
+        _log.warning("Not a valid tag json format specified: %s", tag_str)
         tags = {}
 
     return tags
 
 
-def exec_cmd(cmd_str, env=None, output=False):
+def exec_cmd(cmd_str):
     """Execute a command string and returns its output.
 
     Args:
@@ -102,7 +103,7 @@ def exec_cmd(cmd_str, env=None, output=False):
     Returns:
       A string with the output.
     """
-    _log.debug("Excuting command: {}".format(cmd_str))
+    _log.debug("Excuting command: %s", cmd_str)
 
     cmd = subprocess.Popen(cmd_str, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     cmd_reply, cmd_error = cmd.communicate()
@@ -137,7 +138,41 @@ def get_host_ips():
     return ip_address
 
 
-def prepare_metadata(params, extra):
+def bench_versions(conf):
+    """Extract benchmark version information.
+
+    Args:
+      conf: Full configutaion dict
+
+    Returns:
+      A dict with a mapping of benchmark and version.
+    """
+
+    bench_versions = {}
+
+    for bench in conf['global']['benchmarks']:
+
+        if bench in ['hs06_32', 'hs06_64']:
+            bench_versions[bench] = conf['hepspec06']['image'].split(":")[1]
+
+        elif bench == 'db12':
+            bench_versions[bench] = "v0.1"
+
+        elif bench == 'spec2017':
+            bench_versions[bench] = conf['spec2017']['image'].split(":")[1]
+
+        elif bench == 'hepscore':
+            bench_versions[bench] = conf['hepscore']['version']
+
+        else:
+            bench_versions[bench] = "not_available"
+            _log.warning("No version found for benchmark: %s", bench)
+
+    _log.debug("Benchmark versions found: %s", bench_versions)
+    return bench_versions
+
+
+def prepare_metadata(full_conf, extra):
     """Construct a json with cli inputs and extra fields.
 
     Args:
@@ -148,7 +183,10 @@ def prepare_metadata(params, extra):
       A dict containing hardware metadata, tags, flags & extra fields
     """
     # Create output metadata
-    result = {'host': {}}
+
+    params = full_conf['global']
+
+    result = {'host': {}, 'suite': {}}
     result.update({
         '_id'           : "{}_{}".format(params['uid'], extra['start_time']),
         '_timestamp'    : extra['start_time'],
@@ -168,20 +206,23 @@ def prepare_metadata(params, extra):
             result['host'].update({"{}".format(i): "not_defined"})
 
     # Hep-benchmark-suite flags
-    FLAGS = {
-        'mp_num': params['mp_num'],
+    flags = {
+        'mp_num'  : params['mp_num'],
+        'run_mode': params['mode'],
     }
 
-    result['host'].update({
-        'FLAGS': FLAGS,
+    result['suite'].update({
+        'version'          : __version__,
+        'flags'            : flags,
+        'benchmark_version': bench_versions(full_conf)
     })
 
     # Collect Software and Hardware metadata from hwmetadata plugin
-    hw = Extractor()
+    hw_data = Extractor()
 
     result['host'].update({
-        'SW': hw.collect_sw(),
-        'HW': hw.collect_hw(),
+        'SW': hw_data.collect_sw(),
+        'HW': hw_data.collect_hw(),
     })
 
     return result
