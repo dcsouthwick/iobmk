@@ -8,9 +8,6 @@
             "vo": "Some VM",
             "other_tag": "Some text"
         },
-        "FLAGS": {
-            "mp_num": 48
-        },
         "SW": {
             "python_version": "3.6.8",
             "os_version": "CentOS Linux release 7.8.2003 (Core)",
@@ -60,6 +57,16 @@
                 "Mem_Swap": "32964604"
             },
             "STORAGE": {}
+        }
+    },
+    "suite": {
+        "version": "2.0.rc0",
+        "flags": {
+            "mp_num": 48,
+            "run_mode": "singularity"
+        },
+        "benchmark_version": {
+            "hepscore": "v1.0rc8"
         }
     },
     "_id": "machineX_2020-08-31T09:20:21Z",
