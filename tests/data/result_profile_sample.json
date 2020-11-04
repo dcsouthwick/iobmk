@@ -8,9 +8,6 @@
             "vo": "Some VM",
             "other_tag": "Some text"
         },
-        "FLAGS": {
-            "mp_num": 48
-        },
         "SW": {
             "python_version": "3.6.8",
             "os_version": "CentOS Linux release 7.8.2003 (Core)",
@@ -74,7 +71,7 @@
             "spec2017": "v1.0",
             "hs06_64": "v1.0",
             "hepscore": "v1.0rc8"
-        },
+        }
     },
     "_id": "machineX_2020-08-31T09:20:21Z",
     "_timestamp": "2020-08-31T09:20:21Z",
