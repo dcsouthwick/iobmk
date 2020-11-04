@@ -12,6 +12,7 @@ import shutil
 
 from hepbenchmarksuite import db12
 from hepbenchmarksuite import utils
+from hepbenchmarksuite import benchmarks
 from hepbenchmarksuite.exceptions import PreFlightError
 from hepbenchmarksuite.exceptions import BenchmarkFailure
 from hepbenchmarksuite.exceptions import BenchmarkFullFailure
@@ -51,14 +52,14 @@ class HepBenchmarkSuite():
 
         self._extra['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
 
-        if self._preflight():
+        if self.preflight():
             _log.info("Pre-flight checks passed successfully.")
             self.run()
         else:
             _log.error("Pre-flight checks failed.")
             raise PreFlightError
 
-    def _preflight(self):
+    def preflight(self):
         """Perform pre-flight checks."""
 
         _log.info("Running pre-flight checks")
@@ -86,7 +87,7 @@ class HepBenchmarkSuite():
         _log.info(" - Checking for a valid configuration...")
         for bench in self.selected_benchmarks:
             if bench in ['hs06_32', 'hs06_64', 'spec2017']:
-                checks.append(utils.validate_spec(self._config_full, bench))
+                checks.append(benchmarks.validate_spec(self._config_full, bench))
 
         _log.info(" - Checking if rundir has enough space...")
         disk_stats    = shutil.disk_usage(self._config['rundir'])
@@ -128,16 +129,16 @@ class HepBenchmarkSuite():
 
             elif bench2run == 'hepscore':
                 # Prepare hepscore
-                if utils.prep_hepscore(self._config_full) == 0:
+                if benchmarks.prep_hepscore(self._config_full) == 0:
                     # Run hepscore
-                    returncode = utils.run_hepscore(self._config_full)
+                    returncode = benchmarks.run_hepscore(self._config_full)
                     if returncode <= 0:
                         self.failures.append(bench2run)
                 else:
                    _log.error("Skipping hepscore due to failed installation.")
 
             elif bench2run in ['hs06_32', 'hs06_64', 'spec2017']:
-                returncode = utils.run_hepspec(conf=self._config_full, bench=bench2run)
+                returncode = benchmarks.run_hepspec(conf=self._config_full, bench=bench2run)
                 if returncode > 0:
                     self.failures.append(bench2run)
             _log.info("Completed {} with return code {}".format(bench2run, returncode))
