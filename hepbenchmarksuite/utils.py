@@ -11,11 +11,38 @@ import socket
 import subprocess
 import sys
 import tarfile
+import urllib.request
+from urllib.error import HTTPError, URLError
 
 from hepbenchmarksuite.plugins.extractor import Extractor
 from hepbenchmarksuite import __version__
 
 _log = logging.getLogger(__name__)
+
+
+def download_file(url, outfile):
+    """Download file from an url and save it locally.
+
+    Args:
+      url: String with the link to download.
+      outfile: String with the filename to save.
+
+    Returns:
+      Error code: 0 OK , 1 Not OK
+    """
+
+    _log.info("Attempting to download remote config file...")
+
+    # Download the config file from url and save it locally
+    try:
+        with urllib.request.urlopen(url) as response, open(outfile, 'wb') as fout:
+            fout.write(response.read())
+            _log.info("File saved: %s", fout.name)
+            return 0
+
+    except (ValueError, HTTPError, URLError):
+        _log.error('Failed to download file from provided link: %s', url)
+        return 1
 
 
 def export(result_dir, outfile):

@@ -160,8 +160,28 @@ def run_hepscore(suite_conf):
         except Exception:
             _log.exception("Unable to load default config yaml.")
             return -1
+
+    # Use config provided from remote link
+    elif "http" in suite_conf['hepscore']['config']:
+        _log.info("Skipping hepscore default config. Loading config from remote: %s", suite_conf['hepscore']['config'])
+
+        # Save the remote file to the user specified rundir
+        hepscore_file_dest = os.path.join(suite_conf['global']['rundir'], "hepscore.yaml")
+
+        # Download remote file
+        error_code = utils.download_file(suite_conf['hepscore']['config'], hepscore_file_dest)
+
+        # Succeeds on download, open file
+        if error_code == 0:
+            with open(hepscore_file_dest, 'r') as http_conf:
+                hepscore_conf = yaml.safe_load(http_conf)
+                _log.info("Using hepscore config: %s", hepscore_file_dest)
+        else:
+            return -1
+
     else:
         _log.error("Skipping hepscore default config. Loading user provided config: %s", suite_conf['hepscore']['config'])
+
         try:
             with open(suite_conf['hepscore']['config'], 'r') as alt_conf_file:
                 hepscore_conf = yaml.safe_load(alt_conf_file)
