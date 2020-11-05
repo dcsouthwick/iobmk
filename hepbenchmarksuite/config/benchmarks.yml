@@ -64,7 +64,7 @@ hepscore:
   version: "v1.0rc7"
   # Users can provide an alternative config file, three options are possible:
   # "default"  - Uses the default configuration provided with hepscore.
-  # local path - Searchs locally for the configuration.
+  # local path - Search locally for the configuration.
   # remote     - Download from a remote url the configuration and uses it.
   config: "default"
   # config: "tests/hepscore_ci.yaml"
