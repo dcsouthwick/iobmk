@@ -62,9 +62,10 @@ spec2017:
 hepscore:
   # Select which version of hep-score to use
   version: "v1.0rc7"
-  # Users can provide an alternative config
-  # by providing the full Path to the file.
-  # If 'default' is selected, it will fetch
-  # the default config provided with hep-score
+  # Users can provide an alternative config file, three options are possible:
+  # "default"  - Uses the default configuration provided with the hepscore package.
+  # local path - Searchs locally for the configuration.
+  # remote     - Download from a remote url the configuration and uses it.
   config: "default"
-  #config: "./hepscore_conf.yaml"
+  #config: "tests/hepscore_ci.yaml"
+  #config: "https://"

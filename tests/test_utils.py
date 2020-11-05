@@ -11,6 +11,7 @@ import json
 import unittest
 from hepbenchmarksuite import utils
 import sys
+import pytest
 
 def test_print_results():
     """Test the print results from utils."""
@@ -40,6 +41,14 @@ def test_print_results():
 
             assert sample_output == utils_output
 
+
+@pytest.mark.parametrize('url', ["httpps://brokenlink1", "httpss://brokenlink2", "brokenlink3.com"])
+def test_failed_download(url):
+    """Test the download failure."""
+    assert utils.download_file(url, "test") == 1
+
+# TODO once a publicly available hepscore url is published
+#def test_success_download():
 
 
 if __name__ == '__main__':
