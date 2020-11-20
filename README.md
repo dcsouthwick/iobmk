@@ -97,6 +97,8 @@ Users are free to build/use transport and aggregation/visualization tools of the
 > **This package requires `pip3` >= 19.1, `python3.4+` and `git`**\
   If your `pip3 --version` is older, please update with: `pip3 install --user --upgrade pip` before installing!
 
+### Local user space
+
 ```sh
 python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@qa-v2.0
 ```
@@ -112,6 +114,20 @@ You can additionally add the executible to you $PATH:
 ```sh
 export PATH=$PATH:~/.local/bin
 ```
+
+### Python virtual environments (minimum footprint)
+
+There are cases on which the user would like to keep current Python3 library versions and have a minimum footprint of newly installed packages. For such purporses, it is possible to install the `hep-benchmark-suite` using [Python Virtual Environments](https://docs.python.org/3/tutorial/venv.html). This is the desired approach when the user desires a minimum footprint on the system.
+
+```sh
+export MYENV="bmk_env"        # Define the name of the environment.
+python3 -m venv $MYENV        # Create a directory with the virtual environment.
+source $MYENV/bin/activate    # Activate the environment.
+python3 -m pip install git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@qa-v2.0
+```
+
+_Note: When using virtual environments, hep-score will also be installed in this environment._
+
 
 ## How to run
 

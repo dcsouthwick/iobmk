@@ -73,6 +73,11 @@ def install_hepscore(package, force=False):
 
     runflags=["-m", "pip", "install", "--user"]
 
+    if len(os.environ['VIRTUAL_ENV'])>0:
+        _log.info("Virtual environment detected: %s", os.environ['VIRTUAL_ENV'])
+        _log.info("Installing hep-score in virtual environment.")
+        runflags=["-m", "pip", "install"]
+
     if force:
         runflags.append("--force-reinstall")
 
