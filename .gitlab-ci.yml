@@ -227,11 +227,11 @@ bats_test_docker_dompose_qa:
     - chown -R unprivUser:users ..
     # install the benchmark suite python package & run unprivileged
     #- su unprivUser -c "python3 -m pip install --user ."
-    #- su unprivUser -c "bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE"
+    #- su unprivUser -c "bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST"
     - python3 -m pip install --user .
-    - bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    - bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST
     # cleanup
-    - mv $BMK_VOLUME/run_*/$RESULTS_FILE $CI_PROJECT_DIR
+    - mv $BMK_VOLUME/run_*/bmkrun_report.json $CI_PROJECT_DIR
     - rm -rf $BMK_VOLUME
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/'
@@ -298,8 +298,8 @@ sing_spec2017:
     - python3 -m pip install --user --upgrade pip
     - python3 -m pip install .
     # run $BMKLIST as docker
-    - bmkrun --config=default --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
-    - mv $BMK_VOLUME/run_*/$RESULTS_FILE .
+    - bmkrun --config=default --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST
+    - mv $BMK_VOLUME/run_*/bmkrun_report.json .
     - rm -rf $BMK_VOLUME
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/'
