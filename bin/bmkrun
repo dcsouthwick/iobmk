@@ -34,8 +34,18 @@ from hepbenchmarksuite.exceptions import BenchmarkFullFailure
 from hepbenchmarksuite.plugins import send_queue
 from hepbenchmarksuite.__version__ import __version__
 
+class Color:
+    """ Console colors. """
+    CYAN      = '\033[96m'
+    GREEN     = '\033[92m'
+    YELLOW    = '\033[93m'
+    RED       = '\033[91m'
+    BOLD      = '\033[1m'
+    END       = '\033[0m'
+    WHITE     = "\033[97m"
 
 def main():
+    """ bmkrun cli. """
     parser = argparse.ArgumentParser(
         prog='bmkrun',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -43,50 +53,108 @@ def main():
         -----------------------------------------------
         High Energy Physics Benchmark Suite
         -----------------------------------------------
-        This utility orchestrates several benchmarks
+        This utility orchestrates several benchmarks.
 
         Author: Benchmarking Working Group
         Contact: benchmark-suite-wg-devel@cern.ch
         '''), epilog=textwrap.dedent('''
         -----------------------------------------------
-        ''')
+        '''),
     )
 
-    # may be a better way to do this...
-    try:
-        with pkg_resources.path(config, 'benchmarks.yml') as defaultcfg:
-            default_config = defaultcfg
-    except Exception:
-        print("Unable to load default config yaml")
-        pass
+    # Arguments
+    parser.add_argument("-b", "--benchmarks",
+                        nargs='+',
+                        help="List of benchmarks.",
+                        default=None)
 
-    # Optional arguments
-    parser.add_argument("-b", "--benchmarks", nargs='+', help="List of benchmarks", default=None)
-    parser.add_argument("-c", "--config",     nargs='?', type=str, help="Configuration file to use (yaml format)", default=default_config)
-    parser.add_argument("-d", "--rundir",     nargs='?', help="Directory where benchmarks will be run", default=None)
-    parser.add_argument("-e", "--export",     action='store_true', help="Export all json and log files from rundir and compresses them.", default=None)
-    parser.add_argument("-f", "--file",       nargs='?', help="File to store the results", default=None)
-    parser.add_argument("-m", "--mode",       choices=['singularity', 'docker'], nargs='?', help="Run benchmarks in singularity or docker containers", default=None)
-    parser.add_argument("-n", "--mp_num",     nargs='?', type=int, help="Number of cpus to run the benchmarks", default=None)
-    parser.add_argument("-t", "--tags",       nargs='?', help="Custom user tags", default=None)
-    parser.add_argument("-u", "--uid",        nargs='?', help="UID", default=None)
-    parser.add_argument("-p", "--publish",    action='store_true', help="enable reporting via AMQ credentials in YAML file", default=None)
-    parser.add_argument("-v", "--verbose",    action='store_true', help="Enables verbose mode. Display debug messages.", default=None)
-    parser.add_argument('--version',          action='version', version='{version}'.format(version=__version__))
+    parser.add_argument("-c", "--config",
+                        nargs='?',
+                        type=str,
+                        help="REQUIRED - Configuration file to use (yaml format). Accepts '-c default'.",
+                        default=None)
 
-    try:
-        args = parser.parse_args()
-    except Exception:
-        sys.exit(0)
+    parser.add_argument("-d", "--rundir",
+                        nargs='?',
+                        help="Directory where benchmarks will be run.",
+                        default=None)
 
-    # Select config file
-    if args.config is not None:
-        with open(args.config, 'r') as yam:
-            conf_data = yaml.full_load(yam)
-        active_config = conf_data
-    else:
+    parser.add_argument("-e", "--export",
+                        action='store_true',
+                        help="Export all json and log files from rundir and compresses them.",
+                        default=None)
+
+    parser.add_argument("-m", "--mode",
+                        choices=['singularity', 'docker'],
+                        nargs='?',
+                        help="Run benchmarks in singularity or docker containers.",
+                        default=None)
+
+    parser.add_argument("-n", "--mp_num",
+                        nargs='?',
+                        type=int,
+                        help="Number of cpus to run the benchmarks.",
+                        default=None)
+
+    parser.add_argument("-u", "--uid",
+                        nargs='?',
+                        help="An unique UID to identify the machine.",
+                        default=None)
+
+    parser.add_argument("-p", "--publish",
+                        action='store_true',
+                        help="Enable reporting via AMQ credentials in YAML file.",
+                        default=None)
+
+    parser.add_argument("-s", "--show",
+                        action='store_true',
+                        help="Show running config and exit.",
+                        default=None)
+
+    parser.add_argument("-t", "--tags",
+                        nargs='?',
+                        help="Custom user tags.",
+                        default=None)
+
+    parser.add_argument("-v", "--verbose",
+                        action='store_true',
+                        help="Enables verbose mode. Display debug messages.",
+                        default=None)
+
+    parser.add_argument('--version',
+                        action='version',
+                        version='{version}'.format(version=__version__))
+
+    args = parser.parse_args()
+
+    # Select the config file to load
+    # load default configuration shipped with hep-benchmark-suite
+    if args.config == "default":
+        try:
+            with pkg_resources.path(config, 'benchmarks.yml') as default_cfg:
+                load_config = default_cfg
+
+        except Exception:
+            print("{}Unable to load default yaml configuration.{}".format(Color.RED, Color.END))
+
+    # No configuration file was provided
+    elif args.config is None:
         parser.print_help()
-        sys.exit("No config file specified.")
+        print("{}No configuration file specified.{}".format(Color.RED,Color.END))
+        print("{}Please specify a configuration or run with the default: bmkrun -c default {}".format(Color.RED,Color.END))
+        sys.exit(1)
+
+    else:
+        load_config = args.config
+
+    # Load configuration file
+    try:
+        with open(load_config, 'r') as yam:
+            active_config = yaml.full_load(yam)
+
+    except FileNotFoundError:
+        print("{0}Failed to load configuration file: {1} {2}".format(Color.RED, load_config, Color.END))
+        sys.exit(1)
 
     # Check for cli overrides
     # Convert arguments to dict
@@ -107,15 +175,11 @@ def main():
     # Check if user provided a benchmark
     if active_config['global']['benchmarks'] is None:
         parser.print_help()
-        sys.exit("No benchmarks were selected.")
+        print("{}No benchmarks were selected. {}".format(Color.YELLOW, Color.END))
+        sys.exit(1)
 
     # Check if user provided valid benchmark
-    AVAILABLE_BENCHMARKS = ["db12",
-                            "hepscore",
-                            "spec2017",
-                            "hs06_32",
-                            "hs06_64",
-                            "test"]
+    AVAILABLE_BENCHMARKS = ["db12", "hepscore", "spec2017", "hs06_32", "hs06_64"]
 
     for bench in active_config['global']['benchmarks']:
         if bench not in AVAILABLE_BENCHMARKS:
@@ -131,7 +195,16 @@ def main():
 
     # Check if cpu count in config is integer
     if not isinstance(active_config['global']['mp_num'], int):
-        sys.exit("CPU number is not an integer.")
+        print("{}CPU number (mp_num) is not an integer.{}".format(Color.RED, Color.END))
+        sys.exit(1)
+
+    print("# The following configuration was loaded: {}".format(load_config))
+    print("# The configuration was overrided by the following CLI args: {}".format(non_empty))
+
+    # Print running configuration and exit
+    if args.show:
+        print(yaml.dump(active_config))
+        sys.exit(0)
 
     # Create another dict key to mark the user specified rundir as parent_dir
     # Append the date to the rundir in order to group the results per date
@@ -140,7 +213,10 @@ def main():
     os.makedirs(active_config['global']['parent_dir'], exist_ok=True)
 
     # Create rundir, example: /tmp/hep-benchmark-suite/run_date
-    active_config['global']['rundir'] = os.path.join(active_config['global']['rundir'], 'run_{}'.format(time.strftime('%Y-%m-%d_%H%M', time.gmtime())))
+    active_config['global']['rundir'] = os.path.join(active_config['global']['rundir'],
+                                                     'run_{}'.format(time.strftime('%Y-%m-%d_%H%M',
+                                                     time.gmtime())))
+
     os.makedirs(active_config['global']['rundir'], exist_ok=True)
 
     # Configure logging
@@ -177,13 +253,14 @@ def main():
         yaml.dump(active_config, conf_file)
 
     # Configure hep-benchmark-suite
-    logger.debug("Active configuration in use: {}".format(active_config))
+    logger.debug("Active configuration in use: %s", active_config)
     suite = HepBenchmarkSuite(config=active_config)
+
     try:
         suite.start()
     except (PreFlightError, BenchmarkFullFailure):
         logger.error("HEP-Benchmark Suite failed.")
-        exit(1)
+        sys.exit(1)
     except BenchmarkFailure:
         logger.warning("HEP-Benchmark Suite ran with failed benchmarks. Please be aware of the results.")
 
@@ -195,21 +272,20 @@ def main():
                                                                                  datetime.datetime.now().strftime("%Y-%m-%d_%H%M")))
 
     # Display results
-    FULL_PATH = os.path.join(active_config['global']['rundir'], active_config['global']['file'])
+    FULL_PATH = os.path.join(active_config['global']['rundir'], "bmkrun_report.json")
     utils.print_results_from_file(FULL_PATH)
 
     # Publish to AMQ broker if provided
     if active_config['global'].get('publish'):
         try:
             send_queue.send_message(FULL_PATH, active_config['activemq'])
-        except Exception as e:
+        except Exception as err:
             logger.error("Something went wrong attempting to report via AMQ.")
             logger.error("Results may not have been correctly transmitted.")
-            logger.exception(e)
-            pass
+            logger.exception(err)
 
-    print("\nFull results can be found in {}".format(FULL_PATH))
-    print("Full run log can can be found in {}".format(LOG_PATH))
+    print("\n{}Full results can be found in {} {}".format(Color.CYAN, FULL_PATH, Color.END))
+    print("{}Full run log can can be found in {} {}".format(Color.CYAN, LOG_PATH, Color.END))
 
 
 if __name__ == "__main__":
