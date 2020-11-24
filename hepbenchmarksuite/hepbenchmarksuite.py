@@ -34,7 +34,6 @@ class HepBenchmarkSuite():
     }
 
     # Required disk space (in GB) for all benchmarks
-    # TODO(anyone): update this value based on benchmarks selected
     DISK_THRESHOLD = 20.0
 
     def __init__(self, config=None):
@@ -71,7 +70,7 @@ class HepBenchmarkSuite():
         checks.append(_return_mode)
 
         if _return_mode != 0:
-            _log.error("Specified run mode is not present in the system: {}".format(self._config['mode']))
+            _log.error("Specified run mode is not present in the system: %s", self._config['mode'])
 
         _log.info(" - Checking provided work dirs exist...")
         os.makedirs(self._config['rundir'], exist_ok=True)
@@ -94,10 +93,10 @@ class HepBenchmarkSuite():
         disk_stats    = shutil.disk_usage(self._config['rundir'])
         disk_space_gb = round(disk_stats.free * (10 ** -9), 2)
 
-        _log.debug("Calculated disk space: {} GB".format(disk_space_gb))
+        _log.debug("Calculated disk space: %s GB", disk_space_gb)
 
         if disk_space_gb <= self.DISK_THRESHOLD:
-            _log.error("Not enough disk space on {}, free: {} GB, required: {} GB".format(self._config['rundir'], disk_space_gb, self.DISK_THRESHOLD))
+            _log.error("Not enough disk space on %s, free: %s GB, required: %s GB", self._config['rundir'], disk_space_gb, self.DISK_THRESHOLD)
 
             # Flag for a failed check
             checks.append(1)
@@ -117,9 +116,9 @@ class HepBenchmarkSuite():
             self.cleanup()
 
         else:
-            _log.info("Benchmarks left to run: {}".format(self._bench_queue))
+            _log.info("Benchmarks left to run: %s", self._bench_queue)
             bench2run = self._bench_queue.pop(0)
-            _log.info("Running benchmark: {}".format(bench2run))
+            _log.info("Running benchmark: %s", bench2run)
 
             if bench2run == 'db12':
                 # TO FIX returns a dict{'DB12':{ 'value': float(), 'unit': string() }}
@@ -136,17 +135,18 @@ class HepBenchmarkSuite():
                     if returncode <= 0:
                         self.failures.append(bench2run)
                 else:
-                   _log.error("Skipping hepscore due to failed installation.")
+                    _log.error("Skipping hepscore due to failed installation.")
 
             elif bench2run in ['hs06_32', 'hs06_64', 'spec2017']:
                 returncode = benchmarks.run_hepspec(conf=self._config_full, bench=bench2run)
                 if returncode > 0:
                     self.failures.append(bench2run)
-            _log.info("Completed {} with return code {}".format(bench2run, returncode))
+            _log.info("Completed %s with return code %s", bench2run, returncode)
             # recursive call to run() with check_lock
             self.check_lock()
 
     def check_lock(self):
+        """Check benchmark locks."""
         # TODO: Check lock files
         # loop until lock is released from benchmark
         # print(os.path.exists("bench.lock"))
@@ -166,19 +166,19 @@ class HepBenchmarkSuite():
                 result_path = os.path.join(self._config['rundir'], self.RESULT_FILES[bench])
 
                 with open(result_path, "r") as result_file:
-                    _log.info("Reading result file: {}".format(result_path))
+                    _log.info("Reading result file: %s", result_path)
 
                     if bench == "hepscore":
                         self._result['profiles']['hepscore'] = json.loads(result_file.read())
                     else:
                         self._result['profiles'].update(json.loads(result_file.read()))
 
-            except Exception as e:
-                _log.warning('Skipping {} because of {}'.format(bench, e))
+            except Exception as err:
+                _log.warning('Skipping %s because of %s', bench, err)
 
         # Save complete json report
-        with open(os.path.join(self._config['rundir'], self._config['file']), 'w') as fo:
-            fo.write(json.dumps(self._result))
+        with open(os.path.join(self._config['rundir'], "bmkrun_report.json"), 'w') as fout:
+            fout.write(json.dumps(self._result))
 
         # Check for workload errors
         if len(self.failures) == len(self.selected_benchmarks):
@@ -186,7 +186,7 @@ class HepBenchmarkSuite():
             raise BenchmarkFullFailure
 
         elif len(self.failures) > 0:
-            _log.error("{} Failed. Please check logs".format(*self.failures))
+            _log.error("%s Failed. Please check the logs.", *self.failures)
             raise BenchmarkFailure
 
         else:

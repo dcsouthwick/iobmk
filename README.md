@@ -180,22 +180,21 @@ Contact: benchmark-suite-wg-devel@cern.ch
 
 optional arguments:
   -h, --help            Show this help message and exit
-  -b BENCHMARKS [BENCHMARKS ...], --benchmarks BENCHMARKS [BENCHMARKS ...]
+  -b, --benchmarks BENCHMARKS [BENCHMARKS ...]
                         List of benchmarks
-  -c [CONFIG], --config [CONFIG]
+  -c, --config [CONFIG]
                         Configuration file to use (yaml format)
-  -d [RUNDIR], --rundir [RUNDIR]
+  -d, --rundir [RUNDIR]
                         Directory where benchmarks will be run
-  -f [FILE], --file [FILE]
+  -f, --file [FILE]
                         File to store the results
-  -m [{singularity,docker}], --mode [{singularity,docker}]
-                        Run benchmarks in singularity or docker containers
-  -n [MP_NUM], --mp_num [MP_NUM]
-                        Number of cpus to run the benchmarks
-  -t [TAGS], --tags [TAGS]
-                        Custom user tags
-  -u [UID], --uid [UID] UID
-  -p, --publish         enable reporting via AMQ credentials in YAML file
+  -m, --mode [{singularity,docker}]
+                        Run benchmarks in singularity or docker containers.
+  -n, --mp_num [MP_NUM] Number of cpus to run the benchmarks.
+  -t, --tags [TAGS]     Custom user tags
+  -u, --uid [UID]       UID.
+  -p, --publish         Enable reporting via AMQ credentials in YAML file.
+  -s, --show            Show running config and exit.
   -v, --verbose         Enables verbose mode. Display debug messages.
   --version             Show program's version number and exit
 -----------------------------------------------

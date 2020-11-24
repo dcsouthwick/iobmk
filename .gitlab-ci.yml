@@ -129,7 +129,7 @@ Security:
     - python3 -m pip install -U pip tox
     - tox -e bandit
   rules:
-    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_BRANCH =~ /^qa-.*$/ || $CI_COMMIT_BRANCH == "master"'
       when: never
     - when: always
 
@@ -155,7 +155,7 @@ db12_benchmark:
     - python3 -m pip install --user --upgrade pip
     - python3 -m pip install --user .
     - export PATH=~/.local/bin:$PATH
-    - bmkrun --rundir . --benchmarks db12
+    - bmkrun --config default --rundir . --benchmarks db12
   artifacts:
     paths:
       - ./run_*/result_profile.json
@@ -174,7 +174,7 @@ db12_benchmark:
 
 bats_test_docker_dompose_qa:
   stage: test-parsing-and-injection
-  image: 
+  image:
     name: gitlab-registry.cern.ch/cloud-infrastructure/data-analytics/compose:v0.1
     entrypoint: [""]
   tags:
@@ -298,7 +298,7 @@ sing_spec2017:
     - python3 -m pip install --user --upgrade pip
     - python3 -m pip install .
     # run $BMKLIST as docker
-    - bmkrun --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
+    - bmkrun --config=default --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST --file=$RESULTS_FILE
     - mv $BMK_VOLUME/run_*/$RESULTS_FILE .
     - rm -rf $BMK_VOLUME
   rules:
