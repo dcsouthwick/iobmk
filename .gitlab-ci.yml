@@ -298,7 +298,7 @@ sing_spec2017:
     - python3 -m pip install --user --upgrade pip
     - python3 -m pip install .
     # run $BMKLIST as docker
-    - bmkrun --config=default --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST
+    - bmkrun --config=tests/benchmarks_ci_test.yml --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST
     - mv $BMK_VOLUME/run_*/bmkrun_report.json .
     - rm -rf $BMK_VOLUME
   rules:
