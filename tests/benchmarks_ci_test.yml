@@ -1,7 +1,6 @@
 ---
 global:
   mode: "singularity"
-  file: "result_profile.json"
   rundir: "/tmp/hep-spec_wd3"
   # mp_num: "48"
   benchmarks:
