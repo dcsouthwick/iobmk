@@ -215,7 +215,7 @@ def prepare_metadata(full_conf, extra):
 
     result = {'host': {}, 'suite': {}}
     result.update({
-        '_id'           : "{}_{}".format(params['uid'], extra['start_time']),
+        '_id'           : "{}_{}".format(socket.gethostname(), extra['start_time']),
         '_timestamp'    : extra['start_time'],
         '_timestamp_end': extra['end_time'],
         'json_version'  : get_version()
@@ -226,7 +226,7 @@ def prepare_metadata(full_conf, extra):
         'ip'      : get_host_ips(),
     })
 
-    for i in ['UID', 'tags']:
+    for i in ['tags']:
         try:
             result['host'].update({"{}".format(i): params[i]})
         except:

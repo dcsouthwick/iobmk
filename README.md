@@ -192,7 +192,6 @@ optional arguments:
                         Run benchmarks in singularity or docker containers.
   -n, --mp_num [MP_NUM] Number of cpus to run the benchmarks.
   -t, --tags [TAGS]     Custom user tags
-  -u, --uid [UID]       UID.
   -p, --publish         Enable reporting via AMQ credentials in YAML file.
   -s, --show            Show running config and exit.
   -v, --verbose         Enables verbose mode. Display debug messages.

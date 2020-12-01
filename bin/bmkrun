@@ -96,11 +96,6 @@ def main():
                         help="Number of cpus to run the benchmarks.",
                         default=None)
 
-    parser.add_argument("-u", "--uid",
-                        nargs='?',
-                        help="An unique UID to identify the machine.",
-                        default=None)
-
     parser.add_argument("-p", "--publish",
                         action='store_true',
                         help="Enable reporting via AMQ credentials in YAML file.",

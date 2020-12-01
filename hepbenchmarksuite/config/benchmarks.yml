@@ -20,8 +20,6 @@ global:
     cloud: "Suite CI"
     vo: "Some VM"
     other_tag: "Some text"
-  # An extra machine identifier
-  uid: "machineX"
   # enable AMQ reporting using credentials in activemq
   publish: False
 
