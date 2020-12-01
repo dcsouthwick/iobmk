@@ -11,6 +11,7 @@ import socket
 import subprocess
 import sys
 import tarfile
+import uuid
 import urllib.request
 from urllib.error import HTTPError, URLError
 
@@ -215,7 +216,7 @@ def prepare_metadata(full_conf, extra):
 
     result = {'host': {}, 'suite': {}}
     result.update({
-        '_id'           : "{}_{}".format(socket.gethostname(), extra['start_time']),
+        '_id'           : str(uuid.uuid4()),
         '_timestamp'    : extra['start_time'],
         '_timestamp_end': extra['end_time'],
         'json_version'  : get_version()
