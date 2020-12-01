@@ -10,11 +10,11 @@ global:
   # mp_num: "48"
   # Specify the list of benchmarks to run
   benchmarks:
-    - "db12"
+    - "hepscore"
+  #  - "db12"
   #  - "hs06_32"
   #  - "hs06_64"
   #  - "spec2017"
-  #  - "hepscore"
   # User defined tags that will show on the metadata file
   tags:
     cloud: "Suite CI"
