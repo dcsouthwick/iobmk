@@ -185,7 +185,7 @@ def run_hepscore(suite_conf):
             return -1
 
     else:
-        _log.error("Skipping hepscore default config. Loading user provided config: %s", suite_conf['hepscore']['config'])
+        _log.info("Skipping hepscore default config. Loading user provided config: %s", suite_conf['hepscore']['config'])
 
         try:
             with open(suite_conf['hepscore']['config'], 'r') as alt_conf_file:
