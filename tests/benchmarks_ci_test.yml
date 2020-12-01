@@ -11,10 +11,9 @@ global:
     cloud: "Suite CI"
     vo: "Some VM"
     other_tag: "Some text"
-  uid: "machineX"
 
 hepspec06:
-  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
+  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
   url_tarball: "https://example.com"
   # Define writeable directory for SPEC install in unpriveliged containers
   hepspec_volume: "/tmp/SPEC"
@@ -22,7 +21,7 @@ hepspec06:
   bmk_set: '453.povray'
 
 spec2017:
-  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:qa"
+  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
   # URL to fetch the spec2017. It will only be used if the software is not found under hepspec_volume.
   url_tarball: "https://www.example.com/"
   # Define the location on where spec2017 should be found
@@ -34,5 +33,5 @@ spec2017:
   bmk_set: '508.namd_r'
 
 hepscore:
-  version: "v1.0rc9"
+  version: "v1.0rc10"
   config: "tests/hepscore_ci.yaml"
