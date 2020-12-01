@@ -46,7 +46,7 @@ hepspec06:
   # to allow the installation via the url_tarball
   hepspec_volume: "/tmp/SPEC"
   # Number of iterations to run the benchmark
-  iterations: 1
+  iterations: 3
   # Run only a benchmark set
   # bmk_set: '453.povray'
 
@@ -61,14 +61,14 @@ spec2017:
   # to allow the installation via the url_tarball
   hepspec_volume: "/tmp/SPEC"
   # Number of iterations to run the benchmark
-  iterations: 1
+  iterations: 3
   # Run only a benchmark set
   # bmk_set: '508.namd_r'
 
 # Section to configure HEPScore benchmark
 hepscore:
   # Select which version of hep-score to use
-  version: "v1.0rc9"
+  version: "v1.0rc10"
   # Users can provide an alternative config file, three options are possible:
   # "default"  - Uses the default configuration provided with hepscore.
   # local path - Search locally for the configuration.
