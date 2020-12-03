@@ -268,14 +268,24 @@ def run_hepspec(conf, bench):
         except KeyError as err:
             _log.error("Not a valid HEPSPEC06 key: %s.", err)
 
+    # Check if docker image is properly passed
+    docker_image=''
+    if run_mode == "docker":
+        if spec['image'].startswith('docker://'):
+            docker_image = spec['image'].replace('docker://', '')
+
+        else:
+            _log.error("Invalid docker image specified. Image should start with docker://")
+            return 1
+
     # Command specification
     cmd = {
         'docker': "docker run --network=host -v {0}:{0}:Z -v {1}:{1}:Z {2} {3}"
             .format(conf['global']['rundir'],
                     spec['hepspec_volume'],
-                    spec['image'],
+                    docker_image,
                     _run_args),
-        'singularity': "SINGULARITY_CACHEDIR={0}/singularity_cachedir singularity run -B {1}:{1} -B {2}:{2} docker://{3} {4}"
+        'singularity': "SINGULARITY_CACHEDIR={0}/singularity_cachedir singularity run -B {1}:{1} -B {2}:{2} {3} {4}"
             .format(conf['global']['parent_dir'],
                     conf['global']['rundir'],
                     spec['hepspec_volume'],
