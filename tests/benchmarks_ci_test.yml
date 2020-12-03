@@ -13,7 +13,7 @@ global:
     other_tag: "Some text"
 
 hepspec06:
-  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
+  image: "docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
   url_tarball: "https://example.com"
   # Define writeable directory for SPEC install in unpriveliged containers
   hepspec_volume: "/tmp/SPEC"
@@ -21,7 +21,7 @@ hepspec06:
   bmk_set: '453.povray'
 
 spec2017:
-  image: "gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
+  image: "docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
   # URL to fetch the spec2017. It will only be used if the software is not found under hepspec_volume.
   url_tarball: "https://www.example.com/"
   # Define the location on where spec2017 should be found

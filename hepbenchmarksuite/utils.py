@@ -182,13 +182,13 @@ def bench_versions(conf):
     for bench in conf['global']['benchmarks']:
 
         if bench in ['hs06_32', 'hs06_64']:
-            bench_versions[bench] = conf['hepspec06']['image'].split(":")[1]
+            bench_versions[bench] = conf['hepspec06']['image'].split(":")[-1]
 
         elif bench == 'db12':
             bench_versions[bench] = "v0.1"
 
         elif bench == 'spec2017':
-            bench_versions[bench] = conf['spec2017']['image'].split(":")[1]
+            bench_versions[bench] = conf['spec2017']['image'].split(":")[-1]
 
         elif bench == 'hepscore':
             bench_versions[bench] = conf['hepscore']['version']

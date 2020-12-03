@@ -138,8 +138,7 @@ YAML_lint:
   dependencies: []
   script:
     - yum install -y -q yamllint
-    - cd hepbenchmarksuite/config
-    - yamllint benchmarks.yml
+    - yamllint -c tests/ci/yamllint_conf.yml hepbenchmarksuite/config/benchmarks.yml
   rules:
     - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
       when: never
