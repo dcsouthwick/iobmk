@@ -69,13 +69,20 @@ def test_prepare_metadata():
     metadata_schema.validate(meta_json)
 
 
-def test_convert_tags_to_json():
-    """ Test convert tags string to json."""
+def test_get_tags_env():
+    """ Test get tags from env variables."""
 
-    valid_dict = {"key1" : "value1" , "key2": "value2"}
+     # Test no tags in env
+    assert utils.get_tags_env() == {}
 
-    assert utils.convert_tags_to_json('{"key1" : "value1" , "key2": "value2"}') == valid_dict
-    assert utils.convert_tags_to_json('{"key1" : "incomplete}') == {}
+    # Test tags in env variables
+    valid_dict = {"tag1" : "value1" , "tag2": "value2"}
+
+    os.environ["BMKSUITE_TAG_TAG1"] = "value1"
+    os.environ["BMKSUITE_TAG_TAG2"] = "value2"
+    os.environ["BMKSUITE_TAGtypo_TAG3"] = "value3"
+
+    assert utils.get_tags_env() == valid_dict
 
 
 @pytest.mark.parametrize('cmd_str', ["cat /proc/minfo | grep MemTotal", "lxcpu"])

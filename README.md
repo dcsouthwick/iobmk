@@ -191,13 +191,30 @@ optional arguments:
   -m, --mode [{singularity,docker}]
                         Run benchmarks in singularity or docker containers.
   -n, --mp_num [MP_NUM] Number of cpus to run the benchmarks.
-  -t, --tags [TAGS]     Custom user tags
+  -t, --tags            Enable reading of user tags from ENV variables
+                        (BMKSUITE_TAG_{TAG}). Tags specified in configuration
+                        file are ignored.
   -p, --publish         Enable reporting via AMQ credentials in YAML file.
   -s, --show            Show running config and exit.
   -v, --verbose         Enables verbose mode. Display debug messages.
   --version             Show program's version number and exit
 -----------------------------------------------
 ```
+
+## Examples
+
+- Specify custom tags via ENV variables.
+
+    ```
+    # All tags should start with BMKSUITE_TAG_
+    export BMKSUITE_TAG_MYTAG="My custom tag"
+    export BMKSUITE_TAG_SECONDTAG=$(uptime)
+
+    # The --tags flag enables the reading of ENV variables
+    # ignores tags specified in config file
+
+    bmkrun -c default --tags
+    ```
 
 ## Common Issues
 
