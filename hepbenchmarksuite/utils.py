@@ -99,25 +99,26 @@ def exec_wait_benchmark(cmd_str):
     return cmd.returncode
 
 
-def convert_tags_to_json(tag_str):
-    """Convert tags string to json.
-
-    Args:
-      tag_str: String to be converted to json.
+def get_tags_env():
+    """Get tags from user environment variables.
 
     Returns:
       A dict containing the tags.
     """
-    _log.info("User specified tags: %s", tag_str)
 
-    # Check if user provided a valid tag string to be converted to json
-    try:
-        tags = json.loads(tag_str)
+    tags = {}
 
-    except Exception:
-        # User provided wrong format. Default tags are provided.
-        _log.warning("Not a valid tag json format specified: %s", tag_str)
-        tags = {}
+    # Get ENV variables that start with BMKSUITE_TAG_[user-tag]
+    # returns json with user-tag in lower case
+    PREFIX = "BMKSUITE_TAG_"
+
+    for key, val in os.environ.items():
+        if PREFIX in key:
+            _log.debug("Found tag in ENV: %s=%s", key, val)
+
+            tag_key = key.replace(PREFIX, '').lower()
+
+            tags[tag_key] = str(val)
 
     return tags
 
