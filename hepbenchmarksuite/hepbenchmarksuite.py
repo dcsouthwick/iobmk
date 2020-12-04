@@ -65,12 +65,25 @@ class HepBenchmarkSuite():
         _log.info("Running pre-flight checks")
         checks = []
 
-        _log.info(" - Checking if handler for run mode exists...")
-        _, _return_mode = utils.exec_cmd('{} --version'.format(self._config['mode']))
-        checks.append(_return_mode)
+        _log.info(" - Checking if selected run mode exists...")
 
-        if _return_mode != 0:
-            _log.error("Specified run mode is not present in the system: %s", self._config['mode'])
+        # Avoid executing commands if they are not valid run modes.
+        # This avoids injections through the configuration file.
+        if self._config['mode'] in ('docker', 'singularity'):
+
+            # Search if run mode is installed
+            system_runmode = shutil.which(self._config['mode'])
+
+            if system_runmode != None:
+                _log.info("   - %s executable found: %s.", self._config['mode'], system_runmode)
+
+            else:
+                _log.error("   - %s is not installed in the system.", self._config['mode'])
+                checks.append(1)
+
+        else:
+            _log.error("Invalid run mode specified: %s.", self._config['mode'])
+            checks.append(1)
 
         _log.info(" - Checking provided work dirs exist...")
         os.makedirs(self._config['rundir'], exist_ok=True)
