@@ -190,7 +190,7 @@ class TestAMQ(unittest.TestCase):
                          'key': "somekey"}
             with self.assertLogs('hepbenchmarksuite.plugins.send_queue', level='INFO') as logger:
                 send_queue.send_message(self.test_file_path, test_args)
-            mock_conn.set_ssl.assert_called_once_with(for_hosts=[test_args['server']],
+            mock_conn.set_ssl.assert_called_once_with(for_hosts=[(test_args['server'],test_args['port'])],
                                                       cert_file=test_args['cert'],
                                                       key_file=test_args['key'],
                                                       ssl_version=5)

@@ -24,14 +24,21 @@ global:
   publish: False
 
 # Section to configure ActiveMQ
+# Evaluated ONLY if the parameter `publish` is set to True
 activemq:
   server: 'your-AMQ-server.com'
   port: 61613
   topic: 'hepscore-topic'
-  username: 'user'
-  password: 'pw'
-  key: 'key-file.key'
-  cert: 'cert-file.pem'
+  ## If authentication is done with username/password
+  ## uncomment the following two lines username/password
+  ## and include the real credentials
+  #username: 'user'
+  #password: 'pw'
+  ## If authentication is done with X509 certificates
+  ## uncomment the following two lines key/cert
+  ## and include the real certificates
+  #key: 'key-file.key'
+  #cert: 'cert-file.pem'
 
 # Section to configure HEPSpec06 benchmark
 hepspec06:
