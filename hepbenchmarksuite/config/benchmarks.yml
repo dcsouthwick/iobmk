@@ -87,3 +87,8 @@ hepscore:
   config: "default"
   # config: "tests/hepscore_ci.yaml"
   # config: "https://"
+  ## HEPScore extra options
+  #options:
+  # Enable if you will run the suite from within a singularity instance
+  # in that case make sure that /etc/sysctl.d/90-max_user_namespaces.conf is enabled
+  #    userns: True

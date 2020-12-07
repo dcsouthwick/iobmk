@@ -198,6 +198,11 @@ def run_hepscore(suite_conf):
     # ensure same runmode as suite
     hepscore_conf['hepscore_benchmark']['settings']['container_exec'] = suite_conf['global']['mode']
 
+    if 'options' in suite_conf['hepscore'].keys():
+        hepscore_conf['hepscore_benchmark']['options'] = suite_conf['hepscore']['options']
+
+    _log.debug(hepscore_conf)
+
     # Specify directory to output results
     hepscore_results_dir = os.path.join(suite_conf['global']['rundir'], 'HEPSCORE')
 
