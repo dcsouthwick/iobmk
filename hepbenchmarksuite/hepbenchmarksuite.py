@@ -107,8 +107,7 @@ class HepBenchmarkSuite():
         disk_space_gb = round(disk_stats.free * (10 ** -9), 2)
 
         _log.debug("Calculated disk space: %s GB", disk_space_gb)
-
-        if disk_space_gb <= self.DISK_THRESHOLD:
+        if disk_space_gb <= self.DISK_THRESHOLD and not (len(self.selected_benchmarks) == 1 and 'db12' in self.selected_benchmarks):
             _log.error("Not enough disk space on %s, free: %s GB, required: %s GB", self._config['rundir'], disk_space_gb, self.DISK_THRESHOLD)
 
             # Flag for a failed check
