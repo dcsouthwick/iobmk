@@ -14,21 +14,20 @@
 
 ## About
 
-The HEP Benchmark Suite is a toolkit which aggregates several different benchmarks
-in one single application for characterizing the perfomance of individual and clustered heterogeneous hardware.
+The HEP Benchmark Suite is a toolkit which orchestrates different benchmarks in one single application for characterizing the perfomance of individual and clustered heterogeneous hardware.
 
 It is built in a modular approach to target the following use cases in HEP computing:
 
-1. Mimic the usage of WLCG resources for experiment workloads
-   * Run workloads representative of the production applications running on WLCG
-1. Allow collection of a configurable number of benchmarks
-   * Enable performance studies on heterogeneous hardware
-1. Collect the hardware metadata and the running conditions
-   * Compare the benchmark outcome under similar conditions
-1. Have prompt feedback about executed benchmarks
-   * By publishing results to a monitoring system
-1. Probe randomly assigned slots in a cloud environment
-   * In production can suggest deletion and re-provisioning of underperforming resources
+1. **Mimic the usage of WLCG resources for experiment workloads**
+   * Run workloads representative of the production applications running on WLCG.
+1. **Allow collection of a configurable number of benchmarks**
+   * Enable performance studies on heterogeneous hardware.
+1. **Collect the hardware metadata and the running conditions**
+   * Compare the benchmark outcome under similar conditions.
+1. **Have prompt feedback about executed benchmarks**
+   * By publishing results to a monitoring system.
+1. **Probe randomly assigned slots in a cloud environment**
+   * In production can suggest deletion and re-provisioning of underperforming resources.
 
 ## Benchmark suite architecture
 
@@ -44,7 +43,7 @@ Benchmark results are aggregated into a single JSON document, together with the 
 
 Optionally, the final report can be sent to a transport layer, to be further digested and analysed by broker consumers.
 
-Users may also execute the suite in stand-alone mode without result reporting. (see [How to run](#how-to-run) for further details).
+Users may also execute the suite in stand-alone mode without result reporting -  see [How to run](#how-to-run) for further details.
 
 ### Integration status
 
@@ -75,7 +74,7 @@ The HEP Benchmark Suite is delivered **ready-to-run** with a [default yaml](hepb
 * [HS06](https://w3.hepix.org/benchmarking.html)
 * [SPEC CPU2017](https://www.spec.org/cpu2017/)
 * Fast benchmarks (should not be used for performance measurments):
-  * DIRAC Benchmark (DB12)
+  * [DIRAC Benchmark (DB12)](hepbenchmarksuite/db12.py)
   * [ATLAS Kit Validation](https://gitlab.cern.ch/hep-benchmarks/hep-workloads/blob/master/atlas/kv/atlas-kv/DESCRIPTION)
 
 **Due to proprietary license requirements, HS06 and SPEC CPU 2017 must be provided by the end user.** This tool will work with either a pre-installed or tarball archive of SPEC software.
@@ -117,7 +116,7 @@ export PATH=$PATH:~/.local/bin
 
 ### Python virtual environments (minimum footprint)
 
-There are cases on which the user would like to keep current Python3 library versions and have a minimum footprint of newly installed packages. For such purporses, it is possible to install the `hep-benchmark-suite` using [Python Virtual Environments](https://docs.python.org/3/tutorial/venv.html). This is the desired approach when the user desires a minimum footprint on the system.
+There are cases on which the user would like to keep current Python3 library versions and have a minimum footprint of newly installed packages. For such purporses, it is possible to install the `hep-benchmark-suite` using [Python Virtual Environments](https://docs.python.org/3/tutorial/venv.html). This is the desired approach when the user requires a minimum footprint on the system.
 
 ```sh
 export MYENV="bmk_env"        # Define the name of the environment.
@@ -131,23 +130,42 @@ _Note: When using virtual environments, hep-score will also be installed in this
 
 ## How to run
 
-The python executable (*bmkrun*) can be added to the user's `$PATH`, and launched directly.
-Without argument, this will execute the distributed defaults as defined in `benchmarks.yml`.
+The python executable `bmkrun` can be added to the user's `$PATH`, and launched directly. The `bmkrun` requires one argument to be able to execute:  `--config`.
 Users are free to provide [command-line arguments](#description-of-all-arguments), or edit the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml) file directly.
 
-* Running the HEP Benchmark Suite using Docker containers (default)
-  * `./bmkrun`
-* Running using Singularity containers
-  * `./bmkrun --mode=singularity`
+* Running the HEP Benchmark Suite with default configuration (hepscore is the default benchmark)
+  ```
+  bmkrun -c default
+  ```
 
-The aggregated results of the selected benchmarks are written to the location and file defined by the `--rundir=` & `--file=` argument (defined as `/tmp/hep-spec_wd3/result_profile.json` in [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml)).
+* Execute with an alternative configuration
+  ```
+  bmkrun -c <config path>
+  ```
 
-### Description of major arguments
+Points of attention:
 
-In order to run a sequence of benchmarks, specify the list using the `--benchmarks` argument.
-Multiple benchmarks can be executed in sequence via a single call to the hep-benchmark-suite, passing the dedicated configuration parameters. When a benchmark is not specified in the list defined by `--benchmarks`, the dedicated configuration parameters relevant to that benchmark are ignored.
+- **All CLI arguments have override effect.** For instance, if user has defined multiple benchmarks on the configuration file and specify only one with the `--benchmarks` option, only this benchmark will be executed.
 
-In the case of running HS06, and/or SPEC CPU2017, the benchmark will look for the install at the specified `hepspec_volume:`, and if it does not exist, it will attempt to install it via tarball argument `url_tarball:`, as defined in the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml)).
+- The aggregated results of the selected benchmarks are written to the location defined by the `--rundir=` argument or `rundir` in the `yaml` file.
+
+- By default, results are not sent via AMQ. To send the results, please refer to [Advanced Message Queuing (AMQ)](#Advanced-Message-Queuing-(AMQ)) section.
+
+- Benchmarks are executed in sequence.
+
+- The following benchmarks: `hepscore`, `hepspec06`, `spec2017` are configured in their appropriate configuration sections.
+
+- In the case of running HS06, and/or SPEC CPU2017, the benchmark will look for the installation at the specified `hepspec_volume:`, and if it does not exist, it will attempt to install it via tarball argument `url_tarball:`, as defined in the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml)).
+
+- Please have a look at the [Examples](#examples) section.
+
+## Plugins
+
+### Hardware metadata
+
+The suite ships with a [hardware metadata plugin](hepbenchmarksuite/plugins/extractor.py) which is responsible to collect system hardware and software information. This data is then compiled and reported in the results json file.
+
+This plugin relies on system tools such as: `lscpu`, `lshw`, `dmidecode`. Some of these tools require escalated priviledges for a complete output. Please take this into consideration if some outputs are empty in the final json report.
 
 ### Advanced Message Queuing (AMQ)
 
@@ -164,7 +182,7 @@ activemq:
   cert: /path/cert-file.pem
 ```
 
-### Description of all arguments
+## Description of all arguments
 
 The `-h` option provides an explanation of all command line arguments
 
@@ -186,8 +204,8 @@ optional arguments:
                         Configuration file to use (yaml format)
   -d, --rundir [RUNDIR]
                         Directory where benchmarks will be run
-  -f, --file [FILE]
-                        File to store the results
+  -e, --export          Export all json and log files from rundir and
+                        compresses them.
   -m, --mode [{singularity,docker}]
                         Run benchmarks in singularity or docker containers.
   -n, --mp_num [MP_NUM] Number of cpus to run the benchmarks.
@@ -203,18 +221,37 @@ optional arguments:
 
 ## Examples
 
+
+- Show default configuration.
+
+    ```sh
+    bmkrun -c default --show
+    ```
+
 - Specify custom tags via ENV variables.
 
-    ```
+    ```sh
     # All tags should start with BMKSUITE_TAG_
     export BMKSUITE_TAG_MYTAG="My custom tag"
     export BMKSUITE_TAG_SECONDTAG=$(uptime)
 
     # The --tags flag enables the reading of ENV variables
     # ignores tags specified in config file
-
     bmkrun -c default --tags
     ```
+
+- Run a test bencharmk DB12 (should not be used for system benchmarking)
+
+    ```sh
+    bmkrun -c default -b db12
+    ```
+
+- Run HS06 and SPEC2017 (Alternate config should be based on [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml))
+
+    ```sh
+    bmkrun -c <alternate config>  -b hs06_32 spec2017
+    ```
+
 
 ## Common Issues
 
