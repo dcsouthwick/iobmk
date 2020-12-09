@@ -8,11 +8,14 @@
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
 from hepbenchmarksuite import benchmarks
+from hepbenchmarksuite import utils
 from hepscore import HEPscore
 from importlib_metadata import version, PackageNotFoundError
 from pkg_resources import parse_version
 import sys
 import subprocess
+import pytest
+import yaml
 
 class TestHepscore(unittest.TestCase):
     """Test extra utility methods."""
@@ -46,6 +49,65 @@ class TestHepscore(unittest.TestCase):
             benchmarks.run_hepscore(test_conf)
 
         self.assertEqual(context.exception.code, 1)
+
+#--------------------------------------------------------------------------------------------------------------
+# HEPspec06 and SPEC2017 interface related tests
+#-------------------------------------------------------------------------------------------------------------
+
+def alternate_exec(arg):
+    """ Custom function to mock utils.exec_wait_benchmark. """
+    return arg
+
+# It does not inherit from unittest.TestCase to allow using
+# pytest.parametrization without issues.
+class TestSpec:
+
+    def setup(self):
+        """ Load CI configuration """
+
+        with open("tests/ci/benchmarks.yml", 'r') as cfg_file:
+            self.config_file = yaml.full_load(cfg_file)
+            self.config_file['global']['parent_dir']='.'
+
+    def test_invalid_docker_image(self):
+        """ Test if docker image fails if it does not start with docker:// """
+
+        self.setup()
+        cont = unittest.TestCase()
+
+        sample_config = self.config_file.copy()
+        sample_config['spec2017']['image']='gitlab.com/'
+        sample_config['global']['mode']='docker'
+
+        with cont.assertLogs('hepbenchmarksuite.benchmarks', level='INFO') as log:
+            assert benchmarks.run_hepspec(sample_config, 'spec2017') == 1
+            cont.assertIn('ERROR:hepbenchmarksuite.benchmarks:Invalid docker image specified. Image should start with docker://', " ".join(log.output))
+
+    @pytest.mark.parametrize('bench', ["spec2017", "hs06_32", "hs06_64"])
+    @pytest.mark.parametrize('mode', ["docker", "singularity"])
+    @patch.object(utils, 'exec_wait_benchmark', side_effect=alternate_exec)
+    def test_cli_interface(self, mock,  mode, bench):
+        """ Test interface to run hepspec06 and spec2017 """
+
+        self.setup()
+        sample_config = self.config_file.copy()
+
+        sample_config['global']['mode']=mode
+        sample_config['global']['benchmarks']=bench
+
+        if bench in ("hs06_32", "hs06_64"):
+            bmkset = '453.povray'
+
+        elif bench == 'spec2017':
+            bmkset = '508.namd_r'
+
+        if mode == 'singularity':
+            valid = 'SINGULARITY_CACHEDIR=./singularity_cachedir singularity run -B /tmp/hep-spec_wd3:/tmp/hep-spec_wd3 -B /tmp/SPEC:/tmp/SPEC docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0  -b {} -w /tmp/hep-spec_wd3 -n None -u https://www.example.com/ -p /tmp/SPEC -i 1 -s {}'.format(bench, bmkset)
+
+        elif mode == 'docker':
+            valid = 'docker run --network=host -v /tmp/hep-spec_wd3:/tmp/hep-spec_wd3:Z -v /tmp/SPEC:/tmp/SPEC:Z gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0  -b {} -w /tmp/hep-spec_wd3 -n None -u https://www.example.com/ -p /tmp/SPEC -i 1 -s {}'.format(bench, bmkset)
+
+        assert benchmarks.run_hepspec(sample_config, bench) == valid
 
 #----------------------------------------------------------
 # This section should be ported to HEP-SCORE unittest
