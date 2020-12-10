@@ -194,7 +194,8 @@ def main():
         sys.exit(1)
 
     print("# The following configuration was loaded: {}".format(load_config))
-    print("# The configuration was overrided by the following CLI args: {}".format(non_empty))
+    if len(non_empty):
+        print("# The configuration was overridden by the following CLI args: {}".format(non_empty))
 
     # Print running configuration and exit
     if args.show:
