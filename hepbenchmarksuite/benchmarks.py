@@ -285,7 +285,7 @@ def run_hepspec(conf, bench):
 
     # Command specification
     cmd = {
-        'docker': "docker run --network=host -v {0}:{0}:Z -v {1}:{1}:Z {2} {3}"
+        'docker': "docker run --rm --network=host -v {0}:{0}:Z -v {1}:{1}:Z {2} {3}"
             .format(conf['global']['rundir'],
                     spec['hepspec_volume'],
                     docker_image,

@@ -163,7 +163,8 @@ def get_host_ips():
     Returns:
       A string containing the ip
     """
-    ip_address, _ = exec_cmd("ip route get 1 | awk '{print $NF;exit}'")
+    _, _, ip_list = socket.gethostbyaddr(socket.getfqdn())
+    ip_address = ','.join(ip_list)
     return ip_address
 
 
