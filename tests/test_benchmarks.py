@@ -105,7 +105,7 @@ class TestSpec:
             valid = 'SINGULARITY_CACHEDIR=./singularity_cachedir singularity run -B /tmp/hep-spec_wd3:/tmp/hep-spec_wd3 -B /tmp/SPEC:/tmp/SPEC docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0  -b {} -w /tmp/hep-spec_wd3 -n None -u https://www.example.com/ -p /tmp/SPEC -i 1 -s {}'.format(bench, bmkset)
 
         elif mode == 'docker':
-            valid = 'docker run --network=host -v /tmp/hep-spec_wd3:/tmp/hep-spec_wd3:Z -v /tmp/SPEC:/tmp/SPEC:Z gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0  -b {} -w /tmp/hep-spec_wd3 -n None -u https://www.example.com/ -p /tmp/SPEC -i 1 -s {}'.format(bench, bmkset)
+            valid = 'docker run --rm --network=host -v /tmp/hep-spec_wd3:/tmp/hep-spec_wd3:Z -v /tmp/SPEC:/tmp/SPEC:Z gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0  -b {} -w /tmp/hep-spec_wd3 -n None -u https://www.example.com/ -p /tmp/SPEC -i 1 -s {}'.format(bench, bmkset)
 
         assert benchmarks.run_hepspec(sample_config, bench) == valid
 

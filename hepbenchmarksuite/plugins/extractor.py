@@ -8,9 +8,12 @@
 import json
 import logging
 import os
+import platform
 import re
 from subprocess import Popen, PIPE
+import socket
 import sys
+import shutil
 
 _log = logging.getLogger(__name__)
 
@@ -43,20 +46,18 @@ class Extractor():
         # If the tools are not present, the output will be limited on certain fields.
         # The dict self.pkg enforces the switching of outputs.
 
-        req_packages = ['lshw', 'ipmitool', 'dmidecode']
+        req_packages = ('lshw', 'ipmitool', 'dmidecode')
 
         for pkg_name in req_packages:
-            cmd = Popen("rpm -q {}".format(pkg_name), shell=True, executable='/bin/bash', stdout=PIPE, stderr=PIPE)
-            cmd_reply, cmd_error = cmd.communicate()
 
-            if cmd.returncode != 0:
-                _log.error(cmd_reply.decode('utf-8').rstrip())
-                _log.error(cmd_error)
-                self.pkg[pkg_name] = False
-            else:
-                _log.debug("Package installed: %s", cmd_reply.decode('utf-8').rstrip())
+            _sys_pkg = shutil.which(pkg_name)
+
+            if _sys_pkg != None:
+                _log.debug("Package installed: %s", pkg_name)
                 self.pkg[pkg_name] = True
-
+            else:
+                _log.debug("Package not installed: %s", pkg_name)
+                self.pkg[pkg_name] = False
 
         _log.debug("Installed packages: %s", self.pkg)
 
@@ -80,28 +81,22 @@ class Extractor():
 
         return cmd_reply
 
-    def collect_base(self):
-        """Collect base information of the system."""
-        base = {'Hostname': "hostname -f"}
-
-        # Extract and save data
-        self._extract(base)
-
     def collect_sw(self):
         """Collect Software specific metadata."""
         _log.info("Collecting SW information.")
 
-        SW_CMD = {
-            'os_version'    : "cat /etc/redhat-release",
-            'kernel_version': "uname -r",
-            'gcc_version'   : "gcc --version | head -n1",
-            'glibc_version' : "yum list installed | grep glibc.x86_64 | awk '{print $2}'",
+        sw_cmd = {
+            "singularity": "singularity version",
+            "docker": "docker version --format '{{.Server.Version}}'",
         }
 
-        software = {"python_version": sys.version.split()[0]}
+        software = {
+            "python_version": sys.version.split()[0],
+            "platform": platform.platform(),
+        }
 
         # Execute commands and append result to a dict
-        for key, val in SW_CMD.items():
+        for key, val in sw_cmd.items():
             software[key] = self.exec_cmd(val)
 
         return software
@@ -154,8 +149,11 @@ class Extractor():
             'NUMA_nodes'       : conv(parse_lscpu(r"NUMA node\(s\)"), int),
         }
         # Populate NUMA nodes
-        for i in range(0, int(cpu['NUMA_nodes'])):
-            cpu['NUMA_node{}_CPUs'.format(i)] = parse_lscpu(r"NUMA node{} CPU\(s\)".format(i))
+        try:
+            for i in range(0, int(cpu['NUMA_nodes'])):
+                cpu['NUMA_node{}_CPUs'.format(i)] = parse_lscpu(r"NUMA node{} CPU\(s\)".format(i))
+        except ValueError:
+            _log.warning('Failed to parse or NUMA nodes not existent.')
 
         return cpu
 
@@ -319,7 +317,7 @@ class Extractor():
         """Collect all metadata."""
         _log.info("Collecting the full metadata information.")
 
-        self.collect_base()
+        self.data['Hostname'] = socket.getfqdn()
         self._save("SW", self.collect_sw())
         self._save("HW", self.collect_hw())
 
