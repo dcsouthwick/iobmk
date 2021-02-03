@@ -12,8 +12,7 @@ global:
   benchmarks:
     - "hepscore"
   #  - "db12"
-  #  - "hs06_32"
-  #  - "hs06_64"
+  #  - "hs06"
   #  - "spec2017"
   # User defined tags that will show on the metadata file
   tags:
