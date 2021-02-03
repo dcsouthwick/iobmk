@@ -70,15 +70,14 @@ class TestSuite(unittest.TestCase):
         benchmarks.prep_hepscore = lambda conf: 0
         benchmarks.run_hepscore  = lambda conf: 1
 
-        sample_config['global']['benchmarks'] = ['hs06_32', 'hs06_64', 'spec2017', 'hepscore']
+        sample_config['global']['benchmarks'] = ['hs06', 'spec2017', 'hepscore']
 
         suite = HepBenchmarkSuite(sample_config)
 
         # Suite should print successful message after each benchmark completion
         with self.assertLogs('hepbenchmarksuite.hepbenchmarksuite', level='INFO') as log:
             suite.start()
-            self.assertIn('INFO:hepbenchmarksuite.hepbenchmarksuite:Completed hs06_32 with return code 0', " ".join(log.output))
-            self.assertIn('INFO:hepbenchmarksuite.hepbenchmarksuite:Completed hs06_64 with return code 0', " ".join(log.output))
+            self.assertIn('INFO:hepbenchmarksuite.hepbenchmarksuite:Completed hs06 with return code 0', " ".join(log.output))
             self.assertIn('INFO:hepbenchmarksuite.hepbenchmarksuite:Completed spec2017 with return code 0', " ".join(log.output))
             self.assertIn('INFO:hepbenchmarksuite.hepbenchmarksuite:Completed hepscore with return code 1', " ".join(log.output))
 

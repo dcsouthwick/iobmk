@@ -154,7 +154,7 @@ def exec_cmd(cmd_str):
 
 def get_version():
     """Version of metadata to be used in ElasticSearch tagging."""
-    return "v2.1-dev"
+    return "v2.0-dev0"
 
 
 def get_host_ips():
@@ -182,7 +182,7 @@ def bench_versions(conf):
 
     for bench in conf['global']['benchmarks']:
 
-        if bench in ['hs06_32', 'hs06_64']:
+        if bench == 'hs06':
             bench_versions[bench] = conf['hepspec06']['image'].split(":")[-1]
 
         elif bench == 'db12':
@@ -286,6 +286,7 @@ def print_results(results):
         "DB12"    : lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(data[x]['value']), data[x]['unit']),
         "hs06_32" : lambda x: "HS06 32 bit Benchmark = {}".format(data[x]['score']),
         "hs06_64" : lambda x: "HS06 64 bit Benchmark = {}".format(data[x]['score']),
+        "hs06"    : lambda x: "HS06 Benchmark = {}".format(data[x]['score']),
         "spec2017": lambda x: "SPEC2017 64 bit Benchmark = {}".format(data[x]['score']),
         "hepscore": lambda x: parse_hepscore(data[x]),
     }

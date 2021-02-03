@@ -37,10 +37,10 @@ def validate_spec(conf, bench):
     _log.debug("Configuration to apply validation: %s", conf)
 
     # Config section to use
-    if bench in ['hs06_32', 'hs06_64']:
+    if bench in ('hs06'):
         spec = conf['hepspec06']
 
-    elif bench in ['spec2017']:
+    elif bench in ('spec2017'):
         spec = conf['spec2017']
 
     # Required params to perform an HS06 benchmark
@@ -237,10 +237,10 @@ def run_hepspec(conf, bench):
     _log.debug("Configuration in use for benchmark %s: %s", bench, conf)
 
     # Config section to use
-    if bench in ['hs06_32', 'hs06_64']:
+    if bench in ('hs06'):
         spec = conf['hepspec06']
 
-    elif bench in ['spec2017']:
+    elif bench in ('spec2017'):
         spec = conf['spec2017']
 
     # Select run mode: docker, singularity, podman, etc
@@ -253,6 +253,7 @@ def run_hepspec(conf, bench):
         'mp_num'        : ' -n {}'.format(conf['global'].get('mp_num')),
         'hepspec_volume': ' -p {}'.format(spec.get('hepspec_volume')),
         'bmk_set'       : ' -s {}'.format(spec.get('bmk_set')),
+        'mode'          : ' -m {}'.format(spec.get('mode')),
         'url_tarball'   : ' -u {}'.format(spec.get('url_tarball')),
         'workdir'       : ' -w {}'.format(conf['global'].get('rundir'))
     }

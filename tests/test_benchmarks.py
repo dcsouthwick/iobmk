@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch, mock_open, MagicMock
 from hepbenchmarksuite import benchmarks
 from hepbenchmarksuite import utils
-from hepscore import HEPscore
+from hepscore.hepscore import HEPscore
 from importlib_metadata import version, PackageNotFoundError
 from pkg_resources import parse_version
 import sys
@@ -83,7 +83,7 @@ class TestSpec:
             assert benchmarks.run_hepspec(sample_config, 'spec2017') == 1
             cont.assertIn('ERROR:hepbenchmarksuite.benchmarks:Invalid docker image specified. Image should start with docker://', " ".join(log.output))
 
-    @pytest.mark.parametrize('bench', ["spec2017", "hs06_32", "hs06_64"])
+    @pytest.mark.parametrize('bench', ["spec2017", "hs06"])
     @pytest.mark.parametrize('mode', ["docker", "singularity"])
     @patch.object(utils, 'exec_wait_benchmark', side_effect=alternate_exec)
     def test_cli_interface(self, mock,  mode, bench):
@@ -95,7 +95,7 @@ class TestSpec:
         sample_config['global']['mode']=mode
         sample_config['global']['benchmarks']=bench
 
-        if bench in ("hs06_32", "hs06_64"):
+        if bench == "hs06":
             bmkset = '453.povray'
 
         elif bench == 'spec2017':
