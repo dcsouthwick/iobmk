@@ -57,6 +57,9 @@ hepspec06:
   iterations: 3
   # Run only a benchmark set
   # bmk_set: '453.povray'
+  ## Specifies if benchmark is run on 32 or 64 bit mode
+  ## Default is 64-bit
+  # mode: 32
 
 # Section to configure Spec2017 benchmark
 spec2017:
@@ -75,6 +78,9 @@ spec2017:
   iterations: 3
   # Run only a benchmark set
   # bmk_set: '508.namd_r'
+  ## Specifies if benchmark is run on 32 or 64 bit mode
+  ## Default is 64-bit
+  # mode: 32
 
 # Section to configure HEPScore benchmark
 hepscore:

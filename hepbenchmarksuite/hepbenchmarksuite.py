@@ -26,8 +26,7 @@ class HepBenchmarkSuite():
      *********************************************************"""
     # Location of result files
     RESULT_FILES = {
-        'hs06_32' : 'HS06/hs06_32_result.json',
-        'hs06_64' : 'HS06/hs06_64_result.json',
+        'hs06'    : 'HS06/hs06_result.json',
         'spec2017': 'SPEC2017/spec2017_result.json',
         'hepscore': 'HEPSCORE/hepscore_result.json',
         'db12'    : 'db12_result.json',
@@ -88,7 +87,7 @@ class HepBenchmarkSuite():
         _log.info(" - Checking provided work dirs exist...")
         os.makedirs(self._config['rundir'], exist_ok=True)
 
-        if 'hs06_32' in self.selected_benchmarks or 'hs06_64' in self.selected_benchmarks:
+        if 'hs06' in self.selected_benchmarks:
             os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
 
         if 'spec2017' in self.selected_benchmarks:
@@ -99,7 +98,7 @@ class HepBenchmarkSuite():
 
         _log.info(" - Checking for a valid configuration...")
         for bench in self.selected_benchmarks:
-            if bench in ['hs06_32', 'hs06_64', 'spec2017']:
+            if bench in ('hs06', 'spec2017'):
                 checks.append(benchmarks.validate_spec(self._config_full, bench))
 
         _log.info(" - Checking if rundir has enough space...")
@@ -149,7 +148,7 @@ class HepBenchmarkSuite():
                 else:
                     _log.error("Skipping hepscore due to failed installation.")
 
-            elif bench2run in ['hs06_32', 'hs06_64', 'spec2017']:
+            elif bench2run in ('hs06', 'spec2017'):
                 returncode = benchmarks.run_hepspec(conf=self._config_full, bench=bench2run)
                 if returncode > 0:
                     self.failures.append(bench2run)

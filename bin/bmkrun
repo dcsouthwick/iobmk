@@ -174,13 +174,13 @@ def main():
         sys.exit(1)
 
     # Check if user provided valid benchmark
-    AVAILABLE_BENCHMARKS = ["db12", "hepscore", "spec2017", "hs06_32", "hs06_64"]
+    AVAILABLE_BENCHMARKS = ("db12", "hepscore", "spec2017", "hs06")
 
     for bench in active_config['global']['benchmarks']:
         if bench not in AVAILABLE_BENCHMARKS:
-            sys.exit('Benchmark "{}" is not a valid benchmark.\
-                      Please select one of the following benchmarks:\n- {} \
-                      '.format(bench, '\n- '.join(AVAILABLE_BENCHMARKS)))
+            print('{}Benchmark "{}" is not a valid benchmark.{}'.format(Color.RED, bench, Color.END))
+            print('Please select one of the following benchmarks:\n- {}'.format('\n- '.join(AVAILABLE_BENCHMARKS)))
+            sys.exit(1)
 
     # use all CPUs found if invalid parameter provided
     if ('mp_num' not in active_config['global'].keys()
