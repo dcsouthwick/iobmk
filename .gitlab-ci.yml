@@ -201,7 +201,7 @@ db12_benchmark:
 bats_test_docker_dompose_qa:
   stage: test-parsing-and-injection
   image:
-    name: gitlab-registry.cern.ch/cloud-infrastructure/data-analytics/compose:v0.1
+    name: gitlab-registry.cern.ch/cloud-infrastructure/data-analytics/compose:qa
     entrypoint: [""]
   tags:
     -  hep-benchmark-suite-docker-runner
