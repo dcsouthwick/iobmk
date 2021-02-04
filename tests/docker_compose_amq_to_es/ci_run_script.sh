@@ -43,6 +43,7 @@ function start_docker_compose() {
         echo "Not all services have been deployed. Number of services deployed is $nserv"
         docker ps --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}"
         echo "The test will very likely fail. Stopping now"
+        sleep 100
         stop_docker_compose
         exit 1
     fi
