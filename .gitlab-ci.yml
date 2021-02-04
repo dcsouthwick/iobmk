@@ -57,6 +57,33 @@ build_elasticsearch_image:
       changes:
         - docker-images/es-extractor/*
 
+job_build_logstash_image:
+    stage: build-base-image
+    before_script:
+        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/logstash/Dockerfile
+        - export CONTEXT=$CI_PROJECT_DIR/
+        - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/logstash:${CI_COMMIT_BRANCH} --destination $CI_REGISTRY_IMAGE/logstash:${CI_COMMIT_SHA:0:8}"
+    <<: *template_build_image
+    only:
+        variables:
+        - $CI_COMMIT_BRANCH =~ /^qa-.*$/
+        - $CI_COMMIT_BRANCH =~ /^qa$/
+        changes:
+          - docker-images/logstash/*
+
+job_build_elasticsearch_image:
+  stage: build-base-image
+  before_script:
+      - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/es-extractor/Dockerfile
+      - export CONTEXT=$CI_PROJECT_DIR/docker-images/es-extractor
+      - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/es-extractor:${CI_COMMIT_BRANCH} --destination $CI_REGISTRY_IMAGE/es-extractor:${CI_COMMIT_SHA:0:8} --destination $CI_REGISTRY_IMAGE/es-extractor:latest"
+  <<: *template_build_image
+  only:
+      #variables:
+      #- $CI_COMMIT_BRANCH =~ /^qa-.*$/
+      #- $CI_COMMIT_BRANCH =~ /^qa$/
+      changes:
+        - docker-images/es-extractor/*
 
 ############################################################
 #####              TEST COMPONENTS                     #####
@@ -226,9 +253,9 @@ bats_test_docker_dompose_qa:
     - chown -R unprivUser:users ..
     # install the benchmark suite python package & run unprivileged
     #- su unprivUser -c "python3 -m pip install --user ."
-    #- su unprivUser -c "bmkrun --mode=singularity --config=tests/ci/benchmarks.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST"
+    #- su unprivUser -c "bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST"
     - python3 -m pip install --user .
-    - bmkrun --mode=singularity --config=tests/ci/benchmarks.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST
+    - bmkrun --mode=singularity --config=tests/benchmarks_ci_test.yml --rundir=$BMK_VOLUME --benchmarks=$BMKLIST
     # cleanup
     - mv $BMK_VOLUME/run_*/bmkrun_report.json $CI_PROJECT_DIR
     - rm -rf $BMK_VOLUME
@@ -254,16 +281,16 @@ sing_hepscore:
 sing_hs06:
   extends: .test_qa_singularity
   before_script:
-    - export BMKLIST="hs06"
+    - export BMKLIST="hs06_32"
     - export HS06URL=$HS06URL
-    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/ci/benchmarks.yml
+    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/benchmarks_ci_test.yml
 
 sing_spec2017:
   extends: .test_qa_singularity
   before_script:
     - export BMKLIST="spec2017"
     - export SPEC2017URL=$SPEC2017URL
-    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$SPEC2017URL\"|" tests/ci/benchmarks.yml
+    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$SPEC2017URL\"|" tests/benchmarks_ci_test.yml
 
 ############################################################
 #####              TEST DOCKER                         #####
@@ -297,7 +324,7 @@ sing_spec2017:
     - python3 -m pip install --user --upgrade pip
     - python3 -m pip install .
     # run $BMKLIST as docker
-    - bmkrun --config=tests/ci/benchmarks.yml --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST
+    - bmkrun --config=tests/benchmarks_ci_test.yml --mode=docker --rundir=$BMK_VOLUME --benchmarks=$BMKLIST
     - mv $BMK_VOLUME/run_*/bmkrun_report.json .
     - rm -rf $BMK_VOLUME
   rules:
@@ -317,16 +344,40 @@ sing_spec2017:
 docker_hs06:
   extends: .test_qa_docker
   before_script:
-    - export BMKLIST="hs06"
+    - export BMKLIST="hs06_32"
     - export HS06URL=$HS06URL
-    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/ci/benchmarks.yml
+    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/benchmarks_ci_test.yml
 
 docker_spec2017:
   extends: .test_qa_docker
   before_script:
     - export BMKLIST="spec2017"
     - export SPEC2017URL=$SPEC2017URL
-    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$SPEC2017URL\"|" tests/ci/benchmarks.yml
+    - sed -ri "s|url_tarball:.*|url_tarball:\ \"$SPEC2017URL\"|" tests/benchmarks_ci_test.yml
+
+bats_test_compose_qa:
+  stage: test-components
+  image: 
+    name: gitlab-registry.cern.ch/cloud-infrastructure/data-analytics/compose:v0.1
+    entrypoint: [""]
+  tags:
+    -  hep-benchmark-suite-docker-runner
+  only:
+     variables:
+       - $CI_COMMIT_BRANCH =~ /^qa.*$/
+  before_script:
+    - . $CI_PROJECT_DIR/test/compose_amq_to_es/ci_run_script.sh
+    - start_docker_compose
+  script:
+    - run_amq_bats_test
+    - sleep 10
+    - run_reader
+  after_script:
+    - . $CI_PROJECT_DIR/test/compose_amq_to_es/ci_run_script.sh
+    - stop_docker_compose
+  artifacts:
+    paths:
+        - $CI_PROJECT_DIR/test/compose_amq_to_es/*  
 
 ############################################################
 #####           BUILD & PUBLISH PACKAGE                #####
@@ -352,5 +403,16 @@ dist_hep-benchmark-suite:
       - whl/
       - package_wheels.tar
   rules:
-    - if: '$CI_COMMIT_BRANCH == "qa" || $CI_COMMIT_BRANCH == "master"'
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/ || $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_TAG =~ /^v.*$/'
+
+
+build_suite_prior_image:
+  stage: deploy
+  before_script:
+      - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/hep-benchmark-suite/Dockerfile-cc7
+      - export CONTEXT=$CI_PROJECT_DIR/docker-images/hep-benchmark-suite
+      - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_BRANCH} --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:${CI_COMMIT_SHA:0:8} --destination $CI_REGISTRY_IMAGE/hep-benchmark-suite-cc7:prior"
+  <<: *template_build_image
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/ || $CI_COMMIT_TAG =~ /^v.*$/'
