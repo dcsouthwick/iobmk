@@ -57,6 +57,34 @@ build_elasticsearch_image:
       changes:
         - docker-images/es-extractor/*
 
+job_build_logstash_image:
+    stage: build-base-image
+    before_script:
+        - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/logstash/Dockerfile
+        - export CONTEXT=$CI_PROJECT_DIR/
+        - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/logstash:${CI_COMMIT_BRANCH} --destination $CI_REGISTRY_IMAGE/logstash:${CI_COMMIT_SHA:0:8}"
+    <<: *template_build_image
+    only:
+        variables:
+        - $CI_COMMIT_BRANCH =~ /^qa-.*$/
+        - $CI_COMMIT_BRANCH =~ /^qa$/
+        changes:
+          - docker-images/logstash/*
+
+job_build_elasticsearch_image:
+  stage: build-base-image
+  before_script:
+      - export DOCKERFILE=$CI_PROJECT_DIR/docker-images/es-extractor/Dockerfile
+      - export CONTEXT=$CI_PROJECT_DIR/docker-images/es-extractor
+      - export DESTINATIONS="--destination $CI_REGISTRY_IMAGE/es-extractor:${CI_COMMIT_BRANCH} --destination $CI_REGISTRY_IMAGE/es-extractor:${CI_COMMIT_SHA:0:8} --destination $CI_REGISTRY_IMAGE/es-extractor:latest"
+  <<: *template_build_image
+  only:
+      #variables:
+      #- $CI_COMMIT_BRANCH =~ /^qa-.*$/
+      #- $CI_COMMIT_BRANCH =~ /^qa$/
+      changes:
+        - docker-images/es-extractor/*
+
 ############################################################
 #####              TEST COMPONENTS                     #####
 ############################################################
@@ -326,6 +354,30 @@ docker_spec2017:
     - export BMKLIST="spec2017"
     - export SPEC2017URL=$SPEC2017URL
     - sed -ri "s|url_tarball:.*|url_tarball:\ \"$SPEC2017URL\"|" tests/ci/benchmarks.yml
+
+bats_test_compose_qa:
+  stage: test-components
+  image:
+    name: gitlab-registry.cern.ch/cloud-infrastructure/data-analytics/compose:v0.1
+    entrypoint: [""]
+  tags:
+    -  hep-benchmark-suite-docker-runner
+  only:
+     variables:
+       - $CI_COMMIT_BRANCH =~ /^qa.*$/
+  before_script:
+    - . $CI_PROJECT_DIR/test/compose_amq_to_es/ci_run_script.sh
+    - start_docker_compose
+  script:
+    - run_amq_bats_test
+    - sleep 10
+    - run_reader
+  after_script:
+    - . $CI_PROJECT_DIR/test/compose_amq_to_es/ci_run_script.sh
+    - stop_docker_compose
+  artifacts:
+    paths:
+        - $CI_PROJECT_DIR/test/compose_amq_to_es/*
 
 ############################################################
 #####           BUILD & PUBLISH PACKAGE                #####

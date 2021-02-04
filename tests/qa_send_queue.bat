@@ -10,7 +10,7 @@ QUEUE_NAME="/queue/bmkqueue"
 CODE_DIR=/opt/hep-benchmark-suite
 
 
-@test "Test AMQ successful connection" {
+@test "Test: use right AMQ connection credentials" {
     run python ${CODE_DIR}/pyscripts/send_queue.py --port=$QUEUE_PORT \
         --server=$QUEUE_HOST --name=$QUEUE_NAME  --username=$QUEUE_USERNAME \
         --password=$QUEUE_PASSWD --file=$TESTDIR/data/result_profile_sample.json
@@ -19,7 +19,7 @@ CODE_DIR=/opt/hep-benchmark-suite
 }
 
 
-@test "Test AMQ wrong configuration username-password" { 
+@test "Test: wrong AMQ credentials username-password" { 
     run python ${CODE_DIR}/pyscripts/send_queue.py --port=$QUEUE_PORT \
         --server=$QUEUE_HOST --name=$QUEUE_NAME  --username=$QUEUE_USERNAME \
         --file=$TESTDIR/data/result_profile_sample.json 
@@ -28,7 +28,7 @@ CODE_DIR=/opt/hep-benchmark-suite
 }   
 
 
-@test "Test AMQ missing topic parameter" {
+@test "Test: missing AMQ topic parameter" {
     run python ${CODE_DIR}/pyscripts/send_queue.py --port=$QUEUE_PORT \
         --server=$QUEUE_HOST --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD \
         --file=$TESTDIR/data/result_profile_sample.json 
@@ -37,7 +37,7 @@ CODE_DIR=/opt/hep-benchmark-suite
 }
 
 
-@test "Test AMQ wrong topic name" {
+@test "Test: wrong AMQ topic name" {
     run python ${CODE_DIR}/pyscripts/send_queue.py --port=$QUEUE_PORT --server=$QUEUE_HOST \
         --name=foo  --username=$QUEUE_USERNAME --password=$QUEUE_PASSWD \
         --file=$TESTDIR/data/result_profile_sample.json
