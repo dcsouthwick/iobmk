@@ -284,7 +284,7 @@ sing_hepscore:
 sing_hs06:
   extends: .test_qa_singularity
   before_script:
-    - export BMKLIST="hs06_32"
+    - export BMKLIST="hs06"
     - export HS06URL=$HS06URL
     - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/ci/benchmarks.yml
 
@@ -347,7 +347,7 @@ sing_spec2017:
 docker_hs06:
   extends: .test_qa_docker
   before_script:
-    - export BMKLIST="hs06_32"
+    - export BMKLIST="hs06"
     - export HS06URL=$HS06URL
     - sed -ri "s|url_tarball:.*|url_tarball:\ \"$HS06URL\"|" tests/ci/benchmarks.yml
 
