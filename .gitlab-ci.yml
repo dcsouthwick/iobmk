@@ -207,9 +207,10 @@ bats_test_docker_dompose_qa:
     -  hep-benchmark-suite-docker-runner
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/'
-  script:
+  before_script:
     - . $CI_PROJECT_DIR/tests/docker_compose_amq_to_es/ci_run_script.sh
     - start_docker_compose
+  script:
     - run_amq_bats_test
     - sleep 10
     - run_reader
