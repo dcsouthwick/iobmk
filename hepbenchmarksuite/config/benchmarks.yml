@@ -42,7 +42,7 @@ activemq:
 # Section to configure HEPSpec06 benchmark
 hepspec06:
   # Use the docker registry
-  image: "docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7-x86:qa"
+  image: "docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7-x86_64:qa"
   # Use the CVMFS registry (only available in Singularity)
   # image: "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
   # URL to fetch the hepspec06. It will only be used if the software
@@ -63,7 +63,7 @@ hepspec06:
 # Section to configure Spec2017 benchmark
 spec2017:
   # Use the docker registry
-  image: "docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7-x86:qa"
+  image: "docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7-x86_64:qa"
   # Use the CVMFS registry (only available in Singularity)
   # image: "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
   # URL to fetch the spec2017. It will only be used if the software
