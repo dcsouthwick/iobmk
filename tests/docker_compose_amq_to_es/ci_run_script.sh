@@ -8,9 +8,14 @@
 # In order to run the same script manually, assuming only docker available, run
 #
 # docker run --rm -v /tmp:/tmp -v /builds:/builds -v `pwd`:`pwd` -w `pwd` \
-#      -v /var/run/docker.sock:/var/run/docker.sock gitlab-registry.cern.ch/cloud-infrastructure/data-analytics/compose:qa sh -c ". ./ci_run_script.sh; start_docker_compose; run_reader; stop_docker_compose"
+#      -v /var/run/docker.sock:/var/run/docker.sock gitlab-registry.cern.ch/cloud-infrastructure/data-analytics/compose:qa \
+#                sh -c ". ./ci_run_script.sh; start_docker_compose; run_amq_bats_test; run_reader; stop_docker_compose"
 
 function start_docker_compose() {
+    # start docker-compose services
+    # make sure that the services are up before moving forward.
+    # Timeout configured to 60s
+    echo "[$FUNCNAME]"
     cd $WORK_DIR
     ls -l
     rm -f compose.log
@@ -23,17 +28,43 @@ function start_docker_compose() {
     #sleep 5
     docker-compose -f docker-compose.yml -p amq_to_es_${CI_COMMIT_SHORT_SHA} up --remove-orphans --abort-on-container-exit >> compose.log &
     #docker-compose logs -f 2>&1 >> compose.log &
-    docker ps
+    echo "Wait that services are up"
+    nserv=$(docker ps --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}" | grep -v CONTAINER -c)
+    max_retry=120
+    retry=0
+    while [[ ($nserv -lt 4) && ( $retry -lt ${max_retry}) ]];
+    do
+        ((retry++))
+        echo "Num docker-compose services up: $nserv (retry $retry/${max_retry})"
+        sleep 5
+        nserv=$(docker ps --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}" | grep -v CONTAINER -c)
+    done
+    if [[ ($nserv -lt 4) ]]; then
+        echo "Not all services have been deployed. Number of services deployed is $nserv"
+        docker ps --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}"
+        echo "The test will very likely fail. Stopping now"
+        stop_docker_compose
+        exit 1
+    fi
 }
 
 function run_amq_bats_test() {
+    # Run bats tests that publish data into a given AMQ broker
+    # Tests are coded in the file tests/qa_send_queue.bat
+    echo "[$FUNCNAME]"
     # go to main project dir
     this_work_dir=$CI_PROJECT_DIR
+    echo "wait 30s...."
     sleep 30s
-    docker run --rm --net=amq_to_es_${CI_COMMIT_SHORT_SHA}_default --name mytester_write -v $this_work_dir:$this_work_dir -w $this_work_dir ${CI_REGISTRY_IMAGE}/hep-benchmark-suite-cc7:latest bats tests/qa_send_queue.bat
+    docker run --rm --net=amq_to_es_${CI_COMMIT_SHORT_SHA}_default --name mytester_write \
+        -v $this_work_dir:$this_work_dir -w $this_work_dir \
+        ${CI_REGISTRY_IMAGE}/hep-benchmark-suite-cc7:latest bats tests/qa_send_queue.bat
 }
 
 function run_es_reader() {
+    # Run test that retrieves data from a ES instance
+    # and compare the json result with a reference json file
+    echo "[$FUNCNAME]"
     docker run --rm --net=amq_to_es_${CI_COMMIT_SHORT_SHA}_default --name mytester_reader \
         -v $this_work_dir:$this_work_dir -w $this_work_dir ${CI_REGISTRY_IMAGE}/es-extractor:latest \
         python3 $WORK_DIR/query_es.py --url=${es_url} --username=${es_username}\
@@ -42,18 +73,25 @@ function run_es_reader() {
 }
 
 function conf_hepscore() {
+    # Configure the env variables to inject and retrieve 
+    # a hepscore json 
+    echo "[$FUNCNAME]"
     es_index=bmkwg-prod-hepscore-v2.0-dev
     es_outfile=$WORK_DIR/hepscore_output.json
     ref_file=${WORK_DIR}/es_conf/ref_hepscore_output.json
 }
 
 function conf_summary() {
+    # Configure the env variables to inject and retrieve 
+    # a hepscore json report
     es_index=bmkwg-prod-summary-v2.0-dev
     es_outfile=$WORK_DIR/summary_output.json
     ref_file=${WORK_DIR}/es_conf/ref_summary_output.json
 }
 
 function run_reader() {
+    # Orchestrate two similar tests 
+    # related to querying back a document from ES
     this_work_dir=$CI_PROJECT_DIR/tests/
     es_url="http://srv_elasticsearch"
     es_port=9200
@@ -70,6 +108,9 @@ function run_reader() {
 }
 
 function stop_docker_compose(){
+    # Stop the docker-compose services
+    # make sure that network and volumes are removed
+    echo "[$FUNCNAME]"
     cd $WORK_DIR
     docker-compose -f docker-compose.yml -p amq_to_es_${CI_COMMIT_SHORT_SHA} down --remove-orphans --volumes 
 
@@ -81,8 +122,14 @@ function stop_docker_compose(){
     fi
 
     sleep 10
-    docker network rm amq_to_es_${CI_COMMIT_SHORT_SHA}_default || echo 'this command failed'
-    docker volume rm -f amq_to_es_${CI_COMMIT_SHORT_SHA}_esdata66 || echo 'this command failed'
+    if [ `docker network ls | grep -c amq_to_es_${CI_COMMIT_SHORT_SHA}_default` -gt 0 ]; then
+       docker network rm amq_to_es_${CI_COMMIT_SHORT_SHA}_default || echo 'Network already removed'
+    fi
+
+    if [ `docker volume ls | grep -c amq_to_es_${CI_COMMIT_SHORT_SHA}_esdata66` -gt 0 ]; then
+       docker volume rm -f amq_to_es_${CI_COMMIT_SHORT_SHA}_esdata66 || echo 'Volume already removed'
+    fi
+    
 }
 
 export WORK_DIR=$(readlink -f $(dirname $BASH_SOURCE))
