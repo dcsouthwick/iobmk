@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 # This script is used by the gitlab CI of this repository to run a 
 # test of insertion of anomaly results, in JSON format into an ElasticSearch instance
