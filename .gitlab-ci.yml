@@ -201,14 +201,14 @@ db12_benchmark:
 bats_test_docker_dompose_qa:
   stage: test-parsing-and-injection
   image:
-    name: gitlab-registry.cern.ch/cloud-infrastructure/data-analytics/compose:qa
+    name: gitlab-registry.cern.ch/cloud-infrastructure/data-analytics/compose:v0.1
     entrypoint: [""]
   tags:
     -  hep-benchmark-suite-docker-runner
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/'
   before_script:
-    #- . $CI_PROJECT_DIR/tests/docker_compose_amq_to_es/ci_run_script.sh
+    - . $CI_PROJECT_DIR/tests/docker_compose_amq_to_es/ci_run_script.sh
     #- start_docker_compose
     - sleep 10
   script:
