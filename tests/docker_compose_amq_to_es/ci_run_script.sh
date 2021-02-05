@@ -1,5 +1,3 @@
-#!/bin/bash -x
-
 # This script is used by the gitlab CI of this repository to run a 
 # test of insertion of anomaly results, in JSON format into an ElasticSearch instance
 # using fluentd as transport system
@@ -9,7 +7,15 @@
 #
 # docker run --rm -v /tmp:/tmp -v /builds:/builds -v `pwd`:`pwd` -w `pwd` \
 #      -v /var/run/docker.sock:/var/run/docker.sock gitlab-registry.cern.ch/cloud-infrastructure/data-analytics/compose:qa \
-#                sh -c ". ./ci_run_script.sh; start_docker_compose; run_amq_bats_test; run_reader; stop_docker_compose"
+#                sh -c ". ./ci_run_script.sh; ci_run_script; stop_docker_compose"
+
+function ci_run_script() {
+    set +e #needed to avoid that the gitlab CI exits on silly errors
+    start_docker_compose || exit 1
+    set -e
+    run_amq_bats_test
+    run_reader
+}
 
 function start_docker_compose() {
     # start docker-compose services
@@ -20,6 +26,7 @@ function start_docker_compose() {
     ls -l
     rm -f compose.log
 
+    set +e
     #Use docker-compose variable substitution as from
     #https://docs.docker.com/compose/compose-file/#variable-substitution
 
@@ -28,25 +35,30 @@ function start_docker_compose() {
     #sleep 5
     docker-compose -f docker-compose.yml -p amq_to_es_${CI_COMMIT_SHORT_SHA} up --remove-orphans --abort-on-container-exit >> compose.log &
     #docker-compose logs -f 2>&1 >> compose.log &
+
     echo "Wait that services are up"
-    nserv=$(docker ps --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}" | grep -v CONTAINER -c)
+    nserv=$(docker ps --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}" | wc -l)
+    expected_services=5
+    # NB: the above query reports always the header raw with
+    # CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES
+    # Therefore the nserv counter must be increased of 1
     max_retry=120
     retry=0
-    while [[ ($nserv -lt 4) && ( $retry -lt ${max_retry}) ]];
+    while [[ ($nserv -lt ${expected_services}) && ( $retry -lt ${max_retry}) ]];
     do
         ((retry++))
         echo "Num docker-compose services up: $nserv (retry $retry/${max_retry})"
         sleep 5
-        nserv=$(docker ps --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}" | grep -v CONTAINER -c)
+        nserv=$(docker ps --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}" | wc -l)
     done
-    if [[ ($nserv -lt 4) ]]; then
+    if [[ ($nserv -lt ${expected_services}) ]]; then
         echo "Not all services have been deployed. Number of services deployed is $nserv"
         docker ps --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}"
         echo "The test will very likely fail. Stopping now"
-        sleep 100
         stop_docker_compose
-        exit 1
+        return 1
     fi
+    return 0
 }
 
 function run_amq_bats_test() {
@@ -118,7 +130,7 @@ function stop_docker_compose(){
     echo "Dump docker compose log"
     cat compose.log
 
-    if [ `docker ps -a --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}" | cut -d " " -f1 | grep -v CONTAINER -c` -gt 0 ]; then
+    if [ `docker ps -a --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}" | cut -d " " -f1 | wc -l` -gt 1 ]; then
         docker ps -a --filter "name=srv_.*_${CI_COMMIT_SHORT_SHA}" | cut -d " " -f1 | grep -v CONTAINER | xargs docker rm -f
     fi
 
@@ -142,6 +154,6 @@ export CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-qa}
 export CI_COMMIT_TAG=${CI_COMMIT_TAG:-$CI_COMMIT_BRANCH}
 export CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA:-0000}
 
-echo CI_PROJECT_DIR $CI_PROJECT_DIR
-echo CI_COMMIT_BRANCH $CI_COMMIT_BRANCH
-echo CI_COMMIT_SHORT_SHA ${CI_COMMIT_SHORT_SHA}
+echo CI_PROJECT_DIR=$CI_PROJECT_DIR
+echo CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH
+echo CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA}
