@@ -270,6 +270,8 @@ sing_spec2017:
   extends: .test_qa_singularity
   cache:
   stage: test-docker
+  tags:
+    - hep-benchmark-suite-docker-runner
   services:
     - docker:19.03.1-dind
   variables:
