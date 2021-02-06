@@ -268,12 +268,13 @@ sing_spec2017:
     # This job tests the hep-benchmark-suite
     # running a configurable set of benchmarks defined in $BMKLIST
   extends: .test_qa_singularity
+  image: gitlab-registry.cern.ch/hep-benchmarks/hep-workloads-builder/dind:v1.0
   cache:
   stage: test-docker
   tags:
     - hep-benchmark-suite-docker-runner
-  services:
-    - docker:19.03.1-dind
+  #services:
+  #  - docker:19.03.1-dind
   variables:
     # Disable TLS following https://about.gitlab.com/2019/07/31/docker-in-docker-with-docker-19-dot-03/
     # This will result in a warning that the docker-in-docker service may not have started successfully
