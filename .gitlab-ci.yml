@@ -283,7 +283,7 @@ sing_spec2017:
     BMK_VOLUME: /tmp/${CI_JOB_NAME}_${CI_JOB_ID}
     RESULTS_FILE: $CI_JOB_NAME.json
   script:
-    - yum install -y -q git python3-pip docker-client
+    - yum install -y -q git python3-pip
     - export PATH=$PATH:$HOME/.local/bin
     # non-root user
     #- useradd -d $(pwd) -g users -M -N unprivUser
