@@ -1,0 +1,5 @@
+
+FROM gitlab-registry.cern.ch/linuxsupport/cc7-base:latest
+
+RUN yum install -y git python3-pip singularity \
+    && yum clean all
