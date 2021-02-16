@@ -122,31 +122,37 @@ class Extractor():
         """Collect all CPU data from lscpu."""
         parse_lscpu = self.get_parser(cmd_output, "lscpu")
 
-        def conv(func, typ):
-            """Convert to a given type"""
-            try:
-                return typ(func)
-            except ValueError:
-                return func
+        def conv(arg, req_typ=str):
+            """Convert data to specified type."""
+
+            res = parse_lscpu(arg)
+
+            if res == 'not_available' and (req_typ in (float, int)):
+                return req_typ(-1)
+            else:
+                try:
+                    return req_typ(res)
+                except ValueError:
+                    return res
 
         cpu = {
-            'Architecture'     : parse_lscpu("Architecture"),
-            'CPU_Model'        : parse_lscpu("Model name"),
-            'CPU_Family'       : parse_lscpu("CPU family"),
-            'CPU_num'          : conv(parse_lscpu(r"CPU\(s\)"), int),
-            'Online_CPUs_list' : parse_lscpu(r"On-line CPU\(s\) list"),
-            'Threads_per_core' : conv(parse_lscpu(r"Thread\(s\) per core"), int),
-            'Cores_per_socket' : conv(parse_lscpu(r"Core\(s\) per socket"), int),
-            'Sockets'          : conv(parse_lscpu(r"Socket\(s\)"), int),
-            'Vendor_ID'        : parse_lscpu("Vendor ID"),
-            'Stepping'         : conv(parse_lscpu("Stepping"), int),
-            'CPU_MHz'          : conv(parse_lscpu("CPU MHz"), float),
-            'CPU_Max_Speed_MHz': conv(parse_lscpu("CPU max MHz"), float),
-            'CPU_Min_Speed_MHz': conv(parse_lscpu("CPU min MHz"), float),
-            'BogoMIPS'         : conv(parse_lscpu("BogoMIPS"), float),
-            'L2_cache'         : parse_lscpu("L2 cache"),
-            'L3_cache'         : parse_lscpu("L3 cache"),
-            'NUMA_nodes'       : conv(parse_lscpu(r"NUMA node\(s\)"), int),
+            'Architecture'     : conv("Architecture"),
+            'CPU_Model'        : conv("Model name"),
+            'CPU_Family'       : conv("CPU family"),
+            'CPU_num'          : conv(r"CPU\(s\)", int),
+            'Online_CPUs_list' : conv(r"On-line CPU\(s\) list"),
+            'Threads_per_core' : conv(r"Thread\(s\) per core", int),
+            'Cores_per_socket' : conv(r"Core\(s\) per socket", int),
+            'Sockets'          : conv(r"Socket\(s\)", int),
+            'Vendor_ID'        : conv("Vendor ID"),
+            'Stepping'         : conv("Stepping"),
+            'CPU_MHz'          : conv("CPU MHz", float),
+            'CPU_Max_Speed_MHz': conv("CPU max MHz", float),
+            'CPU_Min_Speed_MHz': conv("CPU min MHz", float),
+            'BogoMIPS'         : conv("BogoMIPS", float),
+            'L2_cache'         : conv("L2 cache"),
+            'L3_cache'         : conv("L3 cache"),
+            'NUMA_nodes'       : conv(r"NUMA node\(s\)", int),
         }
         # Populate NUMA nodes
         try:
