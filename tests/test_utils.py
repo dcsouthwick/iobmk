@@ -215,7 +215,7 @@ def test_success_download(url):
 
 def test_metadata_version():
     """Test metadata version."""
-    assert utils.get_version() == 'v2.0-dev0'
+    assert utils.get_version() == 'v2.0-dev1'
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
