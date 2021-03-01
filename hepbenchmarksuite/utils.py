@@ -248,7 +248,7 @@ def prepare_metadata(full_conf, extra):
     })
 
     # Collect Software and Hardware metadata from hwmetadata plugin
-    hw_data = Extractor()
+    hw_data = Extractor(params)
 
     result['host'].update({
         'SW': hw_data.collect_sw(),
