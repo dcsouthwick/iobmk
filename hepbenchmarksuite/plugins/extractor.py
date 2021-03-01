@@ -29,10 +29,11 @@ class Extractor():
 
     *********************************************************"""
 
-    def __init__(self):
+    def __init__(self, extra):
         """Initialize setup."""
         self.data = {}
         self.pkg = {}
+        self.extra = extra
 
         # Check if the script is run as root user; needed to extract full data.
 
@@ -85,10 +86,15 @@ class Extractor():
         """Collect Software specific metadata."""
         _log.info("Collecting SW information.")
 
-        sw_cmd = {
-            "singularity": "singularity version",
-            "docker": "docker version --format '{{.Server.Version}}'",
-        }
+
+        sw_cmd = {}
+
+        if self.extra['mode'] == 'docker':
+            sw_cmd.update({'docker': "docker version --format '{{.Server.Version}}'"})
+
+        elif self.extra['mode'] == 'singularity':
+            sw_cmd.update({'singularity': 'singularity version'})
+
 
         software = {
             "python_version": sys.version.split()[0],

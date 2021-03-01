@@ -23,7 +23,7 @@ class TestHWExtractor(unittest.TestCase):
         Test if the execution of a command is successfull.
         """
 
-        hw = Extractor()
+        hw = Extractor(extra={})
         result = hw.exec_cmd('echo 1')
         self.assertEqual(result, '1')
 
@@ -32,7 +32,7 @@ class TestHWExtractor(unittest.TestCase):
         Test if the execution of a command fails.
         """
 
-        hw = Extractor()
+        hw = Extractor(extra={})
         result = hw.exec_cmd('echofail 1')
         self.assertEqual(result, 'not_available')
 
@@ -41,7 +41,7 @@ class TestHWExtractor(unittest.TestCase):
         Test the parser for a BIOS output.
         """
 
-        hw = Extractor()
+        hw = Extractor(extra={})
 
         with open('tests/data/BIOS.sample', 'r') as bios_file:
             bios_text = bios_file.read()
@@ -61,7 +61,7 @@ class TestHWExtractor(unittest.TestCase):
         Test the parser for an Intel CPU output.
         """
 
-        hw = Extractor()
+        hw = Extractor(extra={})
 
         with open('tests/data/CPU_Intel.sample', 'r') as cpu_file:
             cpu_text = cpu_file.read()
@@ -97,7 +97,7 @@ class TestHWExtractor(unittest.TestCase):
         Test the parser for an AMD CPU output.
         """
 
-        hw = Extractor()
+        hw = Extractor(extra={})
 
         with open('tests/data/CPU_AMD.sample', 'r') as cpu_file:
             cpu_text = cpu_file.read()
@@ -142,7 +142,7 @@ class TestHWExtractor(unittest.TestCase):
         Test the parser for a memory output.
         """
 
-        hw = Extractor()
+        hw = Extractor(extra={})
 
         with open('tests/data/MEM.sample', 'r') as mem_file:
             mem_text = mem_file.read()
@@ -167,7 +167,7 @@ class TestHWExtractor(unittest.TestCase):
         Test the parser for a storage output.
         """
 
-        hw = Extractor()
+        hw = Extractor(extra={})
 
         with open('tests/data/STORAGE.sample', 'r') as storage_file:
             storage_text = storage_file.read()
@@ -188,7 +188,7 @@ class TestHWExtractor(unittest.TestCase):
         Test the metadata schema
         """
         # Collect data
-        hw=Extractor()
+        hw=Extractor(extra={'mode': 'docker'})
         hw.collect()
 
         # Print the output to stdout and save metadata to json file
