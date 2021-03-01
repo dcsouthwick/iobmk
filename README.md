@@ -29,6 +29,18 @@ It is built in a modular approach to target the following use cases in HEP compu
 1. **Probe randomly assigned slots in a cloud environment**
    * In production can suggest deletion and re-provisioning of underperforming resources.
 
+## Examples
+
+This is a short list of configuration examples to run the suite.
+For an in depth understanding of the installation and configuration options refer to the dedicated [section](## Installation)
+
+1. HEPscore
+   * [Run](examples/hepscore/run_HEPscore_default.sh) HEPscore default configuration
+   * [Run](examples/hepscore/run_HEPscore-slim_on_grid.sh) HEPscore custom configuration
+   * [Run](examples/hepscore/run_HEPscore_on_HPC_slurm.sh) HEPscore default configuration on HPC via SLURM
+1. HEP SPEC
+   * [Run](examples/spec/run_HS06.sh) HS06 32 bits
+
 ## Benchmark suite architecture
 
 *The figure shows the high level architecture of the benchmark suite.*
@@ -171,16 +183,34 @@ This plugin relies on system tools such as: `lscpu`, `lshw`, `dmidecode`. Some o
 
 AMQ publishing is implemented using the [STOMP protocol](https://stomp.github.io/). Users must provide either a valid username/password or key/cert pair, in addition to the server and topic. The relevant section of the [config yaml](hepbenchmarksuite/config/benchmarks.yml) is given below. You can then pass the argument `--publish` to the suite.
 
+1. username/password settings
 ```yaml
 activemq:
-  server: your-AMQ-server.com
-  port: 61613
-  topic: hepscore-topic
+  server: dashb-mb.cern.ch
+  topic: /topic/vm.spec
   username: user
   password: secret
+  port: 61113
+```
+
+1. user cert settings
+```yaml
+activemq:
+  server: dashb-mb.cern.ch
+  topic: /topic/vm.spec
   key: /path/key-file.key
   cert: /path/cert-file.pem
+  port: 61123
 ```
+
+In order to publish to the dedicated CERN AMQ broker, the authentication with key/cert pair is preferred.
+The user DN needs to be whitelisted in the broker configuration. Please extract the user DN in this format
+
+```
+openssl x509 -noout -in usercert.pem -subject -nameopt RFC2253
+```
+ 
+Additional information on user certificate can be found at the official CA documentation https://ca.cern.ch/ca/Help/?kbid=024010
 
 ## Description of all arguments
 
@@ -219,7 +249,7 @@ optional arguments:
 -----------------------------------------------
 ```
 
-## Examples
+### Typical use cases
 
 
 - Show default configuration.
