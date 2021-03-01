@@ -32,7 +32,7 @@ It is built in a modular approach to target the following use cases in HEP compu
 ## Examples
 
 This is a short list of configuration examples to run the suite.
-For an in depth understanding of the installation and configuration options refer to the dedicated [section](## Installation)
+For an in depth understanding of the installation and configuration options refer to the dedicated [section](##installation)
 
 1. HEPscore
    * [Run](examples/hepscore/run_HEPscore_default.sh) HEPscore default configuration
@@ -46,7 +46,7 @@ For an in depth understanding of the installation and configuration options refe
 *The figure shows the high level architecture of the benchmark suite.*
 
 <div align="center">
-![Benchmark Suite architectural view](doc/images/HEP-Benchmark-Suite.png)
+  <img src="doc/images/HEP-Benchmark-Suite.png" width="484" height="490" />
 </div>
 
 A configurable sequence of benchmarks may be launched by the HEP Benchmark Suite.
@@ -65,8 +65,7 @@ The current Hep-Benchmark-Suite integration status.
 
 Benchmark   | Docker             | Singularity
 :---:       | :---:              | :---:
-HEPSpec06_32| :white_check_mark: | :white_check_mark:
-HEPSpec06_64| :white_check_mark: | :white_check_mark:
+HEPSpec06   | :white_check_mark: | :white_check_mark:
 SPEC2017    | :white_check_mark: | :white_check_mark:
 HEP-Score   | :white_check_mark: | :white_check_mark:
 
@@ -91,9 +90,11 @@ The HEP Benchmark Suite is delivered **ready-to-run** with a [default yaml](hepb
 
 **Due to proprietary license requirements, HS06 and SPEC CPU 2017 must be provided by the end user.** This tool will work with either a pre-installed or tarball archive of SPEC software.
 
-### Example of a sparse deployment of HEP Benchmark Suite
+### Example of HEP Benchmark Suite workflow
 
-<img src="doc/images/HEP-Benchmark-Suite-Workflow.png" width="500">
+<div align="center">
+  <img src="doc/images/HEP-Benchmark-Suite-Workflow.png">
+</div>
 
 *The above figure shows an example adoption of the HEP Benchmark suite for a multi-partition deployment.*
 
@@ -179,11 +180,16 @@ The suite ships with a [hardware metadata plugin](hepbenchmarksuite/plugins/extr
 
 This plugin relies on system tools such as: `lscpu`, `lshw`, `dmidecode`. Some of these tools require escalated priviledges for a complete output. Please take this into consideration if some outputs are empty in the final json report.
 
+<div align="center">
+  <img src="doc/images/HEP-Benchmark-Suite-Json.png" width="554" height="393" />
+</div>
+
+
 ### Advanced Message Queuing (AMQ)
 
 AMQ publishing is implemented using the [STOMP protocol](https://stomp.github.io/). Users must provide either a valid username/password or key/cert pair, in addition to the server and topic. The relevant section of the [config yaml](hepbenchmarksuite/config/benchmarks.yml) is given below. You can then pass the argument `--publish` to the suite.
 
-1. username/password settings
+**1. username/password settings**
 ```yaml
 activemq:
   server: dashb-mb.cern.ch
@@ -193,7 +199,7 @@ activemq:
   port: 61113
 ```
 
-1. user cert settings
+**2. user cert settings**
 ```yaml
 activemq:
   server: dashb-mb.cern.ch
@@ -282,9 +288,3 @@ optional arguments:
     bmkrun -c <alternate config>  -b hs06_32 spec2017
     ```
 
-
-## Common Issues
-
-1. `pip3 install` fails due to problems with hep-score:\
-    `No matching distribution found for hep-score@ git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git (from hep-benchmark-suite==2.0.0)`\
-    Solution: HEP Benchmark suite requires pip3 19.1 or newer. Upgrade pip with `pip3 install --user --upgrade pip`
