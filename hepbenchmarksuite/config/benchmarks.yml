@@ -42,9 +42,9 @@ activemq:
 # Section to configure HEPSpec06 benchmark
 hepspec06:
   # Use the docker registry
-  image: "docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7-multiarch:qa"
+  image: "docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7-multiarch:v2.0"
   # Use the CVMFS registry (only available in Singularity)
-  # image: "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
+  # image: "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7-multiarch:v2.0"
   # URL to fetch the hepspec06. It will only be used if the software
   # is  not found under hepspec_volume.
   url_tarball: "https://www.example.com/"
@@ -63,9 +63,9 @@ hepspec06:
 # Section to configure Spec2017 benchmark
 spec2017:
   # Use the docker registry
-  image: "docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7-multiarch:qa"
+  image: "docker://gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7-multiarch:v2.0"
   # Use the CVMFS registry (only available in Singularity)
-  # image: "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7:v1.0"
+  # image: "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/hep-benchmarks/hep-spec/hepspec-cc7-multiarch:v2.0"
   # URL to fetch the spec2017. It will only be used if the software
   # is not found under hepspec_volume.
   url_tarball: "https://www.example.com/"
