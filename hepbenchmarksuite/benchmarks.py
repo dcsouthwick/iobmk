@@ -145,7 +145,8 @@ def run_hepscore(suite_conf):
 
     try:
         _log.info("Attempting to import hepscore")
-        import hepscore
+        from hepscore import hepscore
+        _log.info("Successfully imported hepscore")
     except ImportError:
         _log.exception("Failed to import hepscore!")
         return -1
