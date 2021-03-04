@@ -1,6 +1,6 @@
 hepscore_benchmark:
   settings:
-    name: HEPscore20CI
+    name: HEPscoreCI
     reference_machine: 'Unknown'
     registry: docker://gitlab-registry.cern.ch/hep-benchmarks/hep-workloads
     scaling: 10
@@ -8,15 +8,12 @@ hepscore_benchmark:
     method: geometric_mean #or any other algorithm
   benchmarks:
     atlas-kv-bmk:
-      version:  ci2.0
+      results_file: atlas-kv_summary.json
+      version: ci2.0
       ref_scores:
         sim: 1
       args:
-        # events
-        -e: 3
-        # threads
-        -t: 1
-        # copies
-        -c: 2
-        # debug
-        -d: true
+        events: 3
+        threads: 1
+        copies: 2
+        debug: true
