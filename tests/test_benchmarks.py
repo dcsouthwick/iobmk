@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+"""
 ###############################################################################
-# Copyright 2019-2020 CERN. See the COPYRIGHT file at the top-level directory
+# Copyright 2019-2021 CERN. See the COPYRIGHT file at the top-level directory
 # of this distribution. For licensing information, see the COPYING file at
 # the top-level directory of this distribution.
 ###############################################################################
+"""
 
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
