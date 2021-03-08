@@ -15,12 +15,6 @@ import yaml
 from importlib_metadata import version, PackageNotFoundError
 from pkg_resources import parse_version
 
-try:
-    from importlib.resources import files
-except ImportError:
-    # Try backported to PY<37 `importlib_resources`.
-    from importlib_resources import files
-
 from hepbenchmarksuite import utils
 from hepbenchmarksuite.exceptions import InstallHEPscoreFailure
 
@@ -39,10 +33,10 @@ def validate_spec(conf, bench):
     _log.debug("Configuration to apply validation: %s", conf)
 
     # Config section to use
-    if bench in ('hs06'):
+    if bench in 'hs06':
         spec = conf['hepspec06']
 
-    elif bench in ('spec2017'):
+    elif bench in 'spec2017':
         spec = conf['spec2017']
 
     # Required params to perform an HS06 benchmark
@@ -62,6 +56,7 @@ def validate_spec(conf, bench):
 
     return 0
 
+
 def install_hepscore(package, force=False):
     """Install hepscore.
 
@@ -73,12 +68,12 @@ def install_hepscore(package, force=False):
       InstallHepScoreFailure: If it fails to install
     """
 
-    runflags=["-m", "pip", "install", "--user"]
+    runflags = ["-m", "pip", "install", "--user"]
 
     if 'VIRTUAL_ENV' in os.environ:
         _log.info("Virtual environment detected: %s", os.environ['VIRTUAL_ENV'])
         _log.info("Installing hep-score in virtual environment.")
-        runflags=["-m", "pip", "install"]
+        runflags = ["-m", "pip", "install"]
 
     if force:
         runflags.append("--force-reinstall")
@@ -95,6 +90,7 @@ def install_hepscore(package, force=False):
 
     _log.info('Installation of hep-score succeeded.')
 
+
 def prep_hepscore(conf):
     """Prepare hepscore installation.
 
@@ -105,7 +101,7 @@ def prep_hepscore(conf):
       Error code: 0 OK , 1 Not OK
     """
 
-    REQ_VERSION   = conf['hepscore']['version']
+    REQ_VERSION = conf['hepscore']['version']
     HEPSCORE_REPO = 'git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git'
 
     _log.info("Checking if hep-score is installed.")
@@ -142,12 +138,13 @@ def prep_hepscore(conf):
     # but we want to repeat the same check sequence
     return prep_hepscore(conf)
 
+
 def run_hepscore(suite_conf):
     """Import and run hepscore."""
 
     try:
         _log.info("Attempting to import hepscore")
-        from hepscore import hepscore
+        import hepscore.hepscore
         _log.info("Successfully imported hepscore")
     except ImportError:
         _log.exception("Failed to import hepscore!")
@@ -162,8 +159,9 @@ def run_hepscore(suite_conf):
     if suite_conf['hepscore']['config'] == 'default':
         _log.info("Using default config provided by hepscore.")
         try:
-            cfg_string    = files(hepscore).joinpath('etc/hepscore-default.yaml').read_text()
+            cfg_string = os.path.join(hepscore.__path__[0], 'etc/hepscore-default.yaml').read_text()
             hepscore_conf = yaml.safe_load(cfg_string)
+            _log.debug("Loaded default config from %s", hepscore.__path__[0])
 
         except Exception:
             _log.exception("Unable to load default config yaml.")
@@ -210,7 +208,7 @@ def run_hepscore(suite_conf):
     hepscore_results_dir = os.path.join(suite_conf['global']['rundir'], 'HEPSCORE')
 
     # Initiate hepscore
-    hs = hepscore.HEPscore(hepscore_conf, hepscore_results_dir)
+    hs = hepscore.hepscore.HEPscore(hepscore_conf, hepscore_results_dir)
 
     # hepscore flavor of error propagation
     # run() returns score from last workload if successful

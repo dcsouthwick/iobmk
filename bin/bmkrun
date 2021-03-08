@@ -17,12 +17,6 @@ import textwrap
 import time
 import yaml
 
-try:
-    import importlib.resources as pkg_resources
-except ImportError:
-    # Try backported to PY<37 `importlib_resources`.
-    import importlib_resources as pkg_resources
-
 from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
 
 from hepbenchmarksuite import utils
@@ -126,12 +120,7 @@ def main():
     # Select the config file to load
     # load default configuration shipped with hep-benchmark-suite
     if args.config == "default":
-        try:
-            with pkg_resources.path(config, 'benchmarks.yml') as default_cfg:
-                load_config = default_cfg
-
-        except Exception:
-            print("{}Unable to load default yaml configuration.{}".format(Color.RED, Color.END))
+        load_config = os.path.join(config.__path__[0], 'benchmarks.yml')
 
     # No configuration file was provided
     elif args.config is None:
