@@ -7,9 +7,9 @@
 ################################################################################
 """
 
-from hepbenchmarksuite.plugins.extractor import Extractor
 import logging
 import sys
+from hepbenchmarksuite.plugins.extractor import Extractor
 
 # Configure logging
 logger         = logging.getLogger()

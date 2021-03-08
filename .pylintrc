@@ -1,0 +1,8 @@
+[MESSAGE CONTROL]
+# pylint config
+ignore-patterns=test_*
+# detect & use all cores
+jobs=0
+
+# Warnings skipped
+disable=import-outside-toplevel

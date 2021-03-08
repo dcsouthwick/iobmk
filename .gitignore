@@ -6,7 +6,6 @@ dist
 build
 eggs
 parts
-bin
 var
 sdist
 develop-eggs
@@ -17,6 +16,7 @@ develop-eggs
 report.xml
 .tox
 .venv
+.python-version
 htmlcov*
 result_dump
 run_*
@@ -25,8 +25,7 @@ run_*
 *~
 .*.swp
 .*sw?
-.#*
-.*
+.vscode
 
 # Desktop Service Store
 *.DS_Store

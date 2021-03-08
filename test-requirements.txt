@@ -1,5 +1,4 @@
 #setuptools
-importlib-resources
 pytest
 pylint
 stomp.py
