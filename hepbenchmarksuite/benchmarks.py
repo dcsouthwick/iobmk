@@ -158,10 +158,15 @@ def run_hepscore(suite_conf):
     # Use hepscore-distributed config by default
     if suite_conf['hepscore']['config'] == 'default':
         _log.info("Using default config provided by hepscore.")
+
         try:
-            cfg_string = os.path.join(hepscore.__path__[0], 'etc/hepscore-default.yaml').read_text()
-            hepscore_conf = yaml.safe_load(cfg_string)
-            _log.debug("Loaded default config from %s", hepscore.__path__[0])
+            _hepscore_conf_path = os.path.join(hepscore.__path__[0], 'etc/hepscore-default.yaml')
+            _log.debug("Loading hepscore default config from %s", _hepscore_conf_path)
+
+            with open(_hepscore_conf_path, 'r') as conf:
+                hepscore_conf = yaml.full_load(conf)
+
+            _log.debug("Loaded hepscore default config.")
 
         except Exception:
             _log.exception("Unable to load default config yaml.")
