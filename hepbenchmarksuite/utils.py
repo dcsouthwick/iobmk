@@ -154,11 +154,6 @@ def exec_cmd(cmd_str):
     return cmd_reply, cmd.returncode
 
 
-def get_version():
-    """Version of metadata to be used in ElasticSearch tagging."""
-    return "v2.0-dev1"
-
-
 def get_host_ips():
     """Get external facing system IP from default route, do not rely on hostname.
 
@@ -223,7 +218,7 @@ def prepare_metadata(full_conf, extra):
         '_id'           : str(uuid.uuid4()),
         '_timestamp'    : extra['start_time'],
         '_timestamp_end': extra['end_time'],
-        'json_version'  : get_version()
+        'json_version'  : __version__
     })
 
     result['host'].update({
