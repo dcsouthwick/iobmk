@@ -75,8 +75,16 @@ class HepBenchmarkSuite():
             # Search if run mode is installed
             system_runmode = shutil.which(self._config['mode'])
 
-            if system_runmode != None:
+            if system_runmode is not None:
                 _log.info("   - %s executable found: %s.", self._config['mode'], system_runmode)
+
+                if self._config['mode'] == 'docker':
+                    version, _ = utils.exec_cmd("docker version --format '{{.Server.Version}}'")
+
+                elif self._config['mode'] == 'singularity':
+                    version, _ = utils.exec_cmd('singularity version')
+
+                _log.info("   - %s version: %s.", self._config['mode'], version)
 
             else:
                 _log.error("   - %s is not installed in the system.", self._config['mode'])
