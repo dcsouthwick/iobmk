@@ -126,7 +126,7 @@ def test_bench_versions():
     # Valid benchmark version that should be printed
     valid_version_output = {
         "db12"     : "v0.1",
-        "hepscore" : "v1.0rc13",
+        "hepscore" : "v1.0rc14",
         "hs06"     : "v2.0",
         "spec2017" : "v2.0",
         "newbench" : "not_available",
