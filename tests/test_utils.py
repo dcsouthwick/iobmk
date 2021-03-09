@@ -214,10 +214,5 @@ def test_success_download(url):
     assert utils.download_file(url, "downloaded_README.md") == 0
     assert os.path.isfile("downloaded_README.md") == 1
 
-
-def test_metadata_version():
-    """Test metadata version."""
-    assert utils.get_version() == 'v2.0-dev1'
-
 if __name__ == '__main__':
     unittest.main(verbosity=2)
