@@ -354,15 +354,17 @@ dist_hep-benchmark-suite:
     - python3 -m pip wheel -r requirements.txt --wheel-dir=whl .
     - python3 setup.py sdist bdist_wheel
     - tar -cvf package_wheels.tar whl/
-    # some package publish step here
+    - |
+      curl -X POST "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases" \
+      --header "PRIVATE-TOKEN: ${CI_API_TOKEN}" \
+      --header "Content-Type: application/json" \
+      --data "{\"tag_name\": \"${CI_COMMIT_TAG}\", \"name\": \"${CI_COMMIT_TAG}\", \"description\": \"${CI_COMMIT_TAG_MESSAGE:-No release notes.}\", \"assets\": { \"links\": [{ \"name\": \"HEP Benchmark Suite python wheels\", \"url\": \"$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/download?job=dist_hep-benchmark-suite\", \"link_type\":\"package\" }] }}" \
+      --fail --output "/dev/null" --silent --show-error --write-out "HTTP response: ${http_code:-OK}\n\n"
+
   artifacts:
     paths:
       - dist/
       - whl/
       - package_wheels.tar
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^qa.*$/ || $CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-
-
-
