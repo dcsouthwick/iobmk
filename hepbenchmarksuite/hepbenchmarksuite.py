@@ -153,7 +153,7 @@ class HepBenchmarkSuite():
                 if benchmarks.prep_hepscore(self._config_full) == 0:
                     # Run hepscore
                     returncode = benchmarks.run_hepscore(self._config_full)
-                    if returncode <= 0:
+                    if returncode < 0:
                         self.failures.append(bench2run)
                 else:
                     _log.error("Skipping hepscore due to failed installation.")
