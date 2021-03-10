@@ -141,6 +141,18 @@ python3 -m pip install git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-s
 _Note: When using virtual environments, hep-score will also be installed in this environment._
 
 
+### Limited connectivity (wheel installation)
+An alternative installation method, not requiring git, is based on python wheels, which is suitable for environments with limited connectivity.
+
+
+- [Download the python wheels](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/releases)
+
+- Install the wheels
+  ```
+  python3 -m pip install *.whl
+  ```
+
+
 ## How to run
 
 The python executable `bmkrun` can be added to the user's `$PATH`, and launched directly. The `bmkrun` requires one argument to be able to execute:  `--config`.
