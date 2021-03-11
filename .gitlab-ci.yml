@@ -138,7 +138,7 @@ Security:
     - python3 -m pip install -U pip tox
     - tox -e bandit
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^qa-.*$/ || $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_BRANCH =~ /^qa-.*$/ || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_TAG =~ /^v.*$/'
       when: never
     - when: always
 
@@ -351,9 +351,7 @@ dist_hep-benchmark-suite:
   script:
     - yum install -y -q git python3-pip
     - python3 -m pip install --upgrade setuptools wheel pip
-    - python3 -m pip wheel -r requirements.txt --wheel-dir=whl .
-    - python3 setup.py sdist bdist_wheel
-    - tar -cvf package_wheels.tar whl/
+    - python3 -m pip wheel -r requirements.txt --wheel-dir=suite_wheels .
     - |
       curl -X POST "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases" \
       --header "PRIVATE-TOKEN: ${CI_API_TOKEN}" \
@@ -363,8 +361,6 @@ dist_hep-benchmark-suite:
 
   artifacts:
     paths:
-      - dist/
-      - whl/
-      - package_wheels.tar
+      - suite_wheels
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'

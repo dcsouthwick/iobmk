@@ -89,7 +89,7 @@ global:
 
 hepscore:
   config: hepscore_slim.yml
-  version: v1.0rc10
+  version: v1.0
   options:
       userns: True
       clean: True
