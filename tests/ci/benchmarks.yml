@@ -33,5 +33,5 @@ spec2017:
   bmk_set: '508.namd_r'
 
 hepscore:
-  version: "v1.0rc14"
+  version: "v1.0"
   config: "tests/ci/hepscore.yaml"
