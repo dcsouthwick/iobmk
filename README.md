@@ -12,6 +12,9 @@
 
 [[_TOC_]]
 
+## Feedback/Support
+Feedback, and support questions are welcome in the HEP Benchmarks project [Discourse Forum](https://wlcg-discourse.web.cern.ch/c/hep-benchmarks/13).  You can also contact the developers via e-mail: benchmark-suite-wg-devel@cern.ch.
+
 ## About
 
 The HEP Benchmark Suite is a toolkit which orchestrates different benchmarks in one single application for characterizing the perfomance of individual and clustered heterogeneous hardware.
