@@ -28,7 +28,7 @@ module purge
 module load gcc singularity/3.5.3 python3/3.7.3
 
 export RUNDIR=/tmp/HEP
-export HEP_SUITE_BRANCH=qa-v2.0
+export HEP_SUITE_BRANCH=v2.0
 # example tag 'site':"my HPC..."
 export BMKSUITE_TAG_SITE="my HPC site string to be included in JSON"
  
