@@ -148,7 +148,7 @@ _Note: When using virtual environments, hep-score will also be installed in this
 An alternative installation method, not requiring git, is based on python wheels, which is suitable for environments with limited connectivity.
 
 
-- [Download the python wheels](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite/-/releases)
+- [Download the python wheels](https://hep-benchmarks.web.cern.ch/hep-benchmark-suite/releases/)
 
 - Install the wheels
   ```
