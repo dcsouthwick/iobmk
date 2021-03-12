@@ -115,7 +115,7 @@ Users are free to build/use transport and aggregation/visualization tools of the
 ### Local user space
 
 ```sh
-python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@qa-v2.0
+python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@v2.0
 ```
 
 This will install the suite to the user's home directory:
@@ -138,22 +138,21 @@ There are cases on which the user would like to keep current Python3 library ver
 export MYENV="bmk_env"        # Define the name of the environment.
 python3 -m venv $MYENV        # Create a directory with the virtual environment.
 source $MYENV/bin/activate    # Activate the environment.
-python3 -m pip install git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@qa-v2.0
+python3 -m pip install git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@v2.0
 ```
 
 _Note: When using virtual environments, hep-score will also be installed in this environment._
 
 
 ### Limited connectivity (wheel installation)
-An alternative installation method, not requiring git, is based on python wheels, which is suitable for environments with limited connectivity.
+An alternative installation method, not requiring git, is based on python wheels, which is suitable for environments with limited connectivity. All python wheels can be found [here](https://hep-benchmarks.web.cern.ch/hep-benchmark-suite/releases/).
 
-
-- [Download the python wheels](https://hep-benchmarks.web.cern.ch/hep-benchmark-suite/releases/)
-
-- Install the wheels
-  ```
-  python3 -m pip install *.whl
-  ```
+```sh
+export SUITE_RELEASE=hep-benchmark-suite-wheels-v2.0.tar
+wget https://hep-benchmarks.web.cern.ch/hep-benchmark-suite/releases/${SUITE_RELEASE}
+tar -xvf ${SUITE_RELEASE}
+python3 -m pip install suite_wheels/*.whl
+```
 
 
 ## How to run
