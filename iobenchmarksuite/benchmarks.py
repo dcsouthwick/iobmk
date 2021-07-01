@@ -15,8 +15,8 @@ import yaml
 from importlib_metadata import version, PackageNotFoundError
 from pkg_resources import parse_version
 
-from hepbenchmarksuite import utils
-from hepbenchmarksuite.exceptions import InstallHEPscoreFailure
+from iobenchmarksuite import utils
+from iobenchmarksuite.exceptions import InstallHEPscoreFailure
 
 _log = logging.getLogger(__name__)
 

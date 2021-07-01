@@ -14,7 +14,7 @@ with open("README.md", "r") as readme_file:
     LONG_DESC = readme_file.read()
 
 about = {}
-with open(os.path.join('hepbenchmarksuite', '__version__.py')) as info:
+with open(os.path.join('iobenchmarksuite', '__version__.py')) as info:
     exec(info.read(), about)
 
 setup(
@@ -28,8 +28,8 @@ setup(
     url=about['__url__'],
     license=about['__license__'],
     scripts=['bin/bmkrun', 'bin/bmk_show_metadata'],
-    packages=['hepbenchmarksuite', 'hepbenchmarksuite.plugins', 'hepbenchmarksuite.config'],
-    package_data={'hepbenchmarksuite': ['config/*.yml']},
-    python_requires='~=3.4',
+    packages=['iobenchmarksuite', 'iobenchmarksuite.plugins', 'iobenchmarksuite.config'],
+    package_data={'iobenchmarksuite': ['config/*.yml']},
+    python_requires='~=3.6',
     install_requires=['pyyaml>=5.1', 'stomp.py', 'importlib-metadata']
 )

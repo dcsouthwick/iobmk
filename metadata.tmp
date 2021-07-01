@@ -1,0 +1,52 @@
+{
+    "HW": {
+        "BIOS": {
+            "Release_data": "not_available",
+            "Vendor": "not_available",
+            "Version": "not_available"
+        },
+        "CPU": {
+            "Architecture": "x86_64",
+            "BogoMIPS": 5399.81,
+            "CPU_Family": "6",
+            "CPU_MHz": 2700.0,
+            "CPU_Max_Speed_MHz": 3500.0,
+            "CPU_Min_Speed_MHz": 400.0,
+            "CPU_Model": "Intel(R) Core(TM) i5-7300U CPU @ 2.60GHz",
+            "CPU_num": 4,
+            "Cores_per_socket": 2,
+            "L2_cache": "512 KiB",
+            "L3_cache": "3 MiB",
+            "Microcode": "0xea",
+            "NUMA_node0_CPUs": "0-3",
+            "NUMA_nodes": 1,
+            "Online_CPUs_list": "0-3",
+            "Power_Driver": "intel_pstate",
+            "Power_Policy": "powersave",
+            "SMT_Enabled?": true,
+            "Sockets": 1,
+            "Stepping": "9",
+            "Threads_per_core": 2,
+            "Vendor_ID": "GenuineIntel"
+        },
+        "MEMORY": {
+            "Mem_Available": 1828676,
+            "Mem_Swap": 8009724,
+            "Mem_Total": 8010552
+        },
+        "STORAGE": {},
+        "SYSTEM": {
+            "Manufacturer": "not_available",
+            "Product_Asset_Tag": "not_available",
+            "Product_Name": "not_available",
+            "Product_Serial": "not_available",
+            "Version": "not_available"
+        }
+    },
+    "Hostname": "oplnuc.cern.ch",
+    "SW": {
+        "docker": "not_available",
+        "platform": "Linux-5.12.12-300.fc34.x86_64-x86_64-with-fedora-34-Thirty_Four",
+        "python_version": "3.6.13"
+    }
+}

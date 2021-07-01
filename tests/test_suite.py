@@ -9,10 +9,10 @@
 
 import json
 import unittest
-from hepbenchmarksuite.hepbenchmarksuite import HepBenchmarkSuite
-from hepbenchmarksuite.exceptions import PreFlightError, BenchmarkFailure, BenchmarkFullFailure
-from hepbenchmarksuite import benchmarks
-from hepbenchmarksuite import utils
+from iobenchmarksuite.iobenchmarksuite import IOBenchmarkSuite
+from iobenchmarksuite.exceptions import PreFlightError, BenchmarkFailure, BenchmarkFullFailure
+from iobenchmarksuite import benchmarks
+from iobenchmarksuite import utils
 import yaml
 from unittest.mock import patch, mock_open, MagicMock
 import pytest
@@ -22,7 +22,7 @@ import shutil
 import time
 
 class TestSuite(unittest.TestCase):
-    """ Test the HepBenchmarkSuite """
+    """ Test the IOBenchmarkSuite """
 
     def setup(self):
         """ Load CI configuration """
@@ -41,22 +41,22 @@ class TestSuite(unittest.TestCase):
         # Force a failure of missing singularity/docker
         shutil.which = lambda x: None
 
-        suite = HepBenchmarkSuite(sample_config)
+        suite = IOBenchmarkSuite(sample_config)
 
         # The suite should raise an exception PreFlightError
-        with self.assertLogs('hepbenchmarksuite.hepbenchmarksuite', level='INFO') as log:
+        with self.assertLogs('iobenchmarksuite.iobenchmarksuite', level='INFO') as log:
             with self.assertRaises(PreFlightError):
                 suite.start()
-            self.assertIn('ERROR:hepbenchmarksuite.hepbenchmarksuite:Pre-flight checks failed.', " ".join(log.output))
+            self.assertIn('ERROR:iobenchmarksuite.iobenchmarksuite:Pre-flight checks failed.', " ".join(log.output))
 
         # Preflight check should not pass
-        with self.assertLogs('hepbenchmarksuite.hepbenchmarksuite', level='INFO') as log:
+        with self.assertLogs('iobenchmarksuite.iobenchmarksuite', level='INFO') as log:
             assert suite.preflight() == False
-            self.assertIn('ERROR:hepbenchmarksuite.hepbenchmarksuite:   - singularity is not installed in the system.', " ".join(log.output))
+            self.assertIn('ERROR:iobenchmarksuite.iobenchmarksuite:   - singularity is not installed in the system.', " ".join(log.output))
 
 
-    @patch.object(HepBenchmarkSuite, 'preflight', return_code=1)
-    @patch.object(HepBenchmarkSuite, 'cleanup', return_code=0)
+    @patch.object(IOBenchmarkSuite, 'preflight', return_code=1)
+    @patch.object(IOBenchmarkSuite, 'cleanup', return_code=0)
     def test_suite_run(self, mock_clean, mock_preflight):
         """ Test the benchmark suite main run.
          Mocking to simulate the following conditions:
@@ -74,14 +74,14 @@ class TestSuite(unittest.TestCase):
 
         sample_config['global']['benchmarks'] = ['hs06', 'spec2017', 'hepscore']
 
-        suite = HepBenchmarkSuite(sample_config)
+        suite = IOBenchmarkSuite(sample_config)
 
         # Suite should print successful message after each benchmark completion
-        with self.assertLogs('hepbenchmarksuite.hepbenchmarksuite', level='INFO') as log:
+        with self.assertLogs('iobenchmarksuite.iobenchmarksuite', level='INFO') as log:
             suite.start()
-            self.assertIn('INFO:hepbenchmarksuite.hepbenchmarksuite:Completed hs06 with return code 0', " ".join(log.output))
-            self.assertIn('INFO:hepbenchmarksuite.hepbenchmarksuite:Completed spec2017 with return code 0', " ".join(log.output))
-            self.assertIn('INFO:hepbenchmarksuite.hepbenchmarksuite:Completed hepscore with return code 1', " ".join(log.output))
+            self.assertIn('INFO:iobenchmarksuite.iobenchmarksuite:Completed hs06 with return code 0', " ".join(log.output))
+            self.assertIn('INFO:iobenchmarksuite.iobenchmarksuite:Completed spec2017 with return code 0', " ".join(log.output))
+            self.assertIn('INFO:iobenchmarksuite.iobenchmarksuite:Completed hepscore with return code 1', " ".join(log.output))
 
 
     def test_cleanup_failure(self):
@@ -91,7 +91,7 @@ class TestSuite(unittest.TestCase):
         sample_config = self.config_file.copy()
         sample_config['global']['mp_num']=2
 
-        suite = HepBenchmarkSuite(sample_config)
+        suite = IOBenchmarkSuite(sample_config)
 
         suite._extra['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
         suite._extra['end_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())

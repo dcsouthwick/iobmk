@@ -5,4 +5,3 @@ stomp.py
 coverage
 bandit
 schema
-git+https://gitlab.cern.ch/hep-benchmarks/hep-score.git@qa-v1.0

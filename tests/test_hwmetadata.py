@@ -9,7 +9,7 @@
 
 import json
 import unittest
-from hepbenchmarksuite.plugins.extractor import Extractor
+from iobenchmarksuite.plugins.extractor import Extractor
 from schema import Schema, And, Use, Optional, Or
 
 class TestHWExtractor(unittest.TestCase):

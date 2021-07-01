@@ -17,8 +17,8 @@ import uuid
 import urllib.request
 from urllib.error import HTTPError, URLError
 
-from hepbenchmarksuite.plugins.extractor import Extractor
-from hepbenchmarksuite import __version__
+from iobenchmarksuite.plugins.extractor import Extractor
+from iobenchmarksuite import __version__
 
 _log = logging.getLogger(__name__)
 

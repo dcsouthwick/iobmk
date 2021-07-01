@@ -11,7 +11,7 @@ import contextlib
 import difflib
 import json
 import unittest
-from hepbenchmarksuite import utils
+from iobenchmarksuite import utils
 import os
 import sys
 import pytest
@@ -26,7 +26,7 @@ def test_prepare_metadata():
     """ Test the preparation of metadata."""
 
     try:
-        with open("hepbenchmarksuite/config/benchmarks.yml", 'r') as cfg_file:
+        with open("iobenchmarksuite/config/benchmarks.yml", 'r') as cfg_file:
             sample_config = yaml.full_load(cfg_file)
 
     except FileNotFoundError:
@@ -113,7 +113,7 @@ def test_bench_versions():
     """ Test parsing of benchmark versions. """
 
     try:
-        with open("hepbenchmarksuite/config/benchmarks.yml", 'r') as cfg_file:
+        with open("iobenchmarksuite/config/benchmarks.yml", 'r') as cfg_file:
             sample_config = yaml.full_load(cfg_file)
 
     except FileNotFoundError:

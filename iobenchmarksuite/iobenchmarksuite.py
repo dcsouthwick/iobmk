@@ -12,19 +12,19 @@ import logging
 import time
 import shutil
 
-from hepbenchmarksuite import db12
-from hepbenchmarksuite import utils
-from hepbenchmarksuite import benchmarks
-from hepbenchmarksuite.exceptions import PreFlightError
-from hepbenchmarksuite.exceptions import BenchmarkFailure
-from hepbenchmarksuite.exceptions import BenchmarkFullFailure
+from iobenchmarksuite import db12
+from iobenchmarksuite import utils
+from iobenchmarksuite import benchmarks
+from iobenchmarksuite.exceptions import PreFlightError
+from iobenchmarksuite.exceptions import BenchmarkFailure
+from iobenchmarksuite.exceptions import BenchmarkFullFailure
 
 _log = logging.getLogger(__name__)
 
 
-class HepBenchmarkSuite():
+class IOBenchmarkSuite():
     """********************************************************
-                  *** HEP-BENCHMARK-SUITE ***
+                  *** IO-BENCHMARK-SUITE ***
      *********************************************************"""
     # Location of result files
     RESULT_FILES = {
@@ -35,7 +35,7 @@ class HepBenchmarkSuite():
     }
 
     # Required disk space (in GB) for all benchmarks
-    DISK_THRESHOLD = 20.0
+    DISK_THRESHOLD = 2.0
 
     def __init__(self, config=None):
         """Initialize setup"""
