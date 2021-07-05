@@ -38,13 +38,13 @@ def download_file(url, outfile):
 
     # Download the config file from url and save it locally
     try:
-        with urllib.request.urlopen(url) as response, open(outfile, 'wb') as fout:
+        with urllib.request.urlopen(url) as response, open(outfile, "wb") as fout:
             fout.write(response.read())
             _log.info("File saved: %s", fout.name)
             return 0
 
     except (ValueError, HTTPError, URLError):
-        _log.error('Failed to download file from provided link: %s', url)
+        _log.error("Failed to download file from provided link: %s", url)
         return 1
 
 
@@ -60,16 +60,17 @@ def export(result_dir, outfile):
     """
     _log.info("Exporting *.json, *.log from %s...", result_dir)
 
-    with tarfile.open(outfile, 'w:gz') as archive:
+    with tarfile.open(outfile, "w:gz") as archive:
         # Respect the tree hierarchy on compressing
         for root, dirs, files in os.walk(result_dir):
             for name in files:
-                if name.endswith('.json') or name.endswith('.log'):
+                if name.endswith(".json") or name.endswith(".log"):
                     archive.add(os.path.join(root, name))
 
     _log.info("Files compressed! The resulting file was created: %s", outfile)
 
     return 0
+
 
 def exec_wait_benchmark(cmd_str):
     """Accept command string to execute and waits for process to finish.
@@ -83,12 +84,14 @@ def exec_wait_benchmark(cmd_str):
 
     _log.debug("Excuting command: %s", cmd_str)
 
-    cmd = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    cmd = subprocess.Popen(
+        cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
 
     # Output stdout from child process
     line = cmd.stdout.readline()
     while line:
-        sys.stdout.write(line.decode('utf-8'))
+        sys.stdout.write(line.decode("utf-8"))
         line = cmd.stdout.readline()
 
     # Wait until process is complete
@@ -118,7 +121,7 @@ def get_tags_env():
         if PREFIX in key:
             _log.debug("Found tag in ENV: %s=%s", key, val)
 
-            tag_key = key.replace(PREFIX, '').lower()
+            tag_key = key.replace(PREFIX, "").lower()
 
             tags[tag_key] = str(val)
 
@@ -136,18 +139,24 @@ def exec_cmd(cmd_str):
     """
     _log.debug("Excuting command: %s", cmd_str)
 
-    cmd = subprocess.Popen(cmd_str, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd = subprocess.Popen(
+        cmd_str,
+        shell=True,
+        executable="/bin/bash",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     cmd_reply, cmd_error = cmd.communicate()
 
     # Check for errors
     if cmd.returncode != 0:
         cmd_reply = "not_available"
-        _log.error(cmd_error.decode('utf-8').rstrip())
+        _log.error(cmd_error.decode("utf-8").rstrip())
 
     else:
         # Convert bytes to text and remove \n
         try:
-            cmd_reply = cmd_reply.decode('utf-8').rstrip()
+            cmd_reply = cmd_reply.decode("utf-8").rstrip()
         except UnicodeDecodeError:
             _log.error("Failed to decode to utf-8.")
 
@@ -161,7 +170,7 @@ def get_host_ips():
       A string containing the ip
     """
     _, _, ip_list = socket.gethostbyaddr(socket.getfqdn())
-    ip_address = ','.join(ip_list)
+    ip_address = ",".join(ip_list)
     return ip_address
 
 
@@ -177,19 +186,19 @@ def bench_versions(conf):
 
     bench_versions = {}
 
-    for bench in conf['global']['benchmarks']:
+    for bench in conf["global"]["benchmarks"]:
 
-        if bench == 'hs06':
-            bench_versions[bench] = conf['hepspec06']['image'].split(":")[-1]
+        if bench == "hs06":
+            bench_versions[bench] = conf["hepspec06"]["image"].split(":")[-1]
 
-        elif bench == 'db12':
+        elif bench == "db12":
             bench_versions[bench] = "v0.1"
 
-        elif bench == 'spec2017':
-            bench_versions[bench] = conf['spec2017']['image'].split(":")[-1]
+        elif bench == "spec2017":
+            bench_versions[bench] = conf["spec2017"]["image"].split(":")[-1]
 
-        elif bench == 'hepscore':
-            bench_versions[bench] = conf['hepscore']['version']
+        elif bench == "hepscore":
+            bench_versions[bench] = conf["hepscore"]["version"]
 
         else:
             bench_versions[bench] = "not_available"
@@ -211,46 +220,54 @@ def prepare_metadata(full_conf, extra):
     """
     # Create output metadata
 
-    params = full_conf['global']
+    params = full_conf["global"]
 
-    result = {'host': {}, 'suite': {}}
-    result.update({
-        '_id'           : str(uuid.uuid4()),
-        '_timestamp'    : extra['start_time'],
-        '_timestamp_end': extra['end_time'],
-        'json_version'  : __version__
-    })
+    result = {"host": {}, "suite": {}}
+    result.update(
+        {
+            "_id": str(uuid.uuid4()),
+            "_timestamp": extra["start_time"],
+            "_timestamp_end": extra["end_time"],
+            "json_version": __version__,
+        }
+    )
 
-    result['host'].update({
-        'hostname': socket.gethostname(),
-        'ip'      : get_host_ips(),
-    })
+    result["host"].update(
+        {
+            "hostname": socket.gethostname(),
+            "ip": get_host_ips(),
+        }
+    )
 
-    for i in ['tags']:
+    for i in ["tags"]:
         try:
-            result['host'].update({"{}".format(i): params[i]})
+            result["host"].update({"{}".format(i): params[i]})
         except:
-            result['host'].update({"{}".format(i): "not_defined"})
+            result["host"].update({"{}".format(i): "not_defined"})
 
     # Hep-benchmark-suite flags
     flags = {
-        'mp_num'  : params['mp_num'],
-        'run_mode': params['mode'],
+        "mp_num": params["mp_num"],
+        "run_mode": params["mode"],
     }
 
-    result['suite'].update({
-        'version'          : __version__,
-        'flags'            : flags,
-        'benchmark_version': bench_versions(full_conf)
-    })
+    result["suite"].update(
+        {
+            "version": __version__,
+            "flags": flags,
+            "benchmark_version": bench_versions(full_conf),
+        }
+    )
 
     # Collect Software and Hardware metadata from hwmetadata plugin
     hw_data = Extractor(params)
 
-    result['host'].update({
-        'SW': hw_data.collect_sw(),
-        'HW': hw_data.collect_hw(),
-    })
+    result["host"].update(
+        {
+            "SW": hw_data.collect_sw(),
+            "HW": hw_data.collect_hw(),
+        }
+    )
 
     return result
 
@@ -262,39 +279,42 @@ def print_results(results):
       results: A dict containing the results['profiles']
     """
     print("\n\n=========================================================")
-    print("BENCHMARK RESULTS FOR {}".format(results['host']['hostname']))
+    print("BENCHMARK RESULTS FOR {}".format(results["host"]["hostname"]))
     print("=========================================================")
-    print("Suite start: {}".format(results['_timestamp']))
-    print("Suite end:   {}".format(results['_timestamp_end']))
-    print("Machine CPU Model: {}".format(results['host']['HW']['CPU']['CPU_Model']))
+    print("Suite start: {}".format(results["_timestamp"]))
+    print("Suite end:   {}".format(results["_timestamp_end"]))
+    print("Machine CPU Model: {}".format(results["host"]["HW"]["CPU"]["CPU_Model"]))
 
-    data = results['profiles']
+    data = results["profiles"]
 
     def parse_hepscore(data):
         # Attempt to use the new format of hepscore reporting
         # can be dropped in the future once metadata is standard
         try:
-            result = round(data['report']['score'], 2)
+            result = round(data["report"]["score"], 2)
         except KeyError:
-            result = round(data['score'], 2)
-        return "HEPSCORE Benchmark = {} over benchmarks {}".format(result, data['benchmarks'].keys())
+            result = round(data["score"], 2)
+        return "HEPSCORE Benchmark = {} over benchmarks {}".format(
+            result, data["benchmarks"].keys()
+        )
 
     bmk_print_action = {
-        "DB12"    : lambda x: "DIRAC Benchmark = %.3f (%s)" % (float(data[x]['value']), data[x]['unit']),
-        "hs06_32" : lambda x: "HS06 32 bit Benchmark = {}".format(data[x]['score']),
-        "hs06_64" : lambda x: "HS06 64 bit Benchmark = {}".format(data[x]['score']),
-        "hs06"    : lambda x: "HS06 Benchmark = {}".format(data[x]['score']),
-        "spec2017": lambda x: "SPEC2017 64 bit Benchmark = {}".format(data[x]['score']),
+        "DB12": lambda x: "DIRAC Benchmark = %.3f (%s)"
+        % (float(data[x]["value"]), data[x]["unit"]),
+        "hs06_32": lambda x: "HS06 32 bit Benchmark = {}".format(data[x]["score"]),
+        "hs06_64": lambda x: "HS06 64 bit Benchmark = {}".format(data[x]["score"]),
+        "hs06": lambda x: "HS06 Benchmark = {}".format(data[x]["score"]),
+        "spec2017": lambda x: "SPEC2017 64 bit Benchmark = {}".format(data[x]["score"]),
         "hepscore": lambda x: parse_hepscore(data[x]),
     }
 
-    for bmk in sorted(results['profiles']):
+    for bmk in sorted(results["profiles"]):
         # This try covers two cases: that the expected printout fails
         # or that the item is not know in the print_action
         try:
             print(bmk_print_action[bmk](bmk))
         except:
-            print("{} : {}".format(bmk, results['profiles'][bmk]))
+            print("{} : {}".format(bmk, results["profiles"][bmk]))
 
 
 def print_results_from_file(json_file):
@@ -303,5 +323,5 @@ def print_results_from_file(json_file):
     Args:
       json_file: A json file with results
     """
-    with open(json_file, 'r') as jfile:
+    with open(json_file, "r") as jfile:
         print_results(json.loads(jfile.read()))

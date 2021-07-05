@@ -6,18 +6,26 @@
 ###############################################################################
 """
 
+
 class PreFlightError(Exception):
     """Couldn't pass pre-flight checks."""
+
     pass
+
 
 class BenchmarkFailure(Exception):
     """An exception for a failed benchmark."""
+
     pass
+
 
 class BenchmarkFullFailure(Exception):
     """An exception for when all benchmarks failed."""
+
     pass
+
 
 class InstallHEPscoreFailure(Exception):
     """Could not install hepscore."""
+
     pass

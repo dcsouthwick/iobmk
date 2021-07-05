@@ -22,16 +22,17 @@ from iobenchmarksuite.exceptions import BenchmarkFullFailure
 _log = logging.getLogger(__name__)
 
 
-class IOBenchmarkSuite():
+class IOBenchmarkSuite:
     """********************************************************
-                  *** IO-BENCHMARK-SUITE ***
-     *********************************************************"""
+                 *** IO-BENCHMARK-SUITE ***
+    *********************************************************"""
+
     # Location of result files
     RESULT_FILES = {
-        'hs06'    : 'HS06/hs06_result.json',
-        'spec2017': 'SPEC2017/spec2017_result.json',
-        'hepscore': 'HEPSCORE/hepscore_result.json',
-        'db12'    : 'db12_result.json',
+        "hs06": "HS06/hs06_result.json",
+        "spec2017": "SPEC2017/spec2017_result.json",
+        "hepscore": "HEPSCORE/hepscore_result.json",
+        "db12": "db12_result.json",
     }
 
     # Required disk space (in GB) for all benchmarks
@@ -39,19 +40,19 @@ class IOBenchmarkSuite():
 
     def __init__(self, config=None):
         """Initialize setup"""
-        self._bench_queue        = config['global']['benchmarks'].copy()
-        self.selected_benchmarks = config['global']['benchmarks'].copy()
-        self._config             = config['global']
-        self._config_full        = config
-        self._extra              = {}
-        self._result             = {}
-        self.failures            = []
+        self._bench_queue = config["global"]["benchmarks"].copy()
+        self.selected_benchmarks = config["global"]["benchmarks"].copy()
+        self._config = config["global"]
+        self._config_full = config
+        self._extra = {}
+        self._result = {}
+        self.failures = []
 
     def start(self):
         """Entrypoint for suite."""
         _log.info("Starting HEP Benchmark Suite")
 
-        self._extra['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+        self._extra["start_time"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
         if self.preflight():
             _log.info("Pre-flight checks passed successfully.")
@@ -70,54 +71,69 @@ class IOBenchmarkSuite():
 
         # Avoid executing commands if they are not valid run modes.
         # This avoids injections through the configuration file.
-        if self._config['mode'] in ('docker', 'singularity'):
+        if self._config["mode"] in ("docker", "singularity"):
 
             # Search if run mode is installed
-            system_runmode = shutil.which(self._config['mode'])
+            system_runmode = shutil.which(self._config["mode"])
 
             if system_runmode is not None:
-                _log.info("   - %s executable found: %s.", self._config['mode'], system_runmode)
+                _log.info(
+                    "   - %s executable found: %s.",
+                    self._config["mode"],
+                    system_runmode,
+                )
 
-                if self._config['mode'] == 'docker':
-                    version, _ = utils.exec_cmd("docker version --format '{{.Server.Version}}'")
+                if self._config["mode"] == "docker":
+                    version, _ = utils.exec_cmd(
+                        "docker version --format '{{.Server.Version}}'"
+                    )
 
-                elif self._config['mode'] == 'singularity':
-                    version, _ = utils.exec_cmd('singularity version')
+                elif self._config["mode"] == "singularity":
+                    version, _ = utils.exec_cmd("singularity version")
 
-                _log.info("   - %s version: %s.", self._config['mode'], version)
+                _log.info("   - %s version: %s.", self._config["mode"], version)
 
             else:
-                _log.error("   - %s is not installed in the system.", self._config['mode'])
+                _log.error(
+                    "   - %s is not installed in the system.", self._config["mode"]
+                )
                 checks.append(1)
 
         else:
-            _log.error("Invalid run mode specified: %s.", self._config['mode'])
+            _log.error("Invalid run mode specified: %s.", self._config["mode"])
             checks.append(1)
 
         _log.info(" - Checking provided work dirs exist...")
-        os.makedirs(self._config['rundir'], exist_ok=True)
+        os.makedirs(self._config["rundir"], exist_ok=True)
 
-        if 'hs06' in self.selected_benchmarks:
-            os.makedirs(self._config_full['hepspec06']['hepspec_volume'], exist_ok=True)
+        if "hs06" in self.selected_benchmarks:
+            os.makedirs(self._config_full["hepspec06"]["hepspec_volume"], exist_ok=True)
 
-        if 'spec2017' in self.selected_benchmarks:
-            os.makedirs(self._config_full['spec2017']['hepspec_volume'], exist_ok=True)
+        if "spec2017" in self.selected_benchmarks:
+            os.makedirs(self._config_full["spec2017"]["hepspec_volume"], exist_ok=True)
 
-        if 'hepscore' in self.selected_benchmarks:
-            os.makedirs(os.path.join(self._config['rundir'], "HEPSCORE"), exist_ok=True)
+        if "hepscore" in self.selected_benchmarks:
+            os.makedirs(os.path.join(self._config["rundir"], "HEPSCORE"), exist_ok=True)
 
         _log.info(" - Checking for a valid configuration...")
         for bench in self.selected_benchmarks:
-            if bench in ('hs06', 'spec2017'):
+            if bench in ("hs06", "spec2017"):
                 checks.append(benchmarks.validate_spec(self._config_full, bench))
 
         _log.info(" - Checking if rundir has enough space...")
-        disk_stats    = shutil.disk_usage(self._config['rundir'])
+        disk_stats = shutil.disk_usage(self._config["rundir"])
         disk_space_gb = round(disk_stats.free * (10 ** -9), 2)
 
         _log.debug("Calculated disk space: %s GB", disk_space_gb)
-        if disk_space_gb <= self.DISK_THRESHOLD and not (len(self.selected_benchmarks) == 1 and 'db12' in self.selected_benchmarks):
-            _log.error("Not enough disk space on %s, free: %s GB, required: %s GB", self._config['rundir'], disk_space_gb, self.DISK_THRESHOLD)
+        if disk_space_gb <= self.DISK_THRESHOLD and not (
+            len(self.selected_benchmarks) == 1 and "db12" in self.selected_benchmarks
+        ):
+            _log.error(
+                "Not enough disk space on %s, free: %s GB, required: %s GB",
+                self._config["rundir"],
+                disk_space_gb,
+                self.DISK_THRESHOLD,
+            )
 
             # Flag for a failed check
             checks.append(1)
@@ -133,7 +149,7 @@ class IOBenchmarkSuite():
 
         # Check if there are still benchmarks to run
         if len(self._bench_queue) == 0:
-            self._extra['end_time'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+            self._extra["end_time"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
             self.cleanup()
 
         else:
@@ -141,14 +157,14 @@ class IOBenchmarkSuite():
             bench2run = self._bench_queue.pop(0)
             _log.info("Running benchmark: %s", bench2run)
 
-            if bench2run == 'db12':
+            if bench2run == "db12":
                 # TO FIX returns a dict{'DB12':{ 'value': float(), 'unit': string() }}
-                returncode = db12.run_db12(rundir=self._config['rundir'], cpu_num=2)
+                returncode = db12.run_db12(rundir=self._config["rundir"], cpu_num=2)
 
-                if not returncode['DB12']['value']:
+                if not returncode["DB12"]["value"]:
                     self.failures.append(bench2run)
 
-            elif bench2run == 'hepscore':
+            elif bench2run == "hepscore":
                 # Prepare hepscore
                 if benchmarks.prep_hepscore(self._config_full) == 0:
                     # Run hepscore
@@ -158,8 +174,10 @@ class IOBenchmarkSuite():
                 else:
                     _log.error("Skipping hepscore due to failed installation.")
 
-            elif bench2run in ('hs06', 'spec2017'):
-                returncode = benchmarks.run_hepspec(conf=self._config_full, bench=bench2run)
+            elif bench2run in ("hs06", "spec2017"):
+                returncode = benchmarks.run_hepspec(
+                    conf=self._config_full, bench=bench2run
+                )
                 if returncode > 0:
                     self.failures.append(bench2run)
             _log.info("Completed %s with return code %s", bench2run, returncode)
@@ -179,31 +197,37 @@ class IOBenchmarkSuite():
 
         # compile metadata
         self._result = utils.prepare_metadata(self._config_full, self._extra)
-        self._result.update({'profiles': {}})
+        self._result.update({"profiles": {}})
 
         # Get results from each benchmark
         for bench in self.selected_benchmarks:
             try:
-                result_path = os.path.join(self._config['rundir'], self.RESULT_FILES[bench])
+                result_path = os.path.join(
+                    self._config["rundir"], self.RESULT_FILES[bench]
+                )
 
                 with open(result_path, "r") as result_file:
                     _log.info("Reading result file: %s", result_path)
 
                     if bench == "hepscore":
-                        self._result['profiles']['hepscore'] = json.loads(result_file.read())
+                        self._result["profiles"]["hepscore"] = json.loads(
+                            result_file.read()
+                        )
                     else:
-                        self._result['profiles'].update(json.loads(result_file.read()))
+                        self._result["profiles"].update(json.loads(result_file.read()))
 
             except Exception as err:
-                _log.warning('Skipping %s because of %s', bench, err)
+                _log.warning("Skipping %s because of %s", bench, err)
 
         # Save complete json report
-        with open(os.path.join(self._config['rundir'], "bmkrun_report.json"), 'w') as fout:
+        with open(
+            os.path.join(self._config["rundir"], "bmkrun_report.json"), "w"
+        ) as fout:
             fout.write(json.dumps(self._result))
 
         # Check for workload errors
         if len(self.failures) == len(self.selected_benchmarks):
-            _log.error('All benchmarks failed!')
+            _log.error("All benchmarks failed!")
             raise BenchmarkFullFailure
 
         elif len(self.failures) > 0:

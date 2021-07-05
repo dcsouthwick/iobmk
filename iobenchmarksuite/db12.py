@@ -11,17 +11,17 @@ import logging
 import random
 import multiprocessing
 
-UNITS = {'HS06': 1., 'SI00': 1. / 344.}
+UNITS = {"HS06": 1.0, "SI00": 1.0 / 344.0}
 
 _log = logging.getLogger(__name__)
 
 
-def get_cpu_normalization(i, reference='HS06', iterations=1):
+def get_cpu_normalization(i, reference="HS06", iterations=1):
     """
     Get Normalized Power of the current CPU in [reference] units
     """
     if reference not in UNITS:
-        print('Unknown Normalization unit %s' % str(reference))
+        print("Unknown Normalization unit %s" % str(reference))
     """
         return S_ERROR( 'Unknown Normalization unit %s' % str( reference ) )
     """
@@ -69,7 +69,7 @@ def get_cpu_normalization(i, reference='HS06', iterations=1):
     """
 
 
-def run_db12(rundir=".", cpu_num=multiprocessing.cpu_count(), reference='HS06'):
+def run_db12(rundir=".", cpu_num=multiprocessing.cpu_count(), reference="HS06"):
     """
     Runs DB12 Benchmark and outputs result.
 
@@ -86,13 +86,13 @@ def run_db12(rundir=".", cpu_num=multiprocessing.cpu_count(), reference='HS06'):
     cores = int(cpu_num)
     pool = multiprocessing.Pool(processes=cores)
     result = {}
-    result['DB12'] = {
-        'value': (float(sum(pool.map(get_cpu_normalization, range(cores)))/cores)),
-        'unit': "est. {}".format(reference)
+    result["DB12"] = {
+        "value": (float(sum(pool.map(get_cpu_normalization, range(cores))) / cores)),
+        "unit": "est. {}".format(reference),
     }
 
     # Save result to json
-    with open(os.path.join(rundir, 'db12_result.json'), 'w') as fout:
+    with open(os.path.join(rundir, "db12_result.json"), "w") as fout:
         json.dump(result, fout)
 
     _log.debug("Result from DB12: {} ".format(result))

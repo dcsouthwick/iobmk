@@ -9,7 +9,7 @@
 
 import logging
 import sys
-from hepbenchmarksuite.plugins.extractor import Extractor
+from iobenchmarksuite.plugins.extractor import Extractor
 
 # Configure logging
 logger         = logging.getLogger()
