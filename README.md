@@ -1,14 +1,29 @@
-# HEP Benchmark Suite
+# IO Benchmark Suite
 
-[[_TOC_]]
+- [IO Benchmark Suite](#io-benchmark-suite)
+  * [About](#about)
+  * [Examples](#examples)
+  * [Benchmark suite architecture](#benchmark-suite-architecture)
+    + [Integration status](#integration-status)
+    + [Available benchmarks](#available-benchmarks)
+    + [Example of Benchmark Suite workflow](#example-of-benchmark-suite-workflow)
+  * [Installation](#installation)
+    + [Local user space](#local-user-space)
+    + [Python virtual environments (minimum footprint)](#python-virtual-environments--minimum-footprint-)
+  * [How to run](#how-to-run)
+  * [Plugins](#plugins)
+    + [Hardware metadata](#hardware-metadata)
+    + [Advanced Message Queuing (AMQ)](#advanced-message-queuing--amq-)
+  * [Description of all arguments](#description-of-all-arguments)
+    + [Typical use cases](#typical-use-cases)
 
 ## About
 
 The IO Benchmark Suite is a python module which orchestrates a set of benchmarks, collects their results as well as machine metadata, and produces a summary JSON report.
 
-It is forked from the [HEP-Benchmark-Suite](~HEP-Benchmarks/hep-benchmark-suite), and follows the same approach in hopes of maintaining future compatibility. 
+It is forked from the [HEP-Benchmark-Suite](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite), and follows the same approach in hopes of maintaining future compatibility. 
 
-> What follows is inherited README from the upstream project.
+:warning: What follows is largely inherited from the upstream project, and may not be accurate as development progresses!
 
 
 ---
@@ -16,8 +31,6 @@ It is forked from the [HEP-Benchmark-Suite](~HEP-Benchmarks/hep-benchmark-suite)
 
 The suite is a modular approach to target the following use cases in HEP computing:
 
-1. **Mimic the usage of WLCG resources for experiment workloads**
-   * Run workloads representative of the production applications running on WLCG.
 1. **Allow collection of a configurable number of benchmarks**
    * Enable performance studies on heterogeneous hardware.
 1. **Collect the hardware metadata and the running conditions**
@@ -39,7 +52,7 @@ TODO
   <img src="doc/images/HEP-Benchmark-Suite.png" width="484" height="490" />
 </div>
 
-A configurable sequence of benchmarks may be launched by the HEP Benchmark Suite.
+A configurable sequence of benchmarks may be launched by the IO Benchmark Suite.
 
 Benchmark results are aggregated into a single JSON document, together with the hardware metadata (CPU model, host name, Data Centre name, kernel version, etc.)
 
@@ -49,15 +62,15 @@ Users may also execute the suite in stand-alone mode without result reporting - 
 
 ### Integration status
 
-The current Hep-Benchmark-Suite integration status.
+The current IO Benchmark Suite integration status.
 
 * Benchmarks
 
-Benchmark   | Docker             | Singularity
-:---:       | :---:              | :---:
-fIO   | :x: | :x:
-IoR    | :x: | :x:
-CMSSW   | :x: | :x:
+Benchmark | Docker             | Singularity
+:---:     | :---:              | :---:
+fIO       | :x: | :x:
+IoR       | :x: | :x:
+CMSSW     | :x: | :x:
 
 * Plugins
 
@@ -69,7 +82,7 @@ Elastic Search|:x:        |
 
 ### Available benchmarks
 
-The HEP Benchmark Suite is delivered **ready-to-run** with a [default yaml](hepbenchmarksuite/config/benchmarks.yml) configuration file (see [How to run](#how-to-run)). The  currently available benchmarks are:
+The IO Benchmark Suite is delivered **ready-to-run** with a [default yaml](iobenchmarksuite/config/benchmarks.yml) configuration file (see [How to run](#how-to-run)). The  currently available benchmarks are:
 
 * TODO
 
@@ -95,13 +108,13 @@ Users are free to build/use transport and aggregation/visualization tools of the
 ### Local user space
 
 ```sh
-python3 -m pip install --user git+https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite.git@v2.0
+python3 -m pip install --user git+https://github.com/dcsouthwick/iobmk.git
 ```
 
 This will install the suite to the user's home directory:
 
 ```sh
-~/.local/bin/bmkrun
+~/.local/bin/iobmk
 ```
 
 You can additionally add the executible to you $PATH:
@@ -118,7 +131,7 @@ There are cases on which the user would like to keep current Python3 library ver
 export MYENV="bmk_env"        # Define the name of the environment.
 python3 -m venv $MYENV        # Create a directory with the virtual environment.
 source $MYENV/bin/activate    # Activate the environment.
-python3 -m pip install git+https://gitlab.cern.ch/io-benchmarks/suite
+python3 -m pip install git+https://github.com/dcsouthwick/iobmk.git
 ```
 
 ## How to run
@@ -130,12 +143,12 @@ Users are free to provide [command-line arguments](#description-of-all-arguments
 
 * Running the HEP Benchmark Suite with default configuration (hepscore is the default benchmark)
   ```
-  bmkrun -c default
+  iobmk -c default
   ```
 
 * Execute with an alternative configuration
   ```
-  bmkrun -c <config path>
+  iobmk -c <config path>
   ```
 
 Points of attention:
@@ -148,9 +161,9 @@ Points of attention:
 
 - Benchmarks are executed in sequence.
 
-- The following benchmarks: `hepscore`, `hepspec06`, `spec2017` are configured in their appropriate configuration sections.
+- ~~The following benchmarks: `hepscore`, `hepspec06`, `spec2017` are configured in their appropriate configuration sections.~~
 
-- In the case of running HS06, and/or SPEC CPU2017, the benchmark will look for the installation at the specified `hepspec_volume:`, and if it does not exist, it will attempt to install it via tarball argument `url_tarball:`, as defined in the [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml)).
+- ~~In the case of running HS06, and/or SPEC CPU2017, the benchmark will look for the installation at the specified `hepspec_volume:`, and if it does not exist, it will attempt to install it via tarball argument `url_tarball:`, as defined in the [`benchmarks.yml`](iobenchmarksuite/config/benchmarks.yml)).~~
 
 - Please have a look at the [Examples](#examples) section.
 
@@ -158,7 +171,7 @@ Points of attention:
 
 ### Hardware metadata
 
-The suite ships with a [hardware metadata plugin](hepbenchmarksuite/plugins/extractor.py) which is responsible to collect system hardware and software information. This data is then compiled and reported in the results json file.
+The suite ships with a [hardware metadata plugin](iobenchmarksuite/plugins/extractor.py) which is responsible to collect system hardware and software information. This data is then compiled and reported in the results json file.
 
 This plugin relies on system tools such as: `lscpu`, `lshw`, `dmidecode`. Some of these tools require escalated priviledges for a complete output. Please take this into consideration if some outputs are empty in the final json report.
 
@@ -169,7 +182,7 @@ This plugin relies on system tools such as: `lscpu`, `lshw`, `dmidecode`. Some o
 
 ### Advanced Message Queuing (AMQ)
 
-AMQ publishing is implemented using the [STOMP protocol](https://stomp.github.io/). Users must provide either a valid username/password or key/cert pair, in addition to the server and topic. The relevant section of the [config yaml](hepbenchmarksuite/config/benchmarks.yml) is given below. You can then pass the argument `--publish` to the suite.
+AMQ publishing is implemented using the [STOMP protocol](https://stomp.github.io/). Users must provide either a valid username/password or key/cert pair, in addition to the server and topic. The relevant section of the [config yaml](iobenchmarksuite/config/benchmarks.yml) is given below. You can then pass the argument `--publish` to the suite.
 
 **1. username/password settings**
 ```yaml
@@ -205,7 +218,7 @@ Additional information on user certificate can be found at the official CA docum
 The `-h` option provides an explanation of all command line arguments
 
 ```none
-$ bmkrun --help
+$ iobmk --help
 -----------------------------------------------
 High Energy Physics Benchmark Suite
 -----------------------------------------------
@@ -243,7 +256,7 @@ optional arguments:
 - Show default configuration.
 
     ```sh
-    bmkrun -c default --show
+    iobmk -c default --show
     ```
 
 - Specify custom tags via ENV variables.
@@ -264,7 +277,7 @@ optional arguments:
     bmkrun -c default -b db12
     ```
 
-- Run HS06 and SPEC2017 (Alternate config should be based on [`benchmarks.yml`](hepbenchmarksuite/config/benchmarks.yml))
+- Run HS06 and SPEC2017 (Alternate config should be based on [`benchmarks.yml`](iobenchmarksuite/config/benchmarks.yml))
 
     ```sh
     bmkrun -c <alternate config>  -b hs06_32 spec2017
