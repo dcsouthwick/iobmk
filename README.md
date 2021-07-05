@@ -21,9 +21,9 @@
 
 The IO Benchmark Suite is a python module which orchestrates a set of benchmarks, collects their results as well as machine metadata, and produces a summary JSON report.
 
-It is forked from the [HEP-Benchmark-Suite](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite), and follows the same approach in hopes of maintaining future compatibility. 
+It is forked from the [HEP-Benchmark-Suite](https://gitlab.cern.ch/hep-benchmarks/hep-benchmark-suite), and follows the same approach in hopes of maintaining future compatibility. This branch point is preserved in the [upstream branch](https://github.com/dcsouthwick/iobmk/tree/upstream)
 
-:warning: What follows is largely inherited from the upstream project, and may not be accurate as development progresses!
+⚠️ What follows is largely inherited from the upstream project, and may not be accurate as development progresses!
 
 
 ---
